@@ -2,11 +2,12 @@ class objmesh extends objectToDraw {
 
 
     // --------------------------------------------
-    constructor(objName, scale = 1.0) {
+    constructor(objName, scale = 1.0, color = Color.BLACK) {
         super('glsl/obj', -1, null);
         this.objName = objName;
         this.mesh = null;
         this.scale = scale;
+        this.color = color;
 
         this.loadObjFile(this);
         loadShaders(this);
@@ -21,6 +22,7 @@ class objmesh extends objectToDraw {
         this.shader.rMatrixUniform = gl.getUniformLocation(this.shader, "uRMatrix");
         this.shader.mvMatrixUniform = gl.getUniformLocation(this.shader, "uMVMatrix");
         this.shader.pMatrixUniform = gl.getUniformLocation(this.shader, "uPMatrix");
+        this.shader.colorUniform = gl.getUniformLocation(this.shader, "uColor");
     }
 
     // --------------------------------------------
@@ -32,6 +34,7 @@ class objmesh extends objectToDraw {
         gl.uniformMatrix4fv(this.shader.rMatrixUniform, false, rotMatrix);
         gl.uniformMatrix4fv(this.shader.mvMatrixUniform, false, mvMatrix);
         gl.uniformMatrix4fv(this.shader.pMatrixUniform, false, pMatrix);
+        gl.uniform3fv(this.shader.colorUniform, this.color);
     }
 
     // --------------------------------------------
@@ -58,4 +61,6 @@ class objmesh extends objectToDraw {
         xhttp.open("GET", OBJ3D.objName, true);
         xhttp.send();
     }
+
+
 }
