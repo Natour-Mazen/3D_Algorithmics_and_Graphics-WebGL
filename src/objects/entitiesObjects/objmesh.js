@@ -1,10 +1,12 @@
 class objmesh extends objectToDraw {
 
+
     // --------------------------------------------
-    constructor(objFname) {
+    constructor(objName, scale = 1.0) {
         super('glsl/obj', -1, null);
-        this.objName = objFname;
+        this.objName = objName;
         this.mesh = null;
+        this.scale = scale;
 
         this.loadObjFile(this);
         loadShaders(this);
@@ -26,6 +28,7 @@ class objmesh extends objectToDraw {
         mat4.identity(mvMatrix);
         mat4.translate(mvMatrix, distCENTER);
         mat4.multiply(mvMatrix, rotMatrix);
+        mat4.scale(mvMatrix, [this.scale, this.scale, this.scale]);
         gl.uniformMatrix4fv(this.shader.rMatrixUniform, false, rotMatrix);
         gl.uniformMatrix4fv(this.shader.mvMatrixUniform, false, mvMatrix);
         gl.uniformMatrix4fv(this.shader.pMatrixUniform, false, pMatrix);
