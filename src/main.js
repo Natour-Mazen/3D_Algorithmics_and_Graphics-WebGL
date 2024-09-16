@@ -66,10 +66,10 @@ function webGLStart() {
     distCENTER = vec3.create([0, -0.2, -10]);
 
     const Plane = new plane();
-    const Bunny = new objmesh('res/obj/bunny.obj',5, Color.BROWN );
+    //const Bunny = new objmesh('res/obj/bunny.obj',5, Color.BROWN );
     const Porsche = new objmesh('res/obj/porsche.obj',10, Color.CYAN);
 
-    objectsToDraw.push(Plane, Bunny, Porsche);
+    objectsToDraw.push(Plane, Porsche);
 
     tick();
 }
