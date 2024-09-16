@@ -1,25 +1,27 @@
 <html lang="fr">
+	<head>
+		<title>WebGL - A3D2</title>
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
-<head>
-	<title>WebGL - Canvas test</title>
-	<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<link rel="stylesheet" type="text/css" href="css/main.css">
 
-	<script src="src/initGL.js"></script>
-	<script src="src/glMatrix.js"></script>
-	<script src="src/main.js"></script>
-	<script src="src/callbacks.js"></script>
-	<script src="src/objLoader.js"></script>
-	<script src="src/utilities.js"></script>
-	<script src="src/shaders.js"></script>
-	<script src="src/plane.js"></script>
-	<script src="src/objmesh.js"></script>
-</head>
+		<!--- ****************** RENDERING ****************** --->
+		<script src="src/rendering/glMatrix.js"></script>
+		<script src="src/rendering/callbacks.js"></script>
+		<!--- ****************** SHADERS ****************** --->
+		<script src="src/shaders/shaders.js"></script>
+		<!--- ****************** OBJECTS ****************** --->
+		<script src="src/objects/objectToDraw.js"></script>
+		<script src="src/objects/entitiesObjects/objLoader.js"></script>
+		<script src="src/objects/geometricObjects/plane.js"></script>
+		<script src="src/objects/entitiesObjects/objmesh.js"></script>
+		<!--- ****************** Main ****************** --->
+		<script src="src/main.js"></script>
 
+	</head>
 
-<body onload="webGLStart();">
-	<canvas id="WebGL-test" style="border:none;" width="800" height="600"></canvas>
-	<br><br>
-</body>
-
+	<body onload="webGLStart();">
+			<canvas id="WebGL-canvas"></canvas>
+	</body>
 
 </html>
