@@ -2,12 +2,10 @@ class objmesh extends objectToDraw {
 
 
     // --------------------------------------------
-    constructor(objName, scale = 1.0, color = Color.BLACK) {
+    constructor(objName) {
         super('glsl/obj', -1, null);
         this.objName = objName;
         this.mesh = null;
-        this.scale = scale;
-        this.color = color;
 
         this.loadObjFile(this);
         loadShaders(this);
@@ -61,6 +59,7 @@ class objmesh extends objectToDraw {
         xhttp.open("GET", OBJ3D.objName, true);
         xhttp.send();
     }
+
 
 
 }
