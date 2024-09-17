@@ -4,6 +4,7 @@ let mvMatrix = mat4.create();
 let pMatrix = mat4.create();
 let rotMatrix = mat4.create();
 let distCENTER;
+let main_plane;
 let main_objectsToDraw = [];
 
 const canvasID = 'WebGL-canvas';
@@ -84,9 +85,9 @@ function webGLStart() {
 
     distCENTER = vec3.create([0, 0, -25]);
 
-    const Plane = new plane();
+    main_plane = new plane();
  
-    main_objectsToDraw.push(Plane);
+    main_objectsToDraw.push(main_plane);
 
     tick();
 }
