@@ -42,10 +42,23 @@ function resizeCanvas() {
 window.addEventListener('load', resizeCanvas);
 window.addEventListener('resize', resizeCanvas);
 
+function updateObjectColor(obj) {
+    obj.setColor(CONTROLLER.getColor());
+}
+
 function drawScene() {
     gl.clear(gl.COLOR_BUFFER_BIT);
     for (const obj of objectsToDraw) {
-        obj.draw();
+        if(obj !== null){
+            if (obj instanceof plane) {
+                if (CONTROLLER.isTherePlane) {
+                    obj.draw();
+                }
+            } else {
+                obj.draw();
+            }
+            updateObjectColor(obj)
+        }
     }
 }
 
@@ -67,9 +80,9 @@ function webGLStart() {
 
     const Plane = new plane();
     //const Bunny = new objmesh('res/obj/bunny.obj',5, Color.BROWN );
-    const Porsche = new objmesh('res/obj/porsche.obj',10, Color.CYAN);
+    const Porsche = new objmesh('res/obj/porsche.obj',10, CONTROLLER.getColor() );
 
-    objectsToDraw.push(Plane, Porsche);
+    objectsToDraw.push(Plane);
 
     tick();
 }
