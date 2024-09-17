@@ -82,12 +82,10 @@ function webGLStart() {
     mat4.rotate(rotMatrix, rotX, [1, 0, 0]);
     mat4.rotate(rotMatrix, rotY, [0, 0, 1]);
 
-    distCENTER = vec3.create([0, -0.2, -10]);
+    distCENTER = vec3.create([0, 0, -25]);
 
     const Plane = new plane();
-    //const Bunny = new objmesh('res/obj/bunny.obj',5, Color.BROWN );
-    //const Porsche = new objmesh('res/obj/porsche.obj',10, viewControllerInstance.getSelectedColor() );
-
+ 
     main_objectsToDraw.push(Plane);
 
     tick();
