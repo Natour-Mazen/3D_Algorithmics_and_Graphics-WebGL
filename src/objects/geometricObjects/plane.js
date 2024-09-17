@@ -51,12 +51,20 @@ class plane extends objectToDraw {
         gl.uniformMatrix4fv(this.shader.pMatrixUniform, false, pMatrix);
         gl.uniformMatrix4fv(this.shader.mvMatrixUniform, false, mvMatrix);
         this.shader.uBumpSampler = gl.getUniformLocation(this.shader, "uBumpSampler");
+        this.shader.uSampler = gl.getUniformLocation(this.shader, "uSampler");
+        this.shader.uLightDirection = gl.getUniformLocation(this.shader, "uLightDirection");
+        this.shader.uColor = gl.getUniformLocation(this.shader, "uColor");
     }
 
     setUniforms() {
+
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, bumpTexture);
-        gl.uniform1i( this.shader.uBumpSampler, 1);
+        gl.uniform1i(this.shader.uBumpSampler, 1);
+
+        const lightDirection = [0.0, 0.0, -1.0];
+        gl.uniform3fv(this.shader.uLightDirection, lightDirection);
+        gl.uniform4fv(this.shader.uColor, this.color);
     }
 
     // --------------------------------------------
