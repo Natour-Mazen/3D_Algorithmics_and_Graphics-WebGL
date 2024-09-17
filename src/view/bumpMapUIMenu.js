@@ -1,5 +1,3 @@
 let bumpTexture = null;
 
-function initTextures( url) {
-    bumpTexture = loadTexture(gl, url);
-}
+//bumpTexture = loadTexture(gl, 'res/textures/bumpMaps/flower.jpg');

@@ -50,13 +50,20 @@ class plane extends objectToDraw {
 
         gl.uniformMatrix4fv(this.shader.pMatrixUniform, false, pMatrix);
         gl.uniformMatrix4fv(this.shader.mvMatrixUniform, false, mvMatrix);
+        this.shader.uBumpSampler = gl.getUniformLocation(this.shader, "uBumpSampler");
+    }
+
+    setUniforms() {
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, bumpTexture);
+        gl.uniform1i( this.shader.uBumpSampler, 1);
     }
 
     // --------------------------------------------
     draw() {
         if(this.shader && this.loaded === 4) {
             this.setShadersParams();
-
+            this.setUniforms();
             gl.drawArrays(gl.TRIANGLE_FAN, 0, this.vBuffer.numItems);
             gl.drawArrays(gl.LINE_LOOP, 0, this.vBuffer.numItems);
         }
