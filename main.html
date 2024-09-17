@@ -3,26 +3,80 @@
 		<title>WebGL - A3D2</title>
 		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
-		<link rel="stylesheet" type="text/css" href="css/main.css">
+		<link rel="stylesheet" type="text/css" href="css/base.css">
+		<link rel="stylesheet" type="text/css" href="css/layout.css">
+		<link rel="stylesheet" type="text/css" href="css/menu.css">
+		<link rel="stylesheet" type="text/css" href="css/dropdown.css">
+		<link rel="stylesheet" type="text/css" href="css/components.css">
 
 		<!--- ****************** RENDERING ****************** --->
-		<script src="src/rendering/glMatrix.js"></script>
-		<script src="src/rendering/callbacks.js"></script>
-		<script src="src/utils/color.js"></script>
+		<script defer src="src/rendering/glMatrix.js"></script>
+		<script defer src="src/rendering/callbacks.js"></script>
+		<script defer src="src/utils/color.js"></script>
 		<!--- ****************** SHADERS ****************** --->
-		<script src="src/shaders/shaders.js"></script>
+		<script defer src="src/shaders/shaders.js"></script>
 		<!--- ****************** OBJECTS ****************** --->
-		<script src="src/objects/objectToDraw.js"></script>
-		<script src="src/objects/entitiesObjects/objLoader.js"></script>
-		<script src="src/objects/geometricObjects/plane.js"></script>
-		<script src="src/objects/entitiesObjects/objmesh.js"></script>
+		<script defer src="src/objects/objectToDraw.js"></script>
+		<script defer src="src/objects/entitiesObjects/objLoader.js"></script>
+		<script defer src="src/objects/geometricObjects/plane.js"></script>
+		<script defer src="src/objects/entitiesObjects/objmesh.js"></script>
+
+		<!--- ****************** View ****************** --->
+		<script defer src="src/view/viewController.js"></script>
+		<script defer src="src/view/uiUtil.js"></script>
+
 		<!--- ****************** Main ****************** --->
-		<script src="src/main.js"></script>
+		<script defer src="src/main.js"></script>
 
 	</head>
 
 	<body onload="webGLStart();">
-			<canvas id="WebGL-canvas"></canvas>
+		<canvas id="WebGL-canvas"></canvas>
+
+		<menu class="menu">
+			<button id="open_menu_btn" onclick="openMenu(event)">Menu</button>
+			<div id="menu__content">
+				<!-- This button will close the menu__content div -->
+				<button id="close_menu_btn" onclick="closeMenu()">Close</button>
+				<div class="dropdown active">
+					<div class="header" onclick="toggleDropdown(event);">
+						<span class="caret down"></span>
+						Objects
+					</div>
+					<div class="content__wrapper">
+						<!-- Plane toggle -->
+						<item>
+							<div class="row checkbox">
+								<label for="plane_checkbox">Plane</label>
+								<input type="checkbox" id="plane_checkbox" checked="checked" onclick="CONTROLLER.isTherePlane = this.checked">
+							</div>
+						</item>
+						<!-- Model selection -->
+						<item>
+							<div class="row">
+								<label for="models_select">Objects</label>
+								<select id="models_select" name="Objects" class="selector" onload="this.selectedIndex = 0;">
+									<option onclick="CONTROLLER.OBJECT = null;" selected>None</option>
+								</select>
+							</div>
+						</item>
+						<item id="color_picker">
+							<div class="row">
+								<label for="model_color">Colors:</label>
+								<input type="color" class="color_picker" id="model_color" name="color" value="#000000" oninput="CONTROLLER.setColor(this.value);">
+							</div>
+						</item>
+						<item>
+							<div class="row slider">
+								<label for="scale_slider">Scale:</label>
+								<input type="range" id="scale_slider" min="0" max="50" step="1" value="10" oninput="updateScale(this.value)">
+								<span class="value_display" id="scale_value">10</span>
+							</div>
+						</item>
+					</div>
+				</div>
+			</div>
+		</menu>
 	</body>
 
 </html>
