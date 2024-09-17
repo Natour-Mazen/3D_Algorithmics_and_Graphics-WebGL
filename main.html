@@ -13,6 +13,7 @@
 		<script defer src="src/rendering/glMatrix.js"></script>
 		<script defer src="src/rendering/callbacks.js"></script>
 		<script defer src="src/utils/color.js"></script>
+		<script defer src="src/rendering/textureLoader.js"></script>
 		<!--- ****************** SHADERS ****************** --->
 		<script defer src="src/shaders/shaders.js"></script>
 		<!--- ****************** OBJECTS ****************** --->
@@ -22,8 +23,9 @@
 		<script defer src="src/objects/entitiesObjects/objmesh.js"></script>
 
 		<!--- ****************** View ****************** --->
-		<script defer src="src/view/viewController.js"></script>
-		<script defer src="src/view/uiUtil.js"></script>
+		<script defer src="src/view/generalUIMenu.js"></script>
+		<script defer src="src/view/objectsUIMenu.js"></script>
+		<script defer src="src/view/bumpMapUIMenu.js"></script>
 
 		<!--- ****************** Main ****************** --->
 		<script defer src="src/main.js"></script>
@@ -38,7 +40,7 @@
 			<div id="menu__content">
 				<!-- This button will close the menu__content div -->
 				<button id="close_menu_btn" onclick="closeMenu()">Close</button>
-				<div class="dropdown active">
+				<div class="dropdown">
 					<div class="header" onclick="toggleDropdown(event);">
 						<span class="caret down"></span>
 						Objects
@@ -48,29 +50,74 @@
 						<item>
 							<div class="row checkbox">
 								<label for="plane_checkbox">Plane</label>
-								<input type="checkbox" id="plane_checkbox" checked="checked" onclick="CONTROLLER.isTherePlane = this.checked">
+								<input type="checkbox" id="plane_checkbox" checked="checked">
 							</div>
 						</item>
 						<!-- Model selection -->
 						<item>
 							<div class="row">
 								<label for="models_select">Objects</label>
-								<select id="models_select" name="Objects" class="selector" onload="this.selectedIndex = 0;">
-									<option onclick="CONTROLLER.OBJECT = null;" selected>None</option>
+								<select id="models_select" name="Objects" class="selector" >
+									<option  selected>None</option>
 								</select>
 							</div>
 						</item>
 						<item id="color_picker">
 							<div class="row">
 								<label for="model_color">Colors:</label>
-								<input type="color" class="color_picker" id="model_color" name="color" value="#000000" oninput="CONTROLLER.setColor(this.value);">
+								<input type="color" class="color_picker" id="model_color" name="color" value="#000000">
 							</div>
 						</item>
 						<item>
 							<div class="row slider">
 								<label for="scale_slider">Scale:</label>
-								<input type="range" id="scale_slider" min="0" max="50" step="1" value="0" oninput="updateScale(this.value)">
-								<span class="value_display" id="scale_value"></span>
+								<input type="range" id="scale_slider" min="5" max="20" step="1" value="0" >
+								<span class="value_display" id="scale_value" contenteditable="false"></span>
+							</div>
+						</item>
+					</div>
+
+				</div>
+				<div class="dropdown">
+					<div class="header" onclick="toggleDropdown(event);">
+						<span class="caret down"></span>
+						Terrain
+					</div>
+					<div class="content__wrapper">
+						<!-- Type selection -->
+						<item>
+							<div class="row">
+								<label for="ground_select">Type</label>
+								<select id="ground_select" name="Ground" class="selector" >
+									<option  selected>None</option>
+								</select>
+							</div>
+						</item>
+						<!-- Terrain selection -->
+						<item>
+							<div class="row">
+								<label for="terrain_selector">Terrain</label>
+								<select id="terrain_selector" name="Terrain" class="selector" >
+									<option  selected>None</option>
+								</select>
+							</div>
+						</item>
+						<!-- Texture selection -->
+						<item>
+							<div class="row">
+								<label for="texture_selector">Texture</label>
+								<select id="texture_selector" name="Texture" class="selector" >
+									<option  selected>None</option>
+								</select>
+							</div>
+						</item>
+						<!-- Bump map selection -->
+						<item>
+							<div class="row">
+								<label for="bump_map_selector">Bump Map</label>
+								<select id="bump_map_selector" name="BumpMap" class="selector" >
+									<option  selected>None</option>
+								</select>
 							</div>
 						</item>
 					</div>
@@ -78,5 +125,4 @@
 			</div>
 		</menu>
 	</body>
-
 </html>
