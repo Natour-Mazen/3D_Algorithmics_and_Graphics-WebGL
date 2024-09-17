@@ -12,7 +12,7 @@
 
   /**
    * The main Mesh class. The constructor will parse through the OBJ file data
-   * and collect the vertex, vertex normal, texture, and face information. This
+   * and collect the vertex, vertex normal, textures, and face information. This
    * information can then be used later on when creating your VBOs. See
    * OBJ.initMeshBuffers for an example of how to use the newly created Mesh
    *
@@ -29,26 +29,26 @@
        * 'v': indicates vertex section
        * 'vn': indicates vertex normal section
        * 'f': indicates the faces section
-       * 'vt': indicates vertex texture section (if textures were used on the model)
+       * 'vt': indicates vertex textures section (if textures were used on the model)
      Each of the above sections (except for the faces section) is a list/set of
      unique vertices.
 
      Each line of the faces section contains a list of
-     (vertex, [texture], normal) groups
+     (vertex, [textures], normal) groups
      Some examples:
-         // the texture index is optional, both formats are possible for models
-         // without a texture applied
+         // the textures index is optional, both formats are possible for models
+         // without a textures applied
          f 1/25 18/46 12/31
          f 1//25 18//46 12//31
 
-         // A 3 vertex face with texture indices
+         // A 3 vertex face with textures indices
          f 16/92/11 14/101/22 1/69/1
 
          // A 4 vertex face
          f 16/92/11 40/109/40 38/114/38 14/101/22
 
-     The first two lines are examples of a 3 vertex face without a texture applied.
-     The second is an example of a 3 vertex face with a texture applied.
+     The first two lines are examples of a 3 vertex face without a textures applied.
+     The second is an example of a 3 vertex face with a textures applied.
      The third is an example of a 4 vertex face. Note: a face can contain N
      number of vertices.
 
@@ -59,7 +59,7 @@
      For example:
          `f 16/92/11` is saying to
            - take the 16th element from the [v] vertex array
-           - take the 92nd element from the [vt] texture array
+           - take the 92nd element from the [vt] textures array
            - take the 11th element from the [vn] normal array
          and together they make a unique Vertex.
      Using all 3+ unique Vertices from the face line will produce a polygon.
@@ -77,7 +77,7 @@
      has a vertex at the same coordinates, however, three distinct vertices
      will be drawn at the same spot.
 
-     To solve the issue of duplicate Vertices (the `(vertex, [texture], normal)`
+     To solve the issue of duplicate Vertices (the `(vertex, [textures], normal)`
      groups), while iterating through the face lines, when a group is encountered
      the whole group string ('16/92/11') is checked to see if it exists in the
      packed.hashindices object, and if it doesn't, the indices it specifies
@@ -117,7 +117,7 @@
         vertNormals.push(line[1]);
         vertNormals.push(line[2]);
       } else if (lines[i].trim().startsWith('vt')) {
-        // if this is a texture
+        // if this is a textures
         line = lines[i].trim().split(/\s+/);
         line.shift();
         textures.push(line[0]);
@@ -158,10 +158,10 @@
                     Vertex = ['19', '92', '11'];
                 where
                     Vertex[0] is the vertex index
-                    Vertex[1] is the texture index
+                    Vertex[1] is the textures index
                     Vertex[2] is the normal index
                  Think of faces having Vertices which are comprised of the
-                 attributes location (v), texture (vt), and normal (vn).
+                 attributes location (v), textures (vt), and normal (vn).
                  */
                 var Vertex = line[ j ].split( '/' );
                 /*
@@ -305,7 +305,7 @@
    * |
    * **textureBuffer**      |contains the model&#39;s Texture Coordinates
    * textureBuffer.itemSize |set to 2 items
-   * textureBuffer.numItems |the number of texture coordinates
+   * textureBuffer.numItems |the number of textures coordinates
    * |
    * **vertexBuffer**       |contains the model&#39;s Vertex Position Coordinates (does not include w)
    * vertexBuffer.itemSize  |set to 3 items
@@ -323,7 +323,7 @@
    *     var shaderProgram = gl.createProgram();
    *     // compilation stuff here
    *     ...
-   *     // make sure you have vertex, vertex normal, and texture coordinate
+   *     // make sure you have vertex, vertex normal, and textures coordinate
    *     // attributes located in your shaders and attach them to the shader program
    *     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
    *     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
@@ -334,7 +334,7 @@
    *     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
    *     gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
    *
-   *     // create and initialize the vertex, vertex normal, and texture coordinate buffers
+   *     // create and initialize the vertex, vertex normal, and textures coordinate buffers
    *     // and save on to the mesh object
    *     OBJ.initMeshBuffers(gl, mesh);
    *
