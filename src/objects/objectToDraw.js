@@ -7,6 +7,7 @@ class objectToDraw {
         this.shaderName = shaderName;
         this.loaded = loaded;
         this.shader = shader;
+        this.color = Color.BLACK;
     }
 
     draw() {
@@ -29,6 +30,14 @@ class objectToDraw {
 
         shader.pMatrixUniform = gl.getUniformLocation(shader, "uPMatrix");
         shader.mvMatrixUniform = gl.getUniformLocation(shader, "uMVMatrix");
+    }
+
+    setColor(color) {
+        this.color = color;
+    }
+
+    setScale(scale) {
+        this.scale = scale;
     }
 
 }
