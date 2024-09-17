@@ -8,7 +8,7 @@ class viewController {
 
     // Environment
     setObject(objectName) {
-        this.OBJECT = new objmesh(objectName, 10, this.COLOR);
+        this.OBJECT = new objmesh(objectName);
     }
 
     setScale(scale) {
