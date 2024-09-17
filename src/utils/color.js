@@ -39,6 +39,15 @@ class Color {
     }
 
     toArray() {
-        return [this.r, this.g, this.b, this.a];
+        return [this.r, this.g, this.b];
     }
+
+    static hextoRGB(hex) {
+        hex = hex.replace('#', '');
+        const r = parseInt(hex.substring(0, 2), 16) / 255;
+        const g = parseInt(hex.substring(2, 4), 16) / 255;
+        const b = parseInt(hex.substring(4, 6), 16) / 255;
+        return new Color(r, g, b);
+    }
+
 }
