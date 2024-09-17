@@ -1,0 +1,75 @@
+/* Global dropdowns style */
+.dropdown {
+    background-color: rgba(56, 56, 56, 0.08);
+    border-top: 1px solid #aeaeae;
+    width: 100%;
+    display: inline-block;
+    padding: 2% 0;
+    /* glass effect */
+    backdrop-filter: blur(6.3px);
+    -webkit-backdrop-filter: blur(6.3px);
+}
+
+/* Dropdown header style */
+.dropdown .header {
+    color: white;
+    padding: 7px 10px;
+    font-size: 20px;
+    display: flex;
+    cursor: default;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+/* Personal caret creation */
+.header .caret {
+    position: relative;
+    display: flex;
+    justify-content: start;
+    left: 0;
+    top: 15px;
+    transform: translateY(-50%);
+    margin-right: 5%;
+}
+
+/* Dropdown is closed */
+.caret.down {
+    content: '';
+    border-top: 5px solid #f9f5f5;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+}
+
+/* Dropdown is opened */
+.caret.up {
+    content: '';
+    top: 0;
+    border-bottom: 5px solid #f9f5f5;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+}
+
+/* Dropdown's content (contains rows) */
+.content__wrapper {
+    display: none;
+    padding: 0 10px;
+    z-index: 1;
+}
+
+/* Display the content when a dropdown is active */
+.dropdown.active .content__wrapper {
+    display: block;
+}
+
+/* Dropdown's row */
+.row {
+    color: white;
+    height: 45px;
+    position: relative;
+    font-size: 14px;
+    width: 100%;
+}
+
+.row:hover:not(.slider) {
+    background-color: rgb(105, 105, 105, 0.5);
+}
