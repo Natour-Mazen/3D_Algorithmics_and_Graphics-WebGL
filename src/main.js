@@ -4,7 +4,7 @@ let mvMatrix = mat4.create();
 let pMatrix = mat4.create();
 let rotMatrix = mat4.create();
 let distCENTER;
-let objectsToDraw = [];
+let main_objectsToDraw = [];
 
 const canvasID = 'WebGL-canvas';
 
@@ -43,15 +43,18 @@ window.addEventListener('load', resizeCanvas);
 window.addEventListener('resize', resizeCanvas);
 
 function updateObjectColor(obj) {
-    obj.setColor(CONTROLLER.getColor());
+    obj.setColor(objColor);
 }
 
+/**
+ * Draw the scene
+ */
 function drawScene() {
     gl.clear(gl.COLOR_BUFFER_BIT);
-    for (const obj of objectsToDraw) {
+    for (const obj of main_objectsToDraw) {
         if(obj !== null){
             if (obj instanceof plane) {
-                if (CONTROLLER.isTherePlane) {
+                if (isTherePlane) {
                     obj.draw();
                 }
             } else {
@@ -62,6 +65,9 @@ function drawScene() {
     }
 }
 
+/**
+ * Update the scene, called every frame.
+ */
 function webGLStart() {
     const canvas = document.getElementById(canvasID);
     canvas.onmousedown = handleMouseDown;
@@ -80,9 +86,9 @@ function webGLStart() {
 
     const Plane = new plane();
     //const Bunny = new objmesh('res/obj/bunny.obj',5, Color.BROWN );
-    const Porsche = new objmesh('res/obj/porsche.obj',10, CONTROLLER.getColor() );
+    //const Porsche = new objmesh('res/obj/porsche.obj',10, viewControllerInstance.getSelectedColor() );
 
-    objectsToDraw.push(Plane);
+    main_objectsToDraw.push(Plane);
 
     tick();
 }
