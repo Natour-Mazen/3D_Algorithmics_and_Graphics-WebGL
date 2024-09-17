@@ -81,6 +81,30 @@
 				<div class="dropdown">
 					<div class="header" onclick="toggleDropdown(event);">
 						<span class="caret down"></span>
+						Bump Map
+					</div>
+					<div class="content__wrapper">
+						<!-- Bump map selection -->
+						<item>
+							<div class="row">
+								<label for="bump_map_selector">Type</label>
+								<select id="bump_map_selector" name="BumpMap" class="selector" >
+									<option  selected>None</option>
+								</select>
+							</div>
+						</item>
+						<item id="color_picker">
+							<div class="row">
+								<label for="bump_map_color">Colors:</label>
+								<input type="color" class="color_picker" id="bump_map_color" name="color" value="#000000">
+							</div>
+						</item>
+
+					</div>
+				</div>
+				<div class="dropdown">
+					<div class="header" onclick="toggleDropdown(event);">
+						<span class="caret down"></span>
 						Terrain
 					</div>
 					<div class="content__wrapper">
@@ -111,15 +135,7 @@
 								</select>
 							</div>
 						</item>
-						<!-- Bump map selection -->
-						<item>
-							<div class="row">
-								<label for="bump_map_selector">Bump Map</label>
-								<select id="bump_map_selector" name="BumpMap" class="selector" >
-									<option  selected>None</option>
-								</select>
-							</div>
-						</item>
+
 					</div>
 				</div>
 			</div>
