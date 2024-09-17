@@ -27,14 +27,14 @@
     display: flex;
     justify-content: start;
     left: 0;
-    top: 15px;
+
     transform: translateY(-50%);
     margin-right: 5%;
 }
 
 /* Dropdown is closed */
 .caret.down {
-    content: '';
+    top: 20px;
     border-top: 5px solid #f9f5f5;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
@@ -42,8 +42,7 @@
 
 /* Dropdown is opened */
 .caret.up {
-    content: '';
-    top: 0;
+    top: 2px;
     border-bottom: 5px solid #f9f5f5;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
