@@ -40,4 +40,9 @@ class objectToDraw {
         this.scale = scale;
     }
 
+    setShaderName(newShaderName) {
+        this.shaderName = newShaderName;
+        loadShaders(this);
+    }
+
 }
