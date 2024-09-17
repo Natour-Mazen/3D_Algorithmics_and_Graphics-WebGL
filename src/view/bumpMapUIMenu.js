@@ -1,30 +1,29 @@
 let bumpTexture = null;
 
-
+const bumpMapSelector = doc.getElementById('bump_map_selector');
 const BumpMapColorPicker = doc.getElementById('bump_map_color');
 
 
 // Loaders
-const BumpMapLoader = ['flower', 'cube', 'brickwall', 'moon'];
+const BumpMapLoader = ['flower.jpg', 'cube.jpg', 'brickwall.jpg', 'moon.jpg'];
 
 
 function populateBumpMapSelector() {
-    const bumpMapSelector = doc.getElementById('bump_map_selector');
     BumpMapLoader.forEach(function (bumpMapName) {
         const option = doc.createElement('option');
+        const nameWithoutExtension = bumpMapName.split('.')[0];
         option.value = bumpMapName;
-        option.textContent = bumpMapName;
+        option.textContent = nameWithoutExtension;
         bumpMapSelector.appendChild(option);
     });
 }
 
 function loadBumpTexture(textureName) {
-    const texturePath = `res/textures/bumpMaps/${textureName}.jpg`;
+    const texturePath = `res/textures/bumpMaps/${textureName}`;
     bumpTexture = loadTexture(gl, texturePath);
 }
 
 function initBumpMapSelector() {
-    const bumpMapSelector = doc.getElementById('bump_map_selector');
     bumpMapSelector.addEventListener('change', function () {
         const selectedBumpMap = this.value;
         if (selectedBumpMap !== 'None') {
