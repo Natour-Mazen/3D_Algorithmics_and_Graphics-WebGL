@@ -10,7 +10,6 @@ const scaleValueDisplay = doc.getElementById('scale_value');
 
 // Variables
 let obj = null;
-let objColor = Color.hextoRGB(modelColorPicker.value).toArray();
 let isTherePlane = true;
 const DEFAULT_SCALE = 8;
 
@@ -33,7 +32,7 @@ function initPlaneToggle() {
  */
 function initColorPicker() {
     modelColorPicker.addEventListener('input', function () {
-        objColor = Color.hextoRGB(this.value).toArray();
+        obj.setColor(Color.hextoRGB(this.value).toArray());
     });
 }
 
@@ -62,6 +61,7 @@ function initObjectSelector() {
             let objName = 'res/obj/' + selectedObject + '.obj';
             obj = new objmesh(objName);
             main_objectsToDraw.push(obj);
+            obj.setColor(Color.hextoRGB(modelColorPicker.value).toArray());
             let scaleSliderValue = scaleSlider.value;
             if (scaleSliderValue === '0') {
                 updateScale(DEFAULT_SCALE);
@@ -101,6 +101,7 @@ function initUIComponents() {
     populateObjectSelector();
     initObjectSelector();
     initScaleSlider();
+
 }
 
 // Initialize UI components
