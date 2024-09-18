@@ -1,15 +1,24 @@
+/**
+ * @type {WebGLTexture|null}
+ */
 let bumpMap = null;
+
+/**
+ * @type {WebGLTexture|null}
+ */
 let texture_ForBump = null;
 
 const BumpMapSelector = doc.getElementById('bump_map_selector');
 const BumpMapColorPicker = doc.getElementById('bump_map_color');
 const BumpMapTexture = doc.getElementById('bump_map_texture_selector');
 
-
 // Loaders
 const BumpMapLoader = ['cercle.png', 'brick.jpg'];
 const BumpMapTextureLoader = ['brick.jpg'];
 
+/**
+ * Populate the bump map selector with options.
+ */
 function populateBumpMapSelector() {
     BumpMapLoader.forEach(function (bumpMapName) {
         const option = doc.createElement('option');
@@ -20,10 +29,9 @@ function populateBumpMapSelector() {
     });
 }
 
-function loadBumpTexture(textureName) {
-
-}
-
+/**
+ * Initialize the bump map selector with event listeners.
+ */
 function initBumpMapSelector() {
     BumpMapSelector.addEventListener('change', function () {
         const selectedBumpMap = this.value;
@@ -31,7 +39,7 @@ function initBumpMapSelector() {
             const texturePath = `res/bumpMaps/${selectedBumpMap}`;
             bumpMap = loadTexture(gl, texturePath);
             main_plane.setShaderName('glsl/lambertBumpMap');
-            main_plane.setColor( Color.hextoRGB(BumpMapColorPicker.value).toArray());
+            main_plane.setColor(Color.hextoRGB(BumpMapColorPicker.value).toArray());
         } else {
             bumpMap = null;
             main_plane.setShaderName('glsl/plane');
@@ -40,17 +48,16 @@ function initBumpMapSelector() {
 }
 
 /**
- * Initialize the color picker
+ * Initialize the color picker with event listeners.
  */
 function initColorPicker() {
     BumpMapColorPicker.addEventListener('input', function () {
-        main_plane.setColor( Color.hextoRGB(this.value).toArray());
-        //console.log(Color.hextoRGB(this.value).toArray());
+        main_plane.setColor(Color.hextoRGB(this.value).toArray());
     });
 }
 
 /**
- * Populate the bump map texture selector
+ * Populate the bump map texture selector with options.
  */
 function populateBumpMapTextureSelector() {
     BumpMapTextureLoader.forEach(function (textureName) {
@@ -62,6 +69,9 @@ function populateBumpMapTextureSelector() {
     });
 }
 
+/**
+ * Initialize the bump map texture selector with event listeners.
+ */
 function initBumpMapTextureSelector() {
     BumpMapTexture.addEventListener('change', function () {
         const selectedTexture = this.value;
@@ -74,15 +84,14 @@ function initBumpMapTextureSelector() {
     });
 }
 
-
 /**
- * Initialize UI components
+ * Initialize all UI components.
  */
 function initUIComponents() {
     populateBumpMapSelector();
     populateBumpMapTextureSelector();
     initBumpMapSelector();
-    initColorPicker()
+    initColorPicker();
 }
 
 // Initialize UI components
