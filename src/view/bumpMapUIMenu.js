@@ -5,7 +5,7 @@ const BumpMapColorPicker = doc.getElementById('bump_map_color');
 
 
 // Loaders
-const BumpMapLoader = ['flower.jpg', 'cube.jpg', 'brickwall.jpg', 'moon.jpg'];
+const BumpMapLoader = ['flower.jpg', 'cube.jpg', 'brickwall.jpg', 'moon.jpg', 'water.jpg'];
 
 
 function populateBumpMapSelector() {
@@ -29,11 +29,11 @@ function initBumpMapSelector() {
         if (selectedBumpMap !== 'None') {
             loadBumpTexture(selectedBumpMap);
             main_plane.setShaderName('glsl/lambertBumpMap');
+            main_plane.setColor( Color.hextoRGB(BumpMapColorPicker.value).toArray());
         } else {
             bumpTexture = null;
             main_plane.setShaderName('glsl/plane');
         }
-        main_plane.setColor( Color.hextoRGB(this.value).toArray());
     });
 }
 
