@@ -1,12 +1,14 @@
-let bumpTexture = null;
+let bumpMap = null;
+let texture_ForBump = null;
 
-const bumpMapSelector = doc.getElementById('bump_map_selector');
+const BumpMapSelector = doc.getElementById('bump_map_selector');
 const BumpMapColorPicker = doc.getElementById('bump_map_color');
+const BumpMapTexture = doc.getElementById('bump_map_texture_selector');
 
 
 // Loaders
-const BumpMapLoader = ['flower.jpg', 'cube.jpg', 'brickwall.jpg', 'moon.jpg', 'water.jpg'];
-
+const BumpMapLoader = ['cercle.png', 'brick.jpg'];
+const BumpMapTextureLoader = ['brick.jpg'];
 
 function populateBumpMapSelector() {
     BumpMapLoader.forEach(function (bumpMapName) {
@@ -14,24 +16,24 @@ function populateBumpMapSelector() {
         const nameWithoutExtension = bumpMapName.split('.')[0];
         option.value = bumpMapName;
         option.textContent = nameWithoutExtension;
-        bumpMapSelector.appendChild(option);
+        BumpMapSelector.appendChild(option);
     });
 }
 
 function loadBumpTexture(textureName) {
-    const texturePath = `res/textures/bumpMaps/${textureName}`;
-    bumpTexture = loadTexture(gl, texturePath);
+
 }
 
 function initBumpMapSelector() {
-    bumpMapSelector.addEventListener('change', function () {
+    BumpMapSelector.addEventListener('change', function () {
         const selectedBumpMap = this.value;
         if (selectedBumpMap !== 'None') {
-            loadBumpTexture(selectedBumpMap);
+            const texturePath = `res/bumpMaps/${selectedBumpMap}`;
+            bumpMap = loadTexture(gl, texturePath);
             main_plane.setShaderName('glsl/lambertBumpMap');
             main_plane.setColor( Color.hextoRGB(BumpMapColorPicker.value).toArray());
         } else {
-            bumpTexture = null;
+            bumpMap = null;
             main_plane.setShaderName('glsl/plane');
         }
     });
@@ -47,12 +49,38 @@ function initColorPicker() {
     });
 }
 
+/**
+ * Populate the bump map texture selector
+ */
+function populateBumpMapTextureSelector() {
+    BumpMapTextureLoader.forEach(function (textureName) {
+        const option = document.createElement('option');
+        const nameWithoutExtension = textureName.split('.')[0];
+        option.value = textureName;
+        option.textContent = nameWithoutExtension;
+        BumpMapTexture.appendChild(option);
+    });
+}
+
+function initBumpMapTextureSelector() {
+    BumpMapTexture.addEventListener('change', function () {
+        const selectedTexture = this.value;
+        if (selectedTexture !== 'None') {
+            const texturePath = `res/textures/${selectedTexture}`;
+            texture_ForBump = loadTexture(gl, texturePath);
+        } else {
+            texture_ForBump = null;
+        }
+    });
+}
+
 
 /**
  * Initialize UI components
  */
 function initUIComponents() {
     populateBumpMapSelector();
+    populateBumpMapTextureSelector();
     initBumpMapSelector();
     initColorPicker()
 }
