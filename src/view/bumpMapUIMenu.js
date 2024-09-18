@@ -28,11 +28,12 @@ function initBumpMapSelector() {
         const selectedBumpMap = this.value;
         if (selectedBumpMap !== 'None') {
             loadBumpTexture(selectedBumpMap);
-            main_plane.setShaderName('glsl/LambertBumpMap');
+            main_plane.setShaderName('glsl/lambertBumpMap');
         } else {
             bumpTexture = null;
             main_plane.setShaderName('glsl/plane');
         }
+        main_plane.setColor( Color.hextoRGB(this.value).toArray());
     });
 }
 
@@ -42,6 +43,7 @@ function initBumpMapSelector() {
 function initColorPicker() {
     BumpMapColorPicker.addEventListener('input', function () {
         main_plane.setColor( Color.hextoRGB(this.value).toArray());
+        //console.log(Color.hextoRGB(this.value).toArray());
     });
 }
 
