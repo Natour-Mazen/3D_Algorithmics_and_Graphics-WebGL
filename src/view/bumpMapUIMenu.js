@@ -13,8 +13,8 @@ const BumpMapColorPicker = doc.getElementById('bump_map_color');
 const BumpMapTexture = doc.getElementById('bump_map_texture_selector');
 
 // Loaders
-const BumpMapLoader = ['brick.jpg', 'waves.jpg'];
-const BumpMapTextureLoader = ['brick.jpg', 'water.png'];
+const BumpMapLoader = ['brick.jpg', 'waves.jpg', 'cercle.png'];
+const BumpMapTextureLoader = [ 'water.png', 'water.jpg'];
 
 /**
  * Populate the bump map selector with options.
