@@ -58,13 +58,22 @@ class plane extends objectToDraw {
 
     setUniforms() {
 
+        // Bind and set the bump map texture
         gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, bumpTexture);
-        gl.uniform1i(this.shader.uBumpSampler, 1);
+        gl.bindTexture(gl.TEXTURE_2D, bumpMap);
+        gl.uniform1i(this.shader.uBumpSampler, 0); // Use texture unit 0 for bump map
 
-        const lightDirection = [0.0, 0.0, -1.0];
+        // Bind and set the main texture
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, texture_ForBump);
+        gl.uniform1i(this.shader.uSampler, 1); // Use texture unit 1 for main texture
+
+        // Set the light direction
+        const lightDirection = [1.0, 1.0, 1.0];
         gl.uniform3fv(this.shader.uLightDirection, lightDirection);
-        gl.uniform3fv(this.shader.colorUniform, this.color);
+
+        // Set the color uniform
+        gl.uniform3fv(this.shader.uColor, this.color);
     }
 
     // --------------------------------------------
