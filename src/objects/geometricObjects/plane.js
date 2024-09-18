@@ -40,7 +40,7 @@ class plane extends objectToDraw {
 
     // --------------------------------------------
     setShadersParams() {
-        this.setCommonShaderParams(this.shader, [
+        this.setCommonShaderParams([
             { attribName: "aVertexPosition", buffer: this.vBuffer, itemSize: this.vBuffer.itemSize },
             { attribName: "aTexCoords", buffer: this.tBuffer, itemSize: this.tBuffer.itemSize }
         ]);
@@ -64,17 +64,13 @@ class plane extends objectToDraw {
 
         const lightDirection = [0.0, 0.0, -1.0];
         gl.uniform3fv(this.shader.uLightDirection, lightDirection);
-        gl.uniform4fv(this.shader.uColor, this.color);
+        gl.uniform3fv(this.shader.colorUniform, this.color);
     }
 
     // --------------------------------------------
-    draw() {
-        if(this.shader && this.loaded === 4) {
-            this.setShadersParams();
-            this.setUniforms();
-            gl.drawArrays(gl.TRIANGLE_FAN, 0, this.vBuffer.numItems);
-            gl.drawArrays(gl.LINE_LOOP, 0, this.vBuffer.numItems);
-        }
+    drawAux() {
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, this.vBuffer.numItems);
+        gl.drawArrays(gl.LINE_LOOP, 0, this.vBuffer.numItems);
     }
 
 
