@@ -7,6 +7,7 @@ varying vec4 vPosition;
 uniform sampler2D uSampler;
 uniform sampler2D uBumpSampler;
 uniform vec3 uLightDirection;
+uniform vec3 uColor;
 
 void main(void) {
     vec3 lightDirection = normalize(uLightDirection);
@@ -18,5 +19,7 @@ void main(void) {
     vec3 lightWeighting = vec3(1.0, 1.0, 1.0) * lambertian;
 
     vec4 fragmentColor = texture2D(uSampler, texCoords);
-    gl_FragColor = vec4(fragmentColor.rgb * lightWeighting, fragmentColor.a);
+    vec3 finalColor = fragmentColor.rgb * lightWeighting * uColor;
+
+    gl_FragColor = vec4(finalColor, fragmentColor.a);
 }
