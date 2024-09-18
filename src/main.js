@@ -43,9 +43,6 @@ function resizeCanvas() {
 window.addEventListener('load', resizeCanvas);
 window.addEventListener('resize', resizeCanvas);
 
-function updateObjectColor(obj) {
-    obj.setColor(objColor);
-}
 
 /**
  * Draw the scene
@@ -61,7 +58,7 @@ function drawScene() {
             } else {
                 obj.draw();
             }
-            updateObjectColor(obj)
+            obj.setColor(obj.color);
         }
     }
 }
