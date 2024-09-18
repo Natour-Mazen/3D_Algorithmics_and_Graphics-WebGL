@@ -7,12 +7,13 @@ let distCENTER;
 let main_plane;
 let main_objectsToDraw = [];
 
+
 const canvasID = 'WebGL-canvas';
 
 
 function initGL(canvas) {
     try {
-        gl = canvas.getContext("experimental-webgl");
+        gl = canvas.getContext("webgl2");
         gl.viewportWidth = canvas.width;
         gl.viewportHeight = canvas.height;
         gl.viewport(0, 0, canvas.width, canvas.height);
@@ -75,6 +76,8 @@ function webGLStart() {
 
     initGL(canvas);
     resizeCanvas();
+
+    texture_ForBump = loadTexture(gl, 'res/textures/bumpMaps/brick.jpg');
 
     mat4.identity(rotMatrix);
     mat4.rotate(rotMatrix, rotX, [1, 0, 0]);
