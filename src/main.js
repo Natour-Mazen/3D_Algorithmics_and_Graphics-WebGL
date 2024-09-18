@@ -77,7 +77,6 @@ function webGLStart() {
     initGL(canvas);
     resizeCanvas();
 
-    texture_ForBump = loadTexture(gl, 'res/textures/bumpMaps/brick.jpg');
 
     mat4.identity(rotMatrix);
     mat4.rotate(rotMatrix, rotX, [1, 0, 0]);
