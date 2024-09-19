@@ -6,8 +6,8 @@ const BumpMapSelector = doc.getElementById('bump_map_selector');
 const BumpMapColorPicker = doc.getElementById('bump_map_color');
 const BumpMapTexture = doc.getElementById('bump_map_texture_selector');
 
-const BumpMapLoader = ['brick.jpg', 'waves.jpg', 'cercle.png'];
-const BumpMapTextureLoader = ['water.png', 'water.jpg'];
+const BumpMapLoader = ['brick.jpg', 'waves.jpg', "brickNormalMap.png", "circleNormalMap.png", "brickNormalMap2.png"];
+const BumpMapTextureLoader = ['brick.jpg', 'poolWater.png', 'seaWater.jpg', 'circle.png', "white.png"];
 
 function initUIComponents() {
     initSelector(BumpMapSelector, BumpMapLoader, function () {
@@ -15,12 +15,12 @@ function initUIComponents() {
         if (selectedBumpMap !== 'None') {
             const texturePath = `res/bumpMaps/${selectedBumpMap}`;
             bumpMap = loadTexture(gl, texturePath);
-            main_plane.setShaderName('glsl/lambertBumpMap');
-            main_plane.setColor(Color.hextoRGB(BumpMapColorPicker.value).toArray());
+            main_plane.setShaderName('glsl/lambertNormalMap');
         } else {
             bumpMap = null;
-            main_plane.setShaderName('glsl/plane');
+            main_plane.setShaderName('glsl/planeTexture');
         }
+        main_plane.setColor(Color.hextoRGB(BumpMapColorPicker.value).toArray());
     });
 
     initSelector(BumpMapTexture, BumpMapTextureLoader, function () {
@@ -28,9 +28,14 @@ function initUIComponents() {
         if (selectedTexture !== 'None') {
             const texturePath = `res/textures/${selectedTexture}`;
             texture_ForBump = loadTexture(gl, texturePath);
+            if(bumpMap == null) {
+                main_plane.setShaderName('glsl/planeTexture');
+
+            }
         } else {
             texture_ForBump = null;
         }
+        main_plane.setColor(Color.hextoRGB(BumpMapColorPicker.value).toArray());
     });
 
     initColorPicker(BumpMapColorPicker, function () {
