@@ -79,8 +79,8 @@ function initUIComponents() {
         flattenFactorHeightMap = this.value ;
         if (heightMapColorTexturePath !== null && heightMap_texturePathMap !== null) {
             main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof heightMap));
-            theHeightMap.setColor(Color.hextoRGB(this.value).toArray());
             theHeightMap = new heightMap();
+            theHeightMap.setColor(Color.hextoRGB(this.value).toArray());
             main_objectsToDraw.push(theHeightMap);
             updateScaleHeightMap(heightMapScaleSlider.value);
         }
