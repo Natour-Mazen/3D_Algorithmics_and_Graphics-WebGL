@@ -30,15 +30,15 @@ function initObjectSelector() {
             obj.setColor(Color.hextoRGB(modelColorPicker.value).toArray());
             let scaleSliderValue = scaleSlider.value;
             if (scaleSliderValue === '0') {
-                updateScale(DEFAULT_SCALE);
+                updateScaleOBJ(DEFAULT_SCALE);
             } else {
-                updateScale(parseInt(scaleSliderValue));
+                updateScaleOBJ(parseInt(scaleSliderValue));
             }
         }
     });
 }
 
-function updateScale(scale) {
+function updateScaleOBJ(scale) {
     scaleValueDisplay.textContent = String(scale);
     scaleSlider.value = scale;
     obj.setScale(scale);
@@ -51,7 +51,7 @@ function initUIComponents() {
     });
     initObjectSelector();
     initSlider(scaleSlider, function () {
-        updateScale(this.value);
+        updateScaleOBJ(this.value);
     });
 }
 
