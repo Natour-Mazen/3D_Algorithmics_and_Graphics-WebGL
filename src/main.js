@@ -85,8 +85,10 @@ function webGLStart() {
     distCENTER = vec3.create([0, 0, -25]);
 
     main_plane = new plane();
+
+    const hm = new heightMap();
  
-    main_objectsToDraw.push(main_plane);
+    main_objectsToDraw.push(main_plane, hm);
 
     tick();
 }
