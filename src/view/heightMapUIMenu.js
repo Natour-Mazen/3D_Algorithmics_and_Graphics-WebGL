@@ -1,7 +1,7 @@
-
-let heightMapColorTexturePath = 'res/heightMaps/texture1.png';
+let heightMapColorTexturePath = null;
 let heightMap_texturePathMap = null;
 let isThereHeightMap = false;
+let flattenFactorHeightMap = 1;
 
 const heightMapToggle = doc.getElementById('heightMap_checkbox');
 const heightMapSelector = doc.getElementById('heightMap_selector');
@@ -9,12 +9,11 @@ const heightMapTextureSelector = doc.getElementById('heightMap_texture_selector'
 const heightMapColorPicker = doc.getElementById('heightMap_color');
 const heightMapScaleSlider = doc.getElementById('heightMap_scale_slider');
 const heightMapScaleValueDisplay = doc.getElementById('heightMap_scale_value');
+const heightMapFlattenSlider = doc.getElementById('heightMap_flatten_slider');
+const heightMapFlattenValueDisplay = doc.getElementById('heightMap_flatten_value');
 
 const heightMapLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png'];
 
-/**
- * Initialize the plane toggle
- */
 function initHeightMapToggle() {
     heightMapToggle.checked = isThereHeightMap = false;
     heightMapToggle.addEventListener('input', function () {
@@ -22,37 +21,16 @@ function initHeightMapToggle() {
     });
 }
 
-/**
- * Initialize the color picker
- */
-function initHeightMapColorPicker() {
-    heightMapColorPicker.addEventListener('input', function () {
-        obj.setColor(Color.hextoRGB(this.value).toArray());
-    });
-}
-
-/**
- * Populate the bump map selector with options.
- */
-function populateHeightMapSelector() {
-    heightMapLoader.forEach(function (heightMapName) {
-        const option = doc.createElement('option');
-        const nameWithoutExtension = heightMapName.split('.')[0];
-        option.value = heightMapName;
-        option.textContent = nameWithoutExtension;
-        heightMapSelector.appendChild(option);
-    });
-}
-
-/**
- * Initialize the bump map selector with event listeners.
- */
-function initHeightMapSelector() {
-    heightMapSelector.addEventListener('change', function () {
-        const selectedHeightMap = this.value;
-        main_objectsToDraw = main_objectsToDraw.filter(obj => obj instanceof plane); // Keep only the plane
-        if (selectedHeightMap !== 'None') {
+function handleHeightMapSelection(selectedHeightMap, textureType) {
+    main_objectsToDraw = main_objectsToDraw.filter(obj => obj instanceof plane);
+    if (selectedHeightMap !== 'None') {
+        if (textureType === 'color') {
             heightMapColorTexturePath = `res/heightMaps/${selectedHeightMap}`;
+        } else if (textureType === 'texture') {
+            heightMap_texturePathMap = `res/heightMaps/${selectedHeightMap}`;
+        }
+
+        if (heightMapColorTexturePath !== null && heightMap_texturePathMap !== null) {
             obj = new heightMap();
             main_objectsToDraw.push(obj);
             obj.setColor(Color.hextoRGB(heightMapColorPicker.value).toArray());
@@ -63,77 +41,50 @@ function initHeightMapSelector() {
                 updateScaleHeightMap(parseInt(scaleSliderValue));
             }
         }
+    }
+}
+
+function initHeightMapSelector() {
+    initSelector(heightMapSelector, heightMapLoader, function () {
+        handleHeightMapSelection(this.value, 'color');
     });
 }
 
-/**
- * Update the scale of the object
- * @param {number} scale - The new scale value
- */
+function initHeightMapTexturePathMapSelector() {
+    initSelector(heightMapTextureSelector, heightMapLoader, function () {
+        handleHeightMapSelection(this.value, 'texture');
+    });
+}
+
 function updateScaleHeightMap(scale) {
     heightMapScaleValueDisplay.textContent = String(scale);
     heightMapScaleSlider.value = scale;
     obj.setScale(scale);
 }
 
-/**
- * Initialize the scale slider
- */
-function initScaleSliderHeightMap() {
-    heightMapScaleSlider.addEventListener('input', function () {
+function initUIComponents() {
+    initHeightMapToggle();
+    initHeightMapSelector();
+    initHeightMapTexturePathMapSelector();
+    initColorPicker(heightMapColorPicker, function () {
+        obj.setColor(Color.hextoRGB(this.value).toArray());
+    });
+    initSlider(heightMapScaleSlider, function () {
         updateScaleHeightMap(this.value);
     });
-    heightMapScaleSlider.value = 0;
-}
 
-/**
- * Populate the bump map selector with options.
- */
-function populateHeightMapTextureSelector() {
-    heightMapLoader.forEach(function (heightMapName) {
-        const option = doc.createElement('option');
-        const nameWithoutExtension = heightMapName.split('.')[0];
-        option.value = heightMapName;
-        option.textContent = nameWithoutExtension;
-        heightMapTextureSelector.appendChild(option);
-    });
-}
-
-/**
- * Initialize the bump map selector with event listeners.
- */
-function initHeightMapTextureSelector() {
-    heightMapTextureSelector.addEventListener('change', function () {
-        const selectedHeightMapTexture = this.value;
-        main_objectsToDraw = main_objectsToDraw.filter(obj => obj instanceof plane); // Keep only the plane
-        if (selectedHeightMapTexture !== 'None') {
-            heightMap_texturePathMap = `res/heightMaps/${selectedHeightMapTexture}`;
+    initSlider(heightMapFlattenSlider, function () {
+        heightMapFlattenValueDisplay.textContent = this.value;
+        flattenFactorHeightMap = this.value ;
+        if (heightMapColorTexturePath !== null && heightMap_texturePathMap !== null) {
+            main_objectsToDraw = main_objectsToDraw.filter(obj => obj instanceof plane);
+            obj.setColor(Color.hextoRGB(this.value).toArray());
             obj = new heightMap();
             main_objectsToDraw.push(obj);
-            obj.setColor(Color.hextoRGB(heightMapColorPicker.value).toArray());
-            let scaleSliderValue = heightMapScaleSlider.value;
-            if (scaleSliderValue === '0') {
-                updateScaleHeightMap(DEFAULT_SCALE);
-            } else {
-                updateScaleHeightMap(parseInt(scaleSliderValue));
-            }
+            updateScaleHeightMap(heightMapScaleSlider.value);
         }
+
     });
 }
 
-
-/**
- * Initialize all UI components.
- */
-function initUIComponents() {
-    populateHeightMapSelector()
-    populateHeightMapTextureSelector()
-    initHeightMapSelector();
-    initHeightMapTextureSelector();
-    initHeightMapToggle();
-    initHeightMapColorPicker();
-    initScaleSliderHeightMap();
-}
-
-// Initialize UI components
 initUIComponents();
