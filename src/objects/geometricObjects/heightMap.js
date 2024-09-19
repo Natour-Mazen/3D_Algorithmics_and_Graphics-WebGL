@@ -1,8 +1,6 @@
 class heightMap extends objectToDraw {
     constructor() {
         super('glsl/heightMap', -1, null);
-        this.texturePathT = "res/heightMaps/texture4.png";
-        this.texturePathMap = "res/heightMaps/texture4.png";
         this.color = Color.LIGHT_BLUE;
         this.initAll();
     }
@@ -19,6 +17,7 @@ class heightMap extends objectToDraw {
         this.shader.rMatrixUniform = gl.getUniformLocation(this.shader, "uRMatrix");
         this.shader.mvMatrixUniform = gl.getUniformLocation(this.shader, "uMVMatrix");
         this.shader.pMatrixUniform = gl.getUniformLocation(this.shader, "uPMatrix");
+        this.shader.colorUniform = gl.getUniformLocation(this.shader, "uColor");
     }
 
     setUniforms() {
@@ -34,6 +33,7 @@ class heightMap extends objectToDraw {
         gl.uniformMatrix4fv(this.shader.rMatrixUniform, false, rotMatrix);
         gl.uniformMatrix4fv(this.shader.mvMatrixUniform, false, mvMatrix);
         gl.uniformMatrix4fv(this.shader.pMatrixUniform, false, pMatrix);
+        gl.uniform3fv(this.shader.colorUniform, this.color);
     }
 
     drawAux() {
@@ -64,7 +64,7 @@ class heightMap extends objectToDraw {
         const fSize = 1.0;
         const widthInBetween = (fSize * 2) / parseFloat(width);
         const heightInBetween = (fSize * 2) / parseFloat(height);
-        const fY = fSize / 255.0;
+        const fY = fSize / 255.0 / parseFloat(flattenFactorHeightMap);
 
         for (let h = 0; h < height; ++h) {
             for (let w = 0; w < width; ++w) {
