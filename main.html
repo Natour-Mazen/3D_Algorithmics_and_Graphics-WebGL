@@ -9,179 +9,19 @@
 		<link rel="stylesheet" type="text/css" href="css/dropdown.css">
 		<link rel="stylesheet" type="text/css" href="css/components.css">
 
-		<!--- ****************** RENDERING ****************** --->
-		<script defer src="src/rendering/glMatrix.js"></script>
-		<script defer src="src/rendering/callbacks.js"></script>
-		<script defer src="src/utils/color.js"></script>
-		<script defer src="src/rendering/textureLoader.js"></script>
-		<!--- ****************** SHADERS ****************** --->
-		<script defer src="src/shaders/shaders.js"></script>
-		<!--- ****************** OBJECTS ****************** --->
-		<script defer src="src/objects/objectToDraw.js"></script>
-		<script defer src="src/objects/entitiesObjects/objLoader.js"></script>
-		<script defer src="src/objects/geometricObjects/plane.js"></script>
-		<script defer src="src/objects/geometricObjects/heightMap.js"></script>
-		<script defer src="src/objects/entitiesObjects/objmesh.js"></script>
-
-		<!--- ****************** View ****************** --->
-		<script defer src="src/view/generalUIMenu.js"></script>
-		<script defer src="src/view/objectsUIMenu.js"></script>
-		<script defer src="src/view/bumpMapUIMenu.js"></script>
-		<script defer src="src/view/heightMapUIMenu.js"></script>
-
-		<!--- ****************** Main ****************** --->
-		<script defer src="src/main.js"></script>
-
+		<script src="src/domGeneration/dropdownsMenus.js" ></script>
+		<script src="src/domGeneration/menuGenerator.js" ></script>
+		<script src="src/domGeneration/scriptsLoader.js" ></script>
 	</head>
 
-	<body onload="webGLStart();">
+	<body>
 		<canvas id="WebGL-canvas"></canvas>
-
 		<menu class="menu">
-			<button id="open_menu_btn" onclick="openMenu(event)">Menu</button>
+			<button id="open_menu_btn" onclick="openMenu()">Menu</button>
 			<div id="menu__content">
-				<!-- This button will close the menu__content div -->
 				<button id="close_menu_btn" onclick="closeMenu()">Close</button>
-				<div class="dropdown">
-					<div class="header" onclick="toggleDropdown(event);">
-						<span class="caret down"></span>
-						Objects
-					</div>
-					<div class="content__wrapper">
-						<!-- Plane toggle -->
-						<item>
-							<div class="row checkbox">
-								<label for="plane_checkbox">Plane</label>
-								<input type="checkbox" id="plane_checkbox" checked="checked">
-							</div>
-						</item>
-						<!-- Model selection -->
-						<item>
-							<div class="row">
-								<label for="models_select">Objects</label>
-								<select id="models_select" name="Objects" class="selector" >
-									<option  selected>None</option>
-								</select>
-							</div>
-						</item>
-						<item id="color_picker">
-							<div class="row">
-								<label for="model_color">Colors:</label>
-								<input type="color" class="color_picker" id="model_color" name="color" value="#ffff00">
-							</div>
-						</item>
-						<item>
-							<div class="row slider">
-								<label for="scale_slider">Scale:</label>
-								<input type="range" id="scale_slider" min="5" max="20" step="1" value="0" >
-								<span class="value_display" id="scale_value" contenteditable="false"></span>
-							</div>
-						</item>
-					</div>
-
-				</div>
-				<div class="dropdown">
-					<div class="header" onclick="toggleDropdown(event);">
-						<span class="caret down"></span>
-						HeightMap
-					</div>
-					<div class="content__wrapper">
-						<item>
-							<div class="row checkbox">
-								<label for="heightMap_checkbox">On/Off</label>
-								<input type="checkbox" id="heightMap_checkbox">
-							</div>
-						</item>
-						<item>
-							<div class="row">
-								<label for="heightMap_selector">Type</label>
-								<select id="heightMap_selector" name="heightMap" class="selector" >
-									<option  selected>None</option>
-								</select>
-							</div>
-						</item>
-						<item>
-							<div class="row">
-								<label for="heightMap_texture_selector">Texture</label>
-								<select id="heightMap_texture_selector" name="Texture" class="selector" >
-									<option  selected>None</option>
-								</select>
-							</div>
-						</item>
-						<item id="color_picker">
-							<div class="row">
-								<label for="heightMap_color">Colors:</label>
-								<input type="color" class="color_picker" id="heightMap_color" name="color" value="#3f9cc0">
-							</div>
-						</item>
-						<item>
-							<div class="row slider">
-								<label for="heightMap_scale_slider">Scale:</label>
-								<input type="range" id="heightMap_scale_slider" min="1" max="10" step="1" value="0" >
-								<span class="value_display" id="heightMap_scale_value" contenteditable="false"></span>
-							</div>
-						</item>
-					</div>
-				</div>
-				<div class="dropdown">
-					<div class="header" onclick="toggleDropdown(event);">
-						<span class="caret down"></span>
-						Bump Map
-					</div>
-					<div class="content__wrapper">
-						<!-- Bump map selection -->
-						<item>
-							<div class="row">
-								<label for="bump_map_selector">Type</label>
-								<select id="bump_map_selector" name="BumpMap" class="selector" >
-									<option  selected>None</option>
-								</select>
-							</div>
-						</item>
-						<item>
-							<div class="row">
-								<label for="bump_map_texture_selector">Texture</label>
-								<select id="bump_map_texture_selector" name="Texture" class="selector" >
-									<option  selected>None</option>
-								</select>
-							</div>
-						</item>
-						<item id="color_picker">
-							<div class="row">
-								<label for="bump_map_color">Colors:</label>
-								<input type="color" class="color_picker" id="bump_map_color" name="color" value="#3f9cc0">
-							</div>
-						</item>
-
-
-					</div>
-				</div>
-				<div class="dropdown">
-					<div class="header" onclick="toggleDropdown(event);">
-						<span class="caret down"></span>
-						Terrain
-					</div>
-					<div class="content__wrapper">
-						<!-- Type selection -->
-						<item>
-							<div class="row">
-								<label for="ground_select">Type</label>
-								<select id="ground_select" name="Ground" class="selector" >
-									<option  selected>None</option>
-								</select>
-							</div>
-						</item>
-						<!-- Terrain selection -->
-						<item>
-							<div class="row">
-								<label for="terrain_selector">Terrain</label>
-								<select id="terrain_selector" name="Terrain" class="selector" >
-									<option  selected>None</option>
-								</select>
-							</div>
-						</item>
-						<!-- Texture selection -->
-					</div>
+				<div class="dropdown" id="dropdown">
+					<!-- Dropdown content will be generated here -->
 				</div>
 			</div>
 		</menu>
