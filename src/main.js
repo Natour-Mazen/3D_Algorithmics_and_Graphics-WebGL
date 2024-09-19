@@ -56,7 +56,12 @@ function drawScene() {
                 if (isTherePlane) {
                     obj.draw();
                 }
-            } else {
+            } else if (obj instanceof heightMap) {
+                if(isThereHeightMap){
+                    obj.draw();
+                }
+
+            }else {
                 obj.draw();
             }
             obj.setColor(obj.color);
@@ -86,9 +91,7 @@ function webGLStart() {
 
     main_plane = new plane();
 
-    const hm = new heightMap();
- 
-    main_objectsToDraw.push(main_plane, hm);
+    main_objectsToDraw.push(main_plane);
 
     tick();
 }
