@@ -22,7 +22,7 @@ function initPlaneToggle() {
 function initObjectSelector() {
     initSelector(selects[0], ObjectLoader, function () {
         const selectedObject = this.value;
-        main_objectsToDraw = main_objectsToDraw.filter(obj => obj instanceof plane);
+        main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof objmesh));
         if (selectedObject !== 'None') {
             let objName = 'res/obj/' + selectedObject + '.obj';
             obj = new objmesh(objName);
