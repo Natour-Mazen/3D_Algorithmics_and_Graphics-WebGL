@@ -1,3 +1,4 @@
+let theHeightMap = null;
 let heightMapColorTexturePath = null;
 let heightMap_texturePathMap = null;
 let isThereHeightMap = false;
@@ -22,7 +23,7 @@ function initHeightMapToggle() {
 }
 
 function handleHeightMapSelection(selectedHeightMap, textureType) {
-    main_objectsToDraw = main_objectsToDraw.filter(obj => obj instanceof plane);
+    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof heightMap));
     if (selectedHeightMap !== 'None') {
         if (textureType === 'color') {
             heightMapColorTexturePath = `res/heightMaps/${selectedHeightMap}`;
@@ -31,9 +32,9 @@ function handleHeightMapSelection(selectedHeightMap, textureType) {
         }
 
         if (heightMapColorTexturePath !== null && heightMap_texturePathMap !== null) {
-            obj = new heightMap();
-            main_objectsToDraw.push(obj);
-            obj.setColor(Color.hextoRGB(heightMapColorPicker.value).toArray());
+            theHeightMap = new heightMap();
+            main_objectsToDraw.push(theHeightMap);
+            theHeightMap.setColor(Color.hextoRGB(heightMapColorPicker.value).toArray());
             let scaleSliderValue = heightMapScaleSlider.value;
             if (scaleSliderValue === '0') {
                 updateScaleHeightMap(DEFAULT_SCALE);
@@ -59,7 +60,7 @@ function initHeightMapTexturePathMapSelector() {
 function updateScaleHeightMap(scale) {
     heightMapScaleValueDisplay.textContent = String(scale);
     heightMapScaleSlider.value = scale;
-    obj.setScale(scale);
+    theHeightMap.setScale(scale);
 }
 
 function initUIComponents() {
@@ -67,7 +68,7 @@ function initUIComponents() {
     initHeightMapSelector();
     initHeightMapTexturePathMapSelector();
     initColorPicker(heightMapColorPicker, function () {
-        obj.setColor(Color.hextoRGB(this.value).toArray());
+        theHeightMap.setColor(Color.hextoRGB(this.value).toArray());
     });
     initSlider(heightMapScaleSlider, function () {
         updateScaleHeightMap(this.value);
@@ -77,10 +78,10 @@ function initUIComponents() {
         heightMapFlattenValueDisplay.textContent = this.value;
         flattenFactorHeightMap = this.value ;
         if (heightMapColorTexturePath !== null && heightMap_texturePathMap !== null) {
-            main_objectsToDraw = main_objectsToDraw.filter(obj => obj instanceof plane);
-            obj.setColor(Color.hextoRGB(this.value).toArray());
-            obj = new heightMap();
-            main_objectsToDraw.push(obj);
+            main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof heightMap));
+            theHeightMap.setColor(Color.hextoRGB(this.value).toArray());
+            theHeightMap = new heightMap();
+            main_objectsToDraw.push(theHeightMap);
             updateScaleHeightMap(heightMapScaleSlider.value);
         }
 
