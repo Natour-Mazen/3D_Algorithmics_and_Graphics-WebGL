@@ -8,11 +8,12 @@ class plane extends objectToDraw {
     // --------------------------------------------
     initAll() {
         const size = 10.0;
+        const height = 0.1;
         const vertices = [
-            -size, -size, -0.12,
-            size, -size, -0.12,
-            size, size, -0.12,
-            -size, size, -0.12
+            -size, -size, height,
+            size, -size, height,
+            size, size, height,
+            -size, size, height
         ];
 
         const texcoords = [

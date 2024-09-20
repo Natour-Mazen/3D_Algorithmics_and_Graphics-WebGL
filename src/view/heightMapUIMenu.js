@@ -13,7 +13,7 @@ const heightMapScaleValueDisplay = doc.getElementById('heightMap_scale_value');
 const heightMapFlattenSlider = doc.getElementById('heightMap_flatten_slider');
 const heightMapFlattenValueDisplay = doc.getElementById('heightMap_flatten_value');
 
-const heightMapLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png'];
+const heightMapLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png', "white.png"];
 
 function initHeightMapToggle() {
     heightMapToggle.checked = isThereHeightMap = false;
