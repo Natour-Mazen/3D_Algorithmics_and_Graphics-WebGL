@@ -56,11 +56,6 @@ function drawScene() {
                 if (isTherePlane) {
                     obj.draw();
                 }
-            } else if (obj instanceof heightMap) {
-                if(isThereHeightMap){
-                    obj.draw();
-                }
-
             }else {
                 obj.draw();
             }

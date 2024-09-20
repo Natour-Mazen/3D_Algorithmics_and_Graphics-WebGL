@@ -39,14 +39,11 @@ class heightMap extends objectToDraw {
     drawAux() {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
-        gl.polygonOffset(0.5, 5.0);
-        gl.enable(gl.POLYGON_OFFSET_FILL);
-
-        gl.drawElements(gl.TRIANGLES, this.indexBuffer.numItems, gl.UNSIGNED_INT, 0);
-        gl.disable(gl.POLYGON_OFFSET_FILL);
-
-
-        gl.drawElements(gl.LINE_STRIP, this.indexBuffer.numItems, gl.UNSIGNED_INT, 0);
+        if(isWireFrameActiveHeightMap){
+            gl.drawElements(gl.LINE_STRIP, this.indexBuffer.numItems, gl.UNSIGNED_INT, 0);
+        }else{
+            gl.drawElements(gl.TRIANGLES, this.indexBuffer.numItems, gl.UNSIGNED_INT, 0);
+        }
     }
 
     initAll() {

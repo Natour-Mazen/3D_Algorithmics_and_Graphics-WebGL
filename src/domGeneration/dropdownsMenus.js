@@ -11,7 +11,7 @@ const dropdowns = [
     {
         title: 'HeightMap',
         items: [
-            { type: 'checkbox', label: 'On/Off', id: 'heightMap_checkbox' },
+            { type: 'checkbox', label: 'WireFrame', id: 'heightMap_checkbox' },
             { type: 'select', label: 'Type', id: 'heightMap_selector', options: ['None'] },
             { type: 'select', label: 'Texture', id: 'heightMap_texture_selector', options: ['None'] },
             { type: 'color', label: 'Colors:', id: 'heightMap_color', value: '#ffffff' },
