@@ -7,8 +7,8 @@ class plane extends objectToDraw {
 
     // --------------------------------------------
     initAll() {
-        const size = 10.0;
-        const height = 0.1;
+        const size = 10.2;
+        const height = 0.029;
         const vertices = [
             -size, -size, height,
             size, -size, height,
