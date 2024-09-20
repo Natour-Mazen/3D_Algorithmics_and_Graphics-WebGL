@@ -12,28 +12,13 @@ class heightMap extends objectToDraw {
             { buffer: this.tBuffer, attribName: "aTexCoord", itemSize: this.tBuffer.itemSize }
         ];
         this.setCommonShaderParams(buffers);
-
         this.shader.uSampler = gl.getUniformLocation(this.shader, "uSampler");
-        this.shader.rMatrixUniform = gl.getUniformLocation(this.shader, "uRMatrix");
-        this.shader.mvMatrixUniform = gl.getUniformLocation(this.shader, "uMVMatrix");
-        this.shader.pMatrixUniform = gl.getUniformLocation(this.shader, "uPMatrix");
-        this.shader.colorUniform = gl.getUniformLocation(this.shader, "uColor");
     }
 
     setUniforms() {
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
         gl.uniform1i(this.shader.uSampler, 0);
-
-        mat4.identity(mvMatrix);
-        mat4.translate(mvMatrix, distCENTER);
-        mat4.multiply(mvMatrix, rotMatrix);
-        mat4.scale(mvMatrix, [this.scale, this.scale, this.scale]);
-
-        gl.uniformMatrix4fv(this.shader.rMatrixUniform, false, rotMatrix);
-        gl.uniformMatrix4fv(this.shader.mvMatrixUniform, false, mvMatrix);
-        gl.uniformMatrix4fv(this.shader.pMatrixUniform, false, pMatrix);
-        gl.uniform3fv(this.shader.colorUniform, this.color);
     }
 
     drawAux() {

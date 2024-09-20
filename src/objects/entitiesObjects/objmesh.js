@@ -18,22 +18,12 @@ class objmesh extends objectToDraw {
                 { attribName: "aVertexPosition", buffer: this.mesh.vertexBuffer, itemSize: this.mesh.vertexBuffer.itemSize },
                 { attribName: "aVertexNormal", buffer: this.mesh.normalBuffer, itemSize: this.mesh.vertexBuffer.itemSize }
             ]);
-            this.shader.rMatrixUniform = gl.getUniformLocation(this.shader, "uRMatrix");
-            this.shader.mvMatrixUniform = gl.getUniformLocation(this.shader, "uMVMatrix");
-            this.shader.pMatrixUniform = gl.getUniformLocation(this.shader, "uPMatrix");
         }
     }
 
     // --------------------------------------------
     setUniforms() {
-        mat4.identity(mvMatrix);
-        mat4.translate(mvMatrix, distCENTER);
-        mat4.multiply(mvMatrix, rotMatrix);
-        mat4.scale(mvMatrix, [this.scale, this.scale, this.scale]);
-        gl.uniformMatrix4fv(this.shader.rMatrixUniform, false, rotMatrix);
-        gl.uniformMatrix4fv(this.shader.mvMatrixUniform, false, mvMatrix);
-        gl.uniformMatrix4fv(this.shader.pMatrixUniform, false, pMatrix);
-        gl.uniform3fv(this.shader.colorUniform, this.color);
+       // we don't need to set any uniforms for this object
     }
 
     // --------------------------------------------

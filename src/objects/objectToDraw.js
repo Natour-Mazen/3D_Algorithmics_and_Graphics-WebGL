@@ -19,6 +19,7 @@ class objectToDraw {
         this.loaded = loaded;
         this.shader = shader;
         this.color = Color.BLACK;
+        this.scale = 1;
     }
 
     /**
@@ -50,11 +51,12 @@ class objectToDraw {
 
     /**
      * Draws the object if the shader is loaded.
-     * this method should be called in the render loop and not be overridden except for special cases like the objmesh class.
+     * this method should be called in the render loop and not be overridden.
      */
     draw() {
         if(this.shader && this.loaded === 4) {
             this.setShadersParams();
+            this.setCommonUniforms()
             this.setUniforms();
             this.drawAux();
         }
@@ -74,9 +76,26 @@ class objectToDraw {
             gl.vertexAttribPointer(attribLocation, buffer.itemSize, gl.FLOAT, false, 0, 0);
         }
 
-        this.shader.pMatrixUniform = gl.getUniformLocation(this.shader, "uPMatrix");
+        this.shader.rMatrixUniform = gl.getUniformLocation(this.shader, "uRMatrix");
         this.shader.mvMatrixUniform = gl.getUniformLocation(this.shader, "uMVMatrix");
+        this.shader.pMatrixUniform = gl.getUniformLocation(this.shader, "uPMatrix");
         this.shader.colorUniform = gl.getUniformLocation(this.shader, "uColor");
+    }
+
+    /**
+     * Sets common uniforms for the object.
+     * This method is called in the draw method of the object
+     */
+    setCommonUniforms() {
+        mat4.identity(mvMatrix);
+        mat4.translate(mvMatrix, distCENTER);
+        mat4.scale(mvMatrix, [this.scale, this.scale, this.scale]);
+        mat4.multiply(mvMatrix, rotMatrix);
+
+        gl.uniformMatrix4fv(this.shader.rMatrixUniform, false, rotMatrix);
+        gl.uniformMatrix4fv(this.shader.mvMatrixUniform, false, mvMatrix);
+        gl.uniformMatrix4fv(this.shader.pMatrixUniform, false, pMatrix);
+        gl.uniform3fv(this.shader.colorUniform, this.color);
     }
 
     /**

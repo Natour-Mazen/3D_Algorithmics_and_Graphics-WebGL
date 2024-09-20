@@ -45,20 +45,14 @@ class plane extends objectToDraw {
             { attribName: "aVertexPosition", buffer: this.vBuffer, itemSize: this.vBuffer.itemSize },
             { attribName: "aTexCoords", buffer: this.tBuffer, itemSize: this.tBuffer.itemSize }
         ]);
-        mat4.identity(mvMatrix);
-        mat4.translate(mvMatrix, distCENTER);
-        mat4.multiply(mvMatrix, rotMatrix);
 
-        gl.uniformMatrix4fv(this.shader.pMatrixUniform, false, pMatrix);
-        gl.uniformMatrix4fv(this.shader.mvMatrixUniform, false, mvMatrix);
+
         this.shader.uBumpSampler = gl.getUniformLocation(this.shader, "uBumpSampler");
-        this.shader.uSampler = gl.getUniformLocation(this.shader, "uSampler");
         this.shader.uLightDirection = gl.getUniformLocation(this.shader, "uLightDirection");
-        this.shader.uColor = gl.getUniformLocation(this.shader, "uColor");
+        this.shader.uSampler = gl.getUniformLocation(this.shader, "uSampler");
     }
 
     setUniforms() {
-
         // Bind and set the bump map texture
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, bumpMap);
@@ -72,9 +66,6 @@ class plane extends objectToDraw {
         // Set the light direction
         const lightDirection = [1.0, 1.0, 1.0];
         gl.uniform3fv(this.shader.uLightDirection, lightDirection);
-
-        // Set the color uniform
-        gl.uniform3fv(this.shader.uColor, this.color);
     }
 
     // --------------------------------------------
