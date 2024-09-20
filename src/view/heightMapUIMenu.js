@@ -1,7 +1,7 @@
 let theHeightMap = null;
 let heightMapColorTexturePath = null;
 let heightMap_texturePathMap = null;
-let isThereHeightMap = false;
+let isWireFrameActiveHeightMap = false;
 let flattenFactorHeightMap = 1;
 
 const heightMapToggle = doc.getElementById('heightMap_checkbox');
@@ -16,9 +16,9 @@ const heightMapFlattenValueDisplay = doc.getElementById('heightMap_flatten_value
 const heightMapLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png', "white.png"];
 
 function initHeightMapToggle() {
-    heightMapToggle.checked = isThereHeightMap = false;
+    heightMapToggle.checked = isWireFrameActiveHeightMap = false;
     heightMapToggle.addEventListener('input', function () {
-        isThereHeightMap = this.checked;
+        isWireFrameActiveHeightMap = this.checked;
     });
 }
 
@@ -58,9 +58,11 @@ function initHeightMapTexturePathMapSelector() {
 }
 
 function updateScaleHeightMap(scale) {
-    heightMapScaleValueDisplay.textContent = String(scale);
-    heightMapScaleSlider.value = scale;
-    theHeightMap.setScale(scale);
+    if(theHeightMap !== null){
+        heightMapScaleValueDisplay.textContent = String(scale);
+        heightMapScaleSlider.value = scale;
+        theHeightMap.setScale(scale);
+    }
 }
 
 function initUIComponents() {
@@ -80,7 +82,7 @@ function initUIComponents() {
         if (heightMapColorTexturePath !== null && heightMap_texturePathMap !== null) {
             main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof heightMap));
             theHeightMap = new heightMap();
-            theHeightMap.setColor(Color.hextoRGB(this.value).toArray());
+            theHeightMap.setColor(Color.hextoRGB(heightMapColorPicker.value).toArray());
             main_objectsToDraw.push(theHeightMap);
             updateScaleHeightMap(heightMapScaleSlider.value);
         }
