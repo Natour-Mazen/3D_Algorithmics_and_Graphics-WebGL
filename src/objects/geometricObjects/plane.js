@@ -7,8 +7,8 @@ class plane extends objectToDraw {
 
     // --------------------------------------------
     initAll() {
-        const size = 10.2;
-        const height = 0.029;
+        const size = 10.5;
+        const height = 0.018;
         const vertices = [
             -size, -size, height,
             size, -size, height,
@@ -86,7 +86,7 @@ class plane extends objectToDraw {
         gl.uniform1i(this.shader.uSampler, 1); // Use texture unit 1 for main texture
 
         // Set the light direction
-        const lightDirection = [1.0, 1.0, 1.0];
+        const lightDirection = [0.0, 0.0, 0.0];
         gl.uniform3fv(this.shader.uLightDirection, lightDirection);
     }
 
