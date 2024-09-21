@@ -29,6 +29,35 @@ function toggleMenuVisibility(isVisible) {
 }
 
 /**
+ * close all dropdowns and hide the collapse button
+ * @param evt
+ */
+function closeAllDropdowns(evt) {
+    evt.stopPropagation(); // Prevent the event from bubbling up to the header
+    openDropdowns.forEach(dropdown => {
+        const caret = dropdown.querySelector('.caret');
+        dropdown.classList.remove('active');
+        caret.classList.remove('up');
+        caret.classList.add('down');
+    });
+    openDropdowns.length = 0; // Clear the array
+    updateCollapseButtonVisibility();
+}
+
+/**
+ * Update the visibility of the collapse button
+ */
+function updateCollapseButtonVisibility() {
+    const collapseButton = document.getElementById('close_all_dropdowns_btn');
+    collapseButton.style.display = openDropdowns.length > 0 ? 'block' : 'none';
+}
+
+/**
+ * Initialize an event listener for the load event to update the visibility of the collapse button.
+ */
+window.addEventListener('load', updateCollapseButtonVisibility);
+
+/**
  * Initialize a selector with options and an event listener.
  * @param {HTMLElement} selector - The selector element.
  * @param {Array} options - The options to populate the selector with.

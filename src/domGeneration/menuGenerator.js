@@ -88,11 +88,37 @@ function createItemElement(item) {
  * @description Toggles the visibility of a dropdown menu.
  * @param {Event} evt - The on-click event.
  */
+const openDropdowns = [];
+
 function toggleDropdown(evt) {
     const header = evt.target;
     const dropdown = header.closest('.dropdown');
     const caret = header.querySelector('.caret');
-    dropdown.classList.toggle('active');
-    caret.classList.toggle('up', dropdown.classList.contains('active'));
-    caret.classList.toggle('down', !dropdown.classList.contains('active'));
+
+    if (dropdown.classList.contains('active')) {
+        dropdown.classList.remove('active');
+        caret.classList.remove('up');
+        caret.classList.add('down');
+        const index = openDropdowns.indexOf(dropdown);
+        if (index > -1) {
+            openDropdowns.splice(index, 1);
+        }
+    } else {
+        if (openDropdowns.length >= 2) {
+            const dropdownToClose = openDropdowns.shift();
+            const caretToClose = dropdownToClose.querySelector('.caret');
+            dropdownToClose.classList.remove('active');
+            caretToClose.classList.remove('up');
+            caretToClose.classList.add('down');
+        }
+        dropdown.classList.add('active');
+        caret.classList.remove('down');
+        caret.classList.add('up');
+        openDropdowns.push(dropdown);
+    }
+
+    updateCollapseButtonVisibility();
 }
+
+
+

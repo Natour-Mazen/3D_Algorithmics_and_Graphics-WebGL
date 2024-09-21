@@ -28,8 +28,6 @@
 /* The menu when it's opened */
 #menu__content {
     background-color: #44444498;
-    justify-content: center;
-    align-items: center;
     padding-top: 20px;
     z-index: 1;
     display: none;
@@ -44,17 +42,26 @@
 }
 
 /* "Close Menu" button */
-#close_menu_btn {
+
+#buttons_container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    opacity: 0.8;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#close_menu_btn, #close_all_dropdowns_btn {
     background-color: rgba(83, 83, 83, 0);
     color: white;
     border: none;
     cursor: pointer;
     position: relative;
-    left: 12.5rem;
     bottom: 0.7rem;
-    height: 5%;
+    text-align: end;
+    padding: 5px 10px 1px 10px;
 }
 
-#close_menu_btn:hover {
-    opacity: 0.8;
+#close_menu_btn:hover, #close_all_dropdowns_btn:hover {
+    opacity: 0.9;
 }

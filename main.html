@@ -19,7 +19,16 @@
 		<menu class="menu">
 			<button id="open_menu_btn" onclick="openMenu()">Menu</button>
 			<div id="menu__content">
-				<button id="close_menu_btn" onclick="closeMenu()">Close</button>
+				<div id="buttons_container">
+					<button id="close_all_dropdowns_btn" onclick="closeAllDropdowns(event)" style="display: none">
+						Collapse All
+					</button>
+					<span style="flex-grow: 1"></span>
+					<button id="close_menu_btn" onclick="closeMenu()">
+						Close
+					</button>
+				</div>
+
 				<div class="dropdown" id="dropdown">
 					<!-- Dropdown content will be generated here -->
 				</div>
