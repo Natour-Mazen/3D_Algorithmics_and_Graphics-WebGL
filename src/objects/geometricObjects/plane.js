@@ -9,19 +9,19 @@ class plane extends objectToDraw {
     initAll() {
         const size = 10.2;
         const height = 0.029;
-        // const vertices = [
-        //     -size, -size, height,
-        //     size, -size, height,
-        //     size, size, height,
-        //     -size, size, height
-        // ];
         const vertices = [
-
-            -size, height, -size,
-            size, height, -size,
-            size, height, size,
-            -size, height, size,
+            -size, -size, height,
+            size, -size, height,
+            size, size, height,
+            -size, size, height
         ];
+        // const vertices = [
+        //
+        //     -size, height, -size,
+        //     size, height, -size,
+        //     size, height, size,
+        //     -size, height, size,
+        // ];
 
         const texcoords = [
             0.0, 0.0,

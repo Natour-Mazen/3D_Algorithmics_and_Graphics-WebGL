@@ -6,8 +6,10 @@ const BumpMapSelector = doc.getElementById('bump_map_selector');
 const BumpMapColorPicker = doc.getElementById('bump_map_color');
 const BumpMapTexture = doc.getElementById('bump_map_texture_selector');
 
-const BumpMapLoader = ['brick.jpg', 'waves.jpg', "brickNormalMap.png", "circleNormalMap.png", "brickNormalMap2.png"];
-const BumpMapTextureLoader = ['brick.jpg', 'poolWater.png', 'seaWater.jpg', 'circle.png', "white.png"];
+const BumpMapLoader = ['brickBM.jpg', 'wavesBM.jpg', "brickNM.png", "circleNM.png", "brickNM2.png",
+    "testNM.png", "bumpWaterNM.jpg", "brickWallNM.jpg"];
+const BumpMapTextureLoader = ['brickBM.jpg', 'poolWater.png', 'seaWater.jpg', 'circle.png', "white.png", "bumpWater.jpg",
+    "brickWall.jpg"];
 
 let selectedBumpMap = "None";
 let selectedTexture = "None";
