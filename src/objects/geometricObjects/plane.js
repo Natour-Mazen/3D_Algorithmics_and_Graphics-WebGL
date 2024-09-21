@@ -9,11 +9,18 @@ class plane extends objectToDraw {
     initAll() {
         const size = 10.2;
         const height = 0.029;
+        // const vertices = [
+        //     -size, -size, height,
+        //     size, -size, height,
+        //     size, size, height,
+        //     -size, size, height
+        // ];
         const vertices = [
-            -size, -size, height,
-            size, -size, height,
-            size, size, height,
-            -size, size, height
+
+            -size, height, -size,
+            size, height, -size,
+            size, height, size,
+            -size, height, size,
         ];
 
         const texcoords = [
@@ -22,18 +29,33 @@ class plane extends objectToDraw {
             1.0, 1.0,
             1.0, 0.0
         ];
+        const normals= [
+            0.0, 0.0, 1.0,
+            0.0, 0.0, 1.0,
+            0.0, 0.0, 1.0,
+            0.0, 0.0, 1.0,
+        ];
 
+        // Vertex
         this.vBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         this.vBuffer.itemSize = 3;
         this.vBuffer.numItems = 4;
 
+        // Texture coords
         this.tBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.tBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
         this.tBuffer.itemSize = 2;
         this.tBuffer.numItems = 4;
+
+        // Normals
+        this.nBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.nBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+        this.nBuffer.itemSize = 3;
+        this.nBuffer.numItems = 4;
 
         loadShaders(this);
     }
@@ -43,9 +65,9 @@ class plane extends objectToDraw {
     setShadersParams() {
         this.setCommonShaderParams([
             { attribName: "aVertexPosition", buffer: this.vBuffer, itemSize: this.vBuffer.itemSize },
+            { attribName: "aVertexNormal", buffer: this.nBuffer, itemSize: this.nBuffer.itemSize },
             { attribName: "aTexCoords", buffer: this.tBuffer, itemSize: this.tBuffer.itemSize }
         ]);
-
 
         this.shader.uBumpSampler = gl.getUniformLocation(this.shader, "uBumpSampler");
         this.shader.uLightDirection = gl.getUniformLocation(this.shader, "uLightDirection");

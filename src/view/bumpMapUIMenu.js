@@ -9,32 +9,21 @@ const BumpMapTexture = doc.getElementById('bump_map_texture_selector');
 const BumpMapLoader = ['brick.jpg', 'waves.jpg', "brickNormalMap.png", "circleNormalMap.png", "brickNormalMap2.png"];
 const BumpMapTextureLoader = ['brick.jpg', 'poolWater.png', 'seaWater.jpg', 'circle.png', "white.png"];
 
+let selectedBumpMap = "None";
+let selectedTexture = "None";
+
 function initUIComponents() {
     initSelector(BumpMapSelector, BumpMapLoader, function () {
-        const selectedBumpMap = this.value;
-        if (selectedBumpMap !== 'None') {
-            const texturePath = `res/bumpMaps/${selectedBumpMap}`;
-            bumpMap = loadTexture(gl, texturePath);
-            main_plane.setShaderName('glsl/lambertNormalMap');
-        } else {
-            bumpMap = null;
-            main_plane.setShaderName('glsl/planeTexture');
+        selectedBumpMap = this.value;
+        if(selectedTexture !== "None") {
+            handleShader();
         }
         main_plane.setColor(Color.hextoRGB(BumpMapColorPicker.value).toArray());
     });
 
     initSelector(BumpMapTexture, BumpMapTextureLoader, function () {
-        const selectedTexture = this.value;
-        if (selectedTexture !== 'None') {
-            const texturePath = `res/textures/${selectedTexture}`;
-            texture_ForBump = loadTexture(gl, texturePath);
-            if(bumpMap == null) {
-                main_plane.setShaderName('glsl/planeTexture');
-
-            }
-        } else {
-            texture_ForBump = null;
-        }
+        selectedTexture = this.value;
+        handleShader();
         main_plane.setColor(Color.hextoRGB(BumpMapColorPicker.value).toArray());
     });
 
@@ -42,5 +31,35 @@ function initUIComponents() {
         main_plane.setColor(Color.hextoRGB(this.value).toArray());
     });
 }
+
+function handleShader()
+{
+    // If wwe don't have a texture.
+    if (selectedTexture === "None")
+    {
+        bumpMap = null;
+        texture_ForBump = null;
+        main_plane.setShaderName('glsl/plane');
+    }
+    else // We have a texture.
+    {
+        // We load it.
+        const texturePath = `res/textures/${selectedTexture}`;
+        texture_ForBump = loadTexture(gl, texturePath);
+        // Not bumpMap, we just display the texture.
+        if(selectedBumpMap === "None")
+        {
+            bumpMap = null;
+            main_plane.setShaderName('glsl/planeTexture');
+        }
+        else // We display the bumpMap with the texture.
+        {
+            const bumpMapPath = `res/bumpMaps/${selectedBumpMap}`;
+            bumpMap = loadTexture(gl, bumpMapPath);
+            main_plane.setShaderName('glsl/lambertNormalMap');
+        }
+    }
+}
+
 
 initUIComponents();

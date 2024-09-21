@@ -68,12 +68,19 @@ class objectToDraw {
      */
     setCommonShaderParams(buffers) {
         gl.useProgram(this.shader);
+        if(this.shaderName === "lambertNormalMap")
+        {
+            console.log("ok");
+        }
 
         for (const buffer of buffers) {
             const attribLocation = gl.getAttribLocation(this.shader, buffer.attribName);
-            gl.enableVertexAttribArray(attribLocation);
-            gl.bindBuffer(gl.ARRAY_BUFFER, buffer.buffer);
-            gl.vertexAttribPointer(attribLocation, buffer.itemSize, gl.FLOAT, false, 0, 0);
+            if(attribLocation !== -1)
+            {
+                gl.enableVertexAttribArray(attribLocation);
+                gl.bindBuffer(gl.ARRAY_BUFFER, buffer.buffer);
+                gl.vertexAttribPointer(attribLocation, buffer.itemSize, gl.FLOAT, false, 0, 0);
+            }
         }
 
         this.shader.rMatrixUniform = gl.getUniformLocation(this.shader, "uRMatrix");
