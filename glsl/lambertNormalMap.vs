@@ -2,7 +2,6 @@ attribute vec3 aVertexPosition;
 attribute vec2 aTexCoords;
 attribute vec3 aVertexNormal;
 
-uniform mat4 uRMatrix;
 uniform mat4 uMVMatrix;
 uniform mat4 uPMatrix;
 
@@ -13,5 +12,5 @@ void main(void)
 {
     pos3D = uMVMatrix * vec4(aVertexPosition, 1.0);
     vTexCoords = aTexCoords;
-    gl_Position = uRMatrix * pos3D;
+    gl_Position = uPMatrix * pos3D;
 }
