@@ -9,7 +9,7 @@ const dropdowns = [
         ]
     },
     {
-        title: 'HeightMap',
+        title: 'Height Map',
         items: [
             { type: 'checkbox', label: 'WireFrame', id: 'heightMap_checkbox' },
             { type: 'select', label: 'Type', id: 'heightMap_selector', options: ['None'] },
