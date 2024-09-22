@@ -72,6 +72,10 @@ class plane extends objectToDraw {
         this.shader.uBumpSampler = gl.getUniformLocation(this.shader, "uBumpSampler");
         this.shader.uLightDirection = gl.getUniformLocation(this.shader, "uLightDirection");
         this.shader.uSampler = gl.getUniformLocation(this.shader, "uSampler");
+        this.shader.uLightColor = gl.getUniformLocation(this.shader, "uLightColor");
+        this.shader.uAmbientColor = gl.getUniformLocation(this.shader, "uAmbientColor");
+        this.shader.uShininess = gl.getUniformLocation(this.shader, "uShininess");
+        this.shader.uViewPosition = gl.getUniformLocation(this.shader, "uViewPosition");
     }
 
     setUniforms() {
@@ -86,8 +90,24 @@ class plane extends objectToDraw {
         gl.uniform1i(this.shader.uSampler, 1); // Use texture unit 1 for main texture
 
         // Set the light direction
-        const lightDirection = [0.0, 0.0, 0.0];
+        const lightDirection = [10.0, 10.0, 10.0];
         gl.uniform3fv(this.shader.uLightDirection, lightDirection);
+
+        // Set the light color
+        const lightColor = Color.CYAN; // white
+        gl.uniform3fv(this.shader.uLightColor, lightColor);
+
+        // Set the ambient color
+        const ambientColor = Color.BLUE;
+        gl.uniform3fv(this.shader.uAmbientColor, ambientColor);
+
+        // Set the shininess
+        const shininess = 32.0;
+        gl.uniform1f(this.shader.uShininess, shininess);
+
+        // Set the view position (camera position)
+        const viewPosition = [0.0, 10.0, 0.0];
+        gl.uniform3fv(this.shader.uViewPosition, viewPosition);
     }
 
     // --------------------------------------------
