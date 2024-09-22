@@ -33,23 +33,28 @@ function handleHeightMapSelection(selectedHeightMap, textureType) {
             heightMap_texturePathMap = `res/textures/${selectedHeightMap}`;
         }
 
-        if (heightMapType !== null ) {
-            if(heightMap_texturePathMap === null){
-                heightMap_texturePathMap = `res/textures/white.png`;
-            }
+        if (heightMap_texturePathMap === null) {
+            heightMap_texturePathMap = `res/textures/white.png`;
         }
-    }else{
-        heightMap_texturePathMap = `res/textures/white.png`;
+    } else {
+        if (textureType === 'type') {
+            heightMapType = null;
+        } else if (textureType === 'texture') {
+            heightMap_texturePathMap = `res/textures/white.png`;
+        }
     }
 
-    theHeightMap = new heightMap();
-    main_objectsToDraw.push(theHeightMap);
-    theHeightMap.setColor(Color.hextoRGB(heightMapColorPicker.value).toArray());
-    let scaleSliderValue = heightMapScaleSlider.value;
-    if (scaleSliderValue === '0') {
-        updateScaleHeightMap(DEFAULT_SCALE);
-    } else {
-        updateScaleHeightMap(parseInt(scaleSliderValue));
+    if (heightMapType !== null) {
+        theHeightMap = new heightMap();
+        main_objectsToDraw.push(theHeightMap);
+        theHeightMap.setColor(Color.hextoRGB(heightMapColorPicker.value).toArray());
+
+        let scaleSliderValue = heightMapScaleSlider.value;
+        if (scaleSliderValue === '0') {
+            updateScaleHeightMap(DEFAULT_SCALE);
+        } else {
+            updateScaleHeightMap(parseInt(scaleSliderValue));
+        }
     }
 }
 
