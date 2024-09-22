@@ -47,6 +47,8 @@ function handleHeightMapSelection(selectedHeightMap, textureType) {
                 updateScaleHeightMap(parseInt(scaleSliderValue));
             }
         }
+    }else{
+        heightMap_texturePathMap = `res/textures/white.png`;
     }
 }
 
