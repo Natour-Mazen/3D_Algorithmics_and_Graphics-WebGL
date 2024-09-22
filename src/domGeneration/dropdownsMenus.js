@@ -28,11 +28,11 @@ const dropdowns = [
             { type: 'color', label: 'Colors:', id: 'bump_map_color', value: '#ffffff' }
         ]
     },
-    {
-        title: 'Terrain',
-        items: [
-            { type: 'select', label: 'Type', id: 'ground_select', options: ['None'] },
-            { type: 'select', label: 'Terrain', id: 'terrain_selector', options: ['None'] }
-        ]
-    }
+    // {
+    //     title: 'Terrain',
+    //     items: [
+    //         { type: 'select', label: 'Type', id: 'ground_select', options: ['None'] },
+    //         { type: 'select', label: 'Terrain', id: 'terrain_selector', options: ['None'] }
+    //     ]
+    // }
 ];
