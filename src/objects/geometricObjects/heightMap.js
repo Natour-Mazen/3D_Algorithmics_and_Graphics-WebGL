@@ -38,7 +38,7 @@ class heightMap extends objectToDraw {
             const normals = this.initNormals(triangles, vertices);
             const textureCoord = this.createTextureCoords(width, height);
 
-            this.texture = loadTexture(gl, heightMapColorTexturePath);
+            this.texture = loadTexture(gl, heightMap_texturePathMap);
 
             this.vBuffer = this.createBuffer(gl.ARRAY_BUFFER, vertices, 3, width * height);
             this.indexBuffer = this.createBuffer(gl.ELEMENT_ARRAY_BUFFER, triangles, 3, triangles.length);
@@ -186,7 +186,7 @@ class heightMap extends objectToDraw {
                 reject(error);
             };
 
-            texture.image.src = heightMap_texturePathMap;
+            texture.image.src = heightMapType;
         });
     }
 

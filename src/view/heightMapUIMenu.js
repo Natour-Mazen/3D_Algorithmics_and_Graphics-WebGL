@@ -1,5 +1,5 @@
 let theHeightMap = null;
-let heightMapColorTexturePath = null;
+let heightMapType = null;
 let heightMap_texturePathMap = null;
 let isWireFrameActiveHeightMap = false;
 let flattenFactorHeightMap = 1;
@@ -13,7 +13,9 @@ const heightMapScaleValueDisplay = doc.getElementById('heightMap_scale_value');
 const heightMapFlattenSlider = doc.getElementById('heightMap_flatten_slider');
 const heightMapFlattenValueDisplay = doc.getElementById('heightMap_flatten_value');
 
-const heightMapLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png', "white.png"];
+const heightMapLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png'];
+const heighMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "white.png", "bumpWater.jpg",
+    "brickWall.jpg", "waterReel.jpg"];
 
 function initHeightMapToggle() {
     heightMapToggle.checked = isWireFrameActiveHeightMap = false;
@@ -25,13 +27,16 @@ function initHeightMapToggle() {
 function handleHeightMapSelection(selectedHeightMap, textureType) {
     main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof heightMap));
     if (selectedHeightMap !== 'None') {
-        if (textureType === 'color') {
-            heightMapColorTexturePath = `res/heightMaps/${selectedHeightMap}`;
+        if (textureType === 'type') {
+            heightMapType = `res/heightMaps/${selectedHeightMap}`;
         } else if (textureType === 'texture') {
-            heightMap_texturePathMap = `res/heightMaps/${selectedHeightMap}`;
+            heightMap_texturePathMap = `res/textures/${selectedHeightMap}`;
         }
 
-        if (heightMapColorTexturePath !== null && heightMap_texturePathMap !== null) {
+        if (heightMapType !== null ) {
+            if(heightMap_texturePathMap === null){
+                heightMap_texturePathMap = `res/textures/white.png`;
+            }
             theHeightMap = new heightMap();
             main_objectsToDraw.push(theHeightMap);
             theHeightMap.setColor(Color.hextoRGB(heightMapColorPicker.value).toArray());
@@ -47,12 +52,12 @@ function handleHeightMapSelection(selectedHeightMap, textureType) {
 
 function initHeightMapSelector() {
     initSelector(heightMapSelector, heightMapLoader, function () {
-        handleHeightMapSelection(this.value, 'color');
+        handleHeightMapSelection(this.value, 'type');
     });
 }
 
 function initHeightMapTexturePathMapSelector() {
-    initSelector(heightMapTextureSelector, heightMapLoader, function () {
+    initSelector(heightMapTextureSelector, heighMapTextureLoader, function () {
         handleHeightMapSelection(this.value, 'texture');
     });
 }
@@ -79,7 +84,7 @@ function initUIComponents() {
     initSlider(heightMapFlattenSlider, function () {
         heightMapFlattenValueDisplay.textContent = this.value;
         flattenFactorHeightMap = this.value ;
-        if (heightMapColorTexturePath !== null && heightMap_texturePathMap !== null) {
+        if (heightMapType !== null ) {
             main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof heightMap));
             theHeightMap = new heightMap();
             theHeightMap.setColor(Color.hextoRGB(heightMapColorPicker.value).toArray());
