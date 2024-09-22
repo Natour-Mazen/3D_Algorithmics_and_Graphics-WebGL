@@ -71,7 +71,7 @@ function handleShader()
             {
                 main_plane.setShaderName('glsl/lambertNormalMap');
             }else if(selectedShader === "Blinn-Phong"){
-                main_plane.setShaderName('');
+                main_plane.setShaderName('glsl/blinnPhongNormalMap');
             }else {
                // pop up a message
                 window.alert("Please select a shader");
