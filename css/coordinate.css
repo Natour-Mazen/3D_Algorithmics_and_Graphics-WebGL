@@ -1,0 +1,33 @@
+#coordinate__content {
+    background-color: #44444498;
+    padding: 1rem;
+    z-index: 1;
+    width: 250px;
+    position: absolute;
+    top: 35px;
+    left: 41px;
+    /* glass effect */
+    backdrop-filter: blur(6px);
+    color: white;
+    border-radius: 10px;
+}
+
+#coordinate__content__data, #coordinate__content__title{
+    display: flex;
+    justify-content: space-between;
+    opacity: 0.8;
+    user-select: none;
+}
+
+#reset_coordinate_btn {
+    background-color: rgba(83, 83, 83, 0);
+    color: white;
+    border: none;
+    cursor: pointer;
+    bottom: 0.7rem;
+    text-align: end;
+}
+
+#reset_coordinate_btn:hover {
+    opacity: 0.8;
+}
