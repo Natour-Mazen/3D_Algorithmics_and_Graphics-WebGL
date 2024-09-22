@@ -3,6 +3,7 @@ let bumpMap = null;
 let texture_ForBump = null;
 
 const BumpMapSelector = doc.getElementById('bump_map_selector');
+const BumpMapShaderSelector = doc.getElementById('bump_map_shader_selector');
 const BumpMapColorPicker = doc.getElementById('bump_map_color');
 const BumpMapTexture = doc.getElementById('bump_map_texture_selector');
 
@@ -11,8 +12,11 @@ const BumpMapLoader = ['brickBM.jpg', 'wavesBM.jpg', "brickNM.png", "circleNM.pn
 const BumpMapTextureLoader = ['brickBM.jpg', 'poolWater.png', 'seaWater.jpg', 'circle.png', "white.png", "bumpWater.jpg",
     "brickWall.jpg", "waterReel.jpg"];
 
+const BumpMapShaderLoader = ['Lambert', 'Blinn-Phong'];
+
 let selectedBumpMap = "None";
 let selectedTexture = "None";
+let selectedShader = "None";
 
 function initUIComponents() {
     initSelector(BumpMapSelector, BumpMapLoader, function () {
@@ -27,6 +31,11 @@ function initUIComponents() {
         selectedTexture = this.value;
         handleShader();
         main_plane.setColor(Color.hextoRGB(BumpMapColorPicker.value).toArray());
+    });
+
+    initSelector(BumpMapShaderSelector, BumpMapShaderLoader, function () {
+        selectedShader = this.value;
+        handleShader();
     });
 
     initColorPicker(BumpMapColorPicker, function () {
@@ -49,7 +58,7 @@ function handleShader()
         const texturePath = `res/textures/${selectedTexture}`;
         texture_ForBump = loadTexture(gl, texturePath);
         // Not bumpMap, we just display the texture.
-        if(selectedBumpMap === "None")
+        if(selectedBumpMap === "None" || selectedShader === "None")
         {
             bumpMap = null;
             main_plane.setShaderName('glsl/planeTexture');
@@ -58,7 +67,15 @@ function handleShader()
         {
             const bumpMapPath = `res/bumpMaps/${selectedBumpMap}`;
             bumpMap = loadTexture(gl, bumpMapPath);
-            main_plane.setShaderName('glsl/lambertNormalMap');
+            if(selectedShader === "Lambert")
+            {
+                main_plane.setShaderName('glsl/lambertNormalMap');
+            }else if(selectedShader === "Blinn-Phong"){
+                main_plane.setShaderName('');
+            }else {
+               // pop up a message
+                window.alert("Please select a shader");
+            }
         }
     }
 }
