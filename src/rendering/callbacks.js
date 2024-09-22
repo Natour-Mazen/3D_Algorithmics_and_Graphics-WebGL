@@ -40,6 +40,7 @@ function degToRad(degrees) {
 function handleMouseWheel(event) {
 
 	distCENTER[2] -= event.deltaY/100.0;
+	updateCoordinates();
 }
 
 // =====================================================
@@ -81,3 +82,48 @@ function handleMouseMove(event) {
 	lastMouseX = newX
 	lastMouseY = newY;
 }
+
+// =====================================================
+function handleKeyDown(event) {
+	const key = event.key.toLowerCase();
+	const moveSpeed = 1;
+
+	switch (key) {
+		case 'z': // Move forward
+			distCENTER[2] += moveSpeed;
+			break;
+		case 's': // Move backward
+			distCENTER[2] -= moveSpeed;
+			break;
+		case 'q': // Move left
+			distCENTER[0] += moveSpeed;
+			break;
+		case 'd': // Move right
+			distCENTER[0] -= moveSpeed;
+			break;
+		case ' ': // Move up (spacebar)
+			distCENTER[1] -= moveSpeed;
+			break;
+		case 'shift': // Move down (shift key)
+			distCENTER[1] += moveSpeed;
+			break;
+	}
+	updateCoordinates();
+}
+
+document.addEventListener('keydown', handleKeyDown);
+
+// =====================================================
+function updateCoordinates() {
+    document.getElementById('coordinate__content__data__x').innerText = `X: ${distCENTER[0].toFixed(2)}`;
+    document.getElementById('coordinate__content__data__y').innerText = `Y: ${distCENTER[1].toFixed(2)}`;
+    document.getElementById('coordinate__content__data__z').innerText = `Z: ${distCENTER[2].toFixed(2)}`;
+}
+let DEFAULT_DISTCENTER = [0, 0, -30];
+
+function resetCoordinates() {
+	distCENTER = vec3.create(DEFAULT_DISTCENTER)
+	updateCoordinates();
+}
+
+document.getElementById('reset_coordinate_btn').addEventListener('click', resetCoordinates);
