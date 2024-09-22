@@ -8,8 +8,27 @@ let main_plane;
 let main_objectsToDraw = [];
 
 
+
 const canvasID = 'WebGL-canvas';
 
+// =====================================================
+function resizeCanvas() {
+    const canvas = document.getElementById(canvasID);
+    const padding = 9 * 2;
+    canvas.width = window.innerWidth - padding;
+    canvas.height = window.innerHeight - padding;
+
+    gl.viewportWidth = canvas.width;
+    gl.viewportHeight = canvas.height;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+
+    mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+}
+
+window.addEventListener('load', resizeCanvas);
+window.addEventListener('resize', resizeCanvas);
+
+// =====================================================
 
 function initGL(canvas) {
     try {
@@ -28,22 +47,7 @@ function initGL(canvas) {
     }
 }
 
-function resizeCanvas() {
-    const canvas = document.getElementById(canvasID);
-    const padding = 9 * 2;
-    canvas.width = window.innerWidth - padding;
-    canvas.height = window.innerHeight - padding;
-
-    gl.viewportWidth = canvas.width;
-    gl.viewportHeight = canvas.height;
-    gl.viewport(0, 0, canvas.width, canvas.height);
-
-    mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
-}
-
-window.addEventListener('load', resizeCanvas);
-window.addEventListener('resize', resizeCanvas);
-
+// =====================================================
 
 /**
  * Draw the scene
@@ -64,6 +68,8 @@ function drawScene() {
     }
 }
 
+// =====================================================
+
 /**
  * Update the scene, called every frame.
  */
@@ -82,7 +88,8 @@ function webGLStart() {
     mat4.rotate(rotMatrix, rotX, [1, 0, 0]);
     mat4.rotate(rotMatrix, rotY, [0, 0, 1]);
 
-    distCENTER = vec3.create([0, 0, -25]);
+    distCENTER = vec3.create(DEFAULT_DISTCENTER);
+    updateCoordinates();
 
     main_plane = new plane();
 
