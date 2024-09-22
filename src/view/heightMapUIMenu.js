@@ -24,12 +24,12 @@ function initHeightMapToggle() {
     });
 }
 
-function handleHeightMapSelection(selectedHeightMap, textureType) {
+function handleHeightMapSelection(selectedHeightMap, selectionType) {
     main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof heightMap));
     if (selectedHeightMap !== 'None') {
-        if (textureType === 'type') {
+        if (selectionType === 'type') {
             heightMapType = `res/heightMaps/${selectedHeightMap}`;
-        } else if (textureType === 'texture') {
+        } else if (selectionType === 'texture') {
             heightMap_texturePathMap = `res/textures/${selectedHeightMap}`;
         }
 
@@ -37,9 +37,9 @@ function handleHeightMapSelection(selectedHeightMap, textureType) {
             heightMap_texturePathMap = `res/textures/white.png`;
         }
     } else {
-        if (textureType === 'type') {
+        if (selectionType === 'type') {
             heightMapType = null;
-        } else if (textureType === 'texture') {
+        } else if (selectionType === 'texture') {
             heightMap_texturePathMap = `res/textures/white.png`;
         }
     }
