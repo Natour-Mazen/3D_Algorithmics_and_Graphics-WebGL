@@ -51,7 +51,9 @@ function initUIComponents() {
     });
     initObjectSelector();
     initSlider(scaleSlider, function () {
-        updateScaleOBJ(this.value);
+        if(obj !== null){
+            updateScaleOBJ(this.value);
+        }
     });
 }
 
