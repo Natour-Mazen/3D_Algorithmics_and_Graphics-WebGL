@@ -12,6 +12,10 @@ vec3.create = function (a) {
     return b
 };
 
+vec3.clone = function(a) {
+    return vec3.create([a[0], a[1], a[2]]);
+};
+
 vec3.set = function (a, b) {
     b[0] = a[0];
     b[1] = a[1];
