@@ -37,18 +37,19 @@ function handleHeightMapSelection(selectedHeightMap, textureType) {
             if(heightMap_texturePathMap === null){
                 heightMap_texturePathMap = `res/textures/white.png`;
             }
-            theHeightMap = new heightMap();
-            main_objectsToDraw.push(theHeightMap);
-            theHeightMap.setColor(Color.hextoRGB(heightMapColorPicker.value).toArray());
-            let scaleSliderValue = heightMapScaleSlider.value;
-            if (scaleSliderValue === '0') {
-                updateScaleHeightMap(DEFAULT_SCALE);
-            } else {
-                updateScaleHeightMap(parseInt(scaleSliderValue));
-            }
         }
     }else{
         heightMap_texturePathMap = `res/textures/white.png`;
+    }
+
+    theHeightMap = new heightMap();
+    main_objectsToDraw.push(theHeightMap);
+    theHeightMap.setColor(Color.hextoRGB(heightMapColorPicker.value).toArray());
+    let scaleSliderValue = heightMapScaleSlider.value;
+    if (scaleSliderValue === '0') {
+        updateScaleHeightMap(DEFAULT_SCALE);
+    } else {
+        updateScaleHeightMap(parseInt(scaleSliderValue));
     }
 }
 
