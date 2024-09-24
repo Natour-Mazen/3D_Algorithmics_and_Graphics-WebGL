@@ -94,5 +94,14 @@ function initSlider(slider, onInput, defaultValue = 0) {
     slider.value = defaultValue;
 }
 
-
+/**
+ * Initialize a toggle with an event listener.
+ * @param {HTMLElement} toggleElement - The toggle element.
+ * @param {boolean} initialState - The initial state of the toggle.
+ * @param {Function} onChange - The event listener for the input event.
+ */
+function initToggle(toggleElement, initialState, onChange) {
+    toggleElement.checked = initialState;
+    toggleElement.addEventListener('input', onChange);
+}
 
