@@ -77,6 +77,16 @@ function createItemElement(item) {
     } else if (item.type === 'slider') {
         row.className += ' slider';
         row.innerHTML = `<label for="${item.id}">${item.label}</label><input type="range" id="${item.id}" min="${item.min}" max="${item.max}" step="${item.step}" value="${item.value}"><span class="value_display" id="${item.displayId}" contenteditable="false"></span>`;
+    } else if (item.type === 'switch') {
+        row.className += ' switch__container';
+        row.innerHTML = `
+            <span class="switch__label1">${item.label1}</span>
+            <label class="switch">
+                <input type="checkbox" id="${item.id}">
+                <span class="sliderSwitch round"></span>
+            </label>
+            <span class="switch__label2">${item.label2}</span>
+        `;
     }
 
     itemElement.appendChild(row);

@@ -1,0 +1,55 @@
+/* Switch container */
+.switch {
+    width: 60px;
+    height: 34px;
+    margin: 0 72px;
+}
+
+/* The slider */
+.sliderSwitch {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.sliderSwitch:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .sliderSwitch {
+    background-color: #2196F3;
+}
+
+input:checked + .sliderSwitch:before {
+    transform: translateX(26px);
+}
+
+.sliderSwitch.round:before {
+    border-radius: 50%;
+}
+
+/* Switch label */
+.switch__label1, .switch__label2 {
+    margin: 0 15px;
+}
+
+.switch__container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 5px 0 5px 0;
+}
