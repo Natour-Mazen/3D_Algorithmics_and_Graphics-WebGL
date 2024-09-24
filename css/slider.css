@@ -1,0 +1,32 @@
+/* Sliders */
+.slider {
+    height: 50px;
+}
+
+.slider label {
+    position: absolute;
+    left: 1rem;
+    top: 5%;
+    transform: translateY(0);
+}
+
+input[type=range] {
+    position: absolute;
+    width: 85%;
+    left: 1rem;
+    top: 70%;
+    transform: translateY(-50%);
+}
+
+.value_display {
+    position: absolute;
+    right: 1rem;
+    top: 5%;
+    background-color: #444444;
+    color: white;
+    border-radius: 2px;
+    width: 22.5%;
+    height: 35%;
+    font-size: 14px;
+    text-align: right;
+}
