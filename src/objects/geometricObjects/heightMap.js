@@ -56,7 +56,7 @@ class heightMap extends objectToDraw {
         const fSize = 1.0;
         const widthInBetween = (fSize * 2) / parseFloat(width);
         const heightInBetween = (fSize * 2) / parseFloat(height);
-        const fY = fSize / 255.0 / parseFloat(flattenFactorHeightMap);
+        const fY = fSize / 255.0 * (1.0 - parseFloat(flattenFactorHeightMap) * 0.1 + 0.1);
 
         for (let h = 0; h < height; ++h) {
             for (let w = 0; w < width; ++w) {
