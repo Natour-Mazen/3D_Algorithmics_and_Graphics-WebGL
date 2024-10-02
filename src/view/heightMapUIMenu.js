@@ -39,6 +39,7 @@ function handleCreateHeightMap() {
 }
 
 function handleHeightMapSelection(selectedHeightMap, selectionType) {
+    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof heightMap));
     if (selectedHeightMap !== 'None') {
         if (selectionType === 'type') {
             heightMapType = `res/heightMaps/${selectedHeightMap}`;
