@@ -23,39 +23,39 @@ void main(void)
     if(uIsColor)
     {
         vec3 sandColor = vec3(0.9, 0.9, 0.3);
-        vec3 planeColor = vec3(0.2, 0.8, 0.15);
-        vec3 forestColor = vec3(0.2, 0.55, 0.1);
+        vec3 planeColor = vec3(0.2, 0.7, 0.15);
+        vec3 forestColor = vec3(0.2, 0.45, 0.1);
         vec3 stoneColor = vec3(0.5, 0.5, 0.5);
         vec3 snowColor = vec3(1.0, 1.0, 1.0);
 
         // Transition between colors.
         if (heightNorm < 0.02) { // 0.0 / 0.02 > 0.02
-                                 finalColor = sandColor;
+            finalColor = sandColor;
         }
         else if (heightNorm < 0.05) { // 0.02 / 0.5 > 0.03
-                                      float factor = (heightNorm - 0.02) / 0.03;
-                                      finalColor = mix(sandColor, planeColor, factor);
+            float factor = (heightNorm - 0.02) / 0.03;
+            finalColor = mix(sandColor, planeColor, factor);
         }
-        else if (heightNorm < 0.2) { // 0.05 / 0.2 > 0.2
-                                     finalColor = planeColor;
+        else if (heightNorm < 0.1) { // 0.05 / 0.1 > 0.05
+            finalColor = planeColor;
         }
-        else if (heightNorm < 0.3) { // 0.2 / 0.3 > 0.1
-                                     float factor = (heightNorm - 0.2) / 0.1;
-                                     finalColor = mix(planeColor, forestColor, factor);
+        else if (heightNorm < 0.15) { // 0.1 / 0.15 > 0.05
+            float factor = (heightNorm - 0.1) / 0.05;
+            finalColor = mix(planeColor, forestColor, factor);
         }
-        else if (heightNorm < 0.6) { // 0.4 / 0.6 > 0.2
-                                     finalColor = forestColor;
+        else if (heightNorm < 0.25) { // 0.15 / 0.25 > 0.1
+            finalColor = forestColor;
         }
-        else if (heightNorm < 0.7) { // 0.6 / 0.7 > 0.2
-                                     float factor = (heightNorm - 0.6) / 0.1;
-                                     finalColor = mix(forestColor, stoneColor, factor);
+        else if (heightNorm < 0.35) { // 0.25 / 0.35 > 0.1
+            float factor = (heightNorm - 0.25) / 0.1;
+            finalColor = mix(forestColor, stoneColor, factor);
         }
-        else if(heightNorm < 0.8) { // 0.7 / 0.8 > 0.1
-                                    finalColor = stoneColor;
+        else if(heightNorm < 0.7) { // 0.35 / 0.7 > 0.35
+            finalColor = stoneColor;
         }
-        else if (heightNorm < 0.9){ // 0.8 / 0.9 > 0.1
-                                    float factor = (heightNorm - 0.8) / 0.1;
-                                    finalColor = mix(stoneColor, snowColor, factor);
+        else if (heightNorm < 0.8){ // 0.7 / 0.8 > 0.1
+            float factor = (heightNorm - 0.7) / 0.1;
+            finalColor = mix(stoneColor, snowColor, factor);
         }
         else {
             finalColor = snowColor;
