@@ -13,12 +13,14 @@ class heightMap extends objectToDraw {
         ];
         this.setCommonShaderParams(buffers);
         this.shader.uSampler = gl.getUniformLocation(this.shader, "uSampler");
+        this.shader.uIsColor = gl.getUniformLocation(this.shader, "uIsColor");
     }
 
     setUniforms() {
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
         gl.uniform1i(this.shader.uSampler, 0);
+        gl.uniform1i(this.shader.uIsColor, 1);
     }
 
     drawAux() {
