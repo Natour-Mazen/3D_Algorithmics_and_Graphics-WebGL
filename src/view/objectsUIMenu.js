@@ -26,11 +26,7 @@ function handleObjectSelection(selectedObject) {
         main_objectsToDraw.push(obj);
         obj.setColor(Color.hextoRGB(objectsElements.colorPicker.value).toArray());
         let scaleSliderValue = objectsElements.scaleSlider.value;
-        if (scaleSliderValue === '0') {
-            updateScaleOBJ(DEFAULT_OBJSCALE);
-        } else {
-            updateScaleOBJ(parseInt(scaleSliderValue));
-        }
+        updateScaleOBJ(scaleSliderValue);
     }
 }
 
