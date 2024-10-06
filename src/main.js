@@ -18,7 +18,7 @@ let lightSpecular = [1.0, 1.0, 1.0, 1.0];
 // The material specular (vec4).
 let materialSpecular = [1.0, 1.0, 1.0, 1.0];
 // The shininess of the material (float).
-let materialShininess = 32.0;
+let materialShininess = 1000.0;
 
 const canvasID = 'WebGL-canvas';
 
