@@ -1,3 +1,4 @@
+// Lambert Fragment shader.
 precision mediump float;
 
 uniform sampler2D uSampler; // Texture.
@@ -15,7 +16,7 @@ varying vec3 vTangentLightPos;
 void main(void)
 {
     // Lambert formula by MESEURE Philippe.
-    // ColorFarg = (lightAmb + lightDiff * (normal . lightDir)) * colorMaterial
+    // ColorFrag = (lightAmb + lightDiff * (normal . lightDir)) * colorMaterial
 
     vec3 normal = vVertexNormal;
     if(uBumMap)
