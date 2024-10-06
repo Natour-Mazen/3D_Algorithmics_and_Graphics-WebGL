@@ -14,6 +14,10 @@ const DEFAULT_OBJSCALE = 8;
 const ObjectLoader = ['bunny', 'mustang', 'porsche', 'sphere'];
 
 
+/**
+ * Handles the selection of an object from the dropdown.
+ * @param {string} selectedObject - The name of the selected object.
+ */
 function handleObjectSelection(selectedObject) {
     main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof objmesh));
     if (selectedObject !== 'None') {
@@ -30,12 +34,36 @@ function handleObjectSelection(selectedObject) {
     }
 }
 
+/**
+ * Updates the plane toggle checkbox to reflect the current state.
+ */
+function updatePlaneToggle() {
+    objectsElements.planeToggle.checked = isTherePlane;
+}
+
+
+/**
+ * Sets the state of the plane and updates the toggle checkbox.
+ * @param {boolean} state - The new state of the plane.
+ */
+function setPlaneState(state) {
+    isTherePlane = state;
+    updatePlaneToggle();
+}
+
+/**
+ * Updates the scale of the selected object.
+ * @param {number} scale - The new scale value.
+ */
 function updateScaleOBJ(scale) {
     objectsElements.scaleValueDisplay.textContent = String(scale);
     objectsElements.scaleSlider.value = scale;
     obj.setScale(scale);
 }
 
+/**
+ * Initializes the UI components for object manipulation.
+ */
 function initObjectsUIComponents() {
     initToggle(objectsElements.planeToggle, true, function () {
         isTherePlane = this.checked;
