@@ -18,8 +18,10 @@ class objectToDraw {
         this.shaderName = shaderName;
         this.loaded = loaded;
         this.shader = shader;
-        this.color = Color.BLACK;
+        this.color = Color.WHITE;
         this.scale = 1;
+        // To display error just one time.
+        this.seenErrors = new Set();
     }
 
     /**
@@ -68,10 +70,6 @@ class objectToDraw {
      */
     setCommonShaderParams(buffers) {
         gl.useProgram(this.shader);
-        if(this.shaderName === "lambertNormalMap")
-        {
-            console.log("ok");
-        }
 
         for (const buffer of buffers) {
             const attribLocation = gl.getAttribLocation(this.shader, buffer.attribName);
@@ -87,6 +85,12 @@ class objectToDraw {
         this.shader.mvMatrixUniform = gl.getUniformLocation(this.shader, "uMVMatrix");
         this.shader.pMatrixUniform = gl.getUniformLocation(this.shader, "uPMatrix");
         this.shader.colorUniform = gl.getUniformLocation(this.shader, "uColor");
+        this.shader.uLightPosition = gl.getUniformLocation(this.shader, "uLightPosition");
+        this.shader.uLightColor = gl.getUniformLocation(this.shader, "uLightColor");
+        this.shader.uAmbientColor = gl.getUniformLocation(this.shader, "uAmbientColor");
+        this.shader.uLightSpecular = gl.getUniformLocation(this.shader, "uLightSpecular");
+        this.shader.uMaterialShininess = gl.getUniformLocation(this.shader, "uMaterialShininess");
+        this.shader.uMaterialSpecular = gl.getUniformLocation(this.shader, "uMaterialSpecular");
     }
 
     /**
@@ -100,9 +104,38 @@ class objectToDraw {
         mat4.multiply(mvMatrix, rotMatrix);
 
         gl.uniformMatrix4fv(this.shader.rMatrixUniform, false, rotMatrix);
+        this.checkGlError();
         gl.uniformMatrix4fv(this.shader.mvMatrixUniform, false, mvMatrix);
+        this.checkGlError();
         gl.uniformMatrix4fv(this.shader.pMatrixUniform, false, pMatrix);
-        gl.uniform3fv(this.shader.colorUniform, this.color);
+        this.checkGlError();
+        gl.uniform4fv(this.shader.colorUniform, this.color);
+        this.checkGlError();
+
+        // Set the light position.
+        gl.uniform3fv(this.shader.uLightPosition, lightPosition);
+        this.checkGlError();
+
+        // Set the light color
+        gl.uniform4fv(this.shader.uLightColor, lightColor);
+        this.checkGlError();
+
+        // Set the ambient color
+        gl.uniform4fv(this.shader.uAmbientColor, lightAmbient);
+        this.checkGlError();
+
+        // Set the specular light color.
+        gl.uniform4fv(this.shader.uLightSpecular, lightSpecular);
+        this.checkGlError();
+
+        // Set the material specular
+        gl.uniform4fv(this.shader.uMaterialSpecular, materialSpecular);
+        this.checkGlError();
+
+        // Set the material shininess.
+        gl.uniform1f(this.shader.uMaterialShininess, materialShininess);
+        this.checkGlError();
+
     }
 
     /**
@@ -128,6 +161,14 @@ class objectToDraw {
     setShaderName(newShaderName) {
         this.shaderName = newShaderName;
         loadShaders(this);
+    }
+
+    checkGlError() {
+        const error = gl.getError();
+        if (error !== gl.NO_ERROR && !this.seenErrors.has(error)) {
+            console.error("WebGL Error: ", error);
+            this.seenErrors.add(error);  // Ajoute l'erreur dans l'ensemble si elle est nouvelle
+        }
     }
 
 }

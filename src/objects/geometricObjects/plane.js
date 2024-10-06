@@ -35,6 +35,30 @@ class plane extends objectToDraw {
             0.0, 0.0, 1.0,
             0.0, 0.0, 1.0,
         ];
+        // Vertex.
+        const pos1 = vec3.create([-size, -size, height]);
+        const pos2 = vec3.create([size, -size, height]);
+        const pos3 = vec3.create([size, size, height]);
+        const pos4 = vec3.create([-size, size, height]);
+
+        // Textures Coords.
+        let uv1 = vec2.create([0.0, 0.0]);
+        let uv2 = vec2.create([0.0, 1.0]);
+        let uv3 = vec2.create([1.0, 1.0]);
+        let uv4 = vec2.create([1.0, 0.0]);
+
+        // For the first triangle.
+        let edge1 = vec3.subtract(pos1, pos2, [0., 0., 0.]);
+        let edge2 = vec3.subtract(pos3, pos1, [0., 0., 0.]);
+        let deltaUV1 = vec2.subtract(uv2, uv1, [0., 0., 0.]);
+        let deltaUV2 = vec2.subtract(uv3, uv1, [0., 0., 0.]);
+
+        let f = 1.0 / (deltaUV1[0] * deltaUV2[1] - deltaUV2[0] * deltaUV1[1]);
+
+        let tangent1 = [f * (deltaUV2[1] * edge1[0] - deltaUV1[1] * edge2[0]),
+                                f * (deltaUV2[1] * edge1[1] - deltaUV1[1] * edge2[1]),
+                                f * (deltaUV2[1] * edge1[2] - deltaUV1[1] * edge2[2])];
+
 
         // Vertex
         this.vBuffer = gl.createBuffer();
@@ -70,12 +94,7 @@ class plane extends objectToDraw {
         ]);
 
         this.shader.uBumpSampler = gl.getUniformLocation(this.shader, "uBumpSampler");
-        this.shader.uLightDirection = gl.getUniformLocation(this.shader, "uLightDirection");
         this.shader.uSampler = gl.getUniformLocation(this.shader, "uSampler");
-        this.shader.uLightColor = gl.getUniformLocation(this.shader, "uLightColor");
-        this.shader.uAmbientColor = gl.getUniformLocation(this.shader, "uAmbientColor");
-        this.shader.uShininess = gl.getUniformLocation(this.shader, "uShininess");
-        this.shader.uViewPosition = gl.getUniformLocation(this.shader, "uViewPosition");
     }
 
     setUniforms() {
@@ -83,31 +102,13 @@ class plane extends objectToDraw {
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, bumpMap);
         gl.uniform1i(this.shader.uBumpSampler, 0); // Use texture unit 0 for bump map
+        this.checkGlError();
 
         // Bind and set the main texture
         gl.activeTexture(gl.TEXTURE1);
         gl.bindTexture(gl.TEXTURE_2D, texture_ForBump);
         gl.uniform1i(this.shader.uSampler, 1); // Use texture unit 1 for main texture
-
-        // Set the light direction
-        const lightDirection = [10.0, 10.0, 10.0];
-        gl.uniform3fv(this.shader.uLightDirection, lightDirection);
-
-        // Set the light color
-        const lightColor = Color.CYAN; // white
-        gl.uniform3fv(this.shader.uLightColor, lightColor);
-
-        // Set the ambient color
-        const ambientColor = Color.BLUE;
-        gl.uniform3fv(this.shader.uAmbientColor, ambientColor);
-
-        // Set the shininess
-        const shininess = 32.0;
-        gl.uniform1f(this.shader.uShininess, shininess);
-
-        // Set the view position (camera position)
-        const viewPosition = [0.0, 10.0, 0.0];
-        gl.uniform3fv(this.shader.uViewPosition, viewPosition);
+        this.checkGlError();
     }
 
     // --------------------------------------------
@@ -115,6 +116,4 @@ class plane extends objectToDraw {
         gl.drawArrays(gl.TRIANGLE_FAN, 0, this.vBuffer.numItems);
         gl.drawArrays(gl.LINE_LOOP, 0, this.vBuffer.numItems);
     }
-
-
 }

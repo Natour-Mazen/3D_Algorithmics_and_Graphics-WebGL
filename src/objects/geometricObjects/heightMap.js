@@ -20,7 +20,10 @@ class heightMap extends objectToDraw {
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
         gl.uniform1i(this.shader.uSampler, 0);
-        gl.uniform1i(this.shader.uIsColor, 1);
+        this.checkGlError();
+        // Set if we use the shader pre-define colors for the map.
+        gl.uniform1i(this.shader.uIsColor, heightMapElements.switch.checked);
+        this.checkGlError();
     }
 
     drawAux() {
