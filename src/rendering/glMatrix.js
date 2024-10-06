@@ -1,5 +1,107 @@
-// glMatrix v0.9.5
+// glMatrix v0.9.5 + vec2
 glMatrixArrayType = typeof Float32Array != "undefined" ? Float32Array : typeof WebGLFloatArray != "undefined" ? WebGLFloatArray : Array;
+var vec2 = {};
+
+vec2.create = function(a) {
+    var b = new glMatrixArrayType(2);
+    if (a) {
+        b[0] = a[0];
+        b[1] = a[1];
+    }
+    return b;
+};
+
+vec2.clone = function(a) {
+    return vec2.create([a[0], a[1]]);
+};
+
+vec2.set = function(a, b) {
+    b[0] = a[0];
+    b[1] = a[1];
+    return b;
+};
+
+vec2.add = function(a, b, c) {
+    if (!c || a === c) {
+        a[0] += b[0];
+        a[1] += b[1];
+        return a;
+    }
+    c[0] = a[0] + b[0];
+    c[1] = a[1] + b[1];
+    return c;
+};
+
+vec2.subtract = function(a, b, c) {
+    if (!c || a === c) {
+        a[0] -= b[0];
+        a[1] -= b[1];
+        return a;
+    }
+    c[0] = a[0] - b[0];
+    c[1] = a[1] - b[1];
+    return c;
+};
+
+vec2.negate = function(a, b) {
+    b || (b = a);
+    b[0] = -a[0];
+    b[1] = -a[1];
+    return b;
+};
+
+vec2.scale = function(a, b, c) {
+    if (!c || a === c) {
+        a[0] *= b;
+        a[1] *= b;
+        return a;
+    }
+    c[0] = a[0] * b;
+    c[1] = a[1] * b;
+    return c;
+};
+
+vec2.normalize = function(a, b) {
+    b || (b = a);
+    var x = a[0], y = a[1];
+    var length = Math.sqrt(x * x + y * y);
+    if (length) {
+        if (length === 1) {
+            b[0] = x;
+            b[1] = y;
+            return b;
+        }
+    } else {
+        b[0] = 0;
+        b[1] = 0;
+        return b;
+    }
+    length = 1 / length;
+    b[0] = x * length;
+    b[1] = y * length;
+    return b;
+};
+
+vec2.length = function(a) {
+    var x = a[0], y = a[1];
+    return Math.sqrt(x * x + y * y);
+};
+
+vec2.dot = function(a, b) {
+    return a[0] * b[0] + a[1] * b[1];
+};
+
+vec2.lerp = function(a, b, t, d) {
+    d || (d = a);
+    d[0] = a[0] + t * (b[0] - a[0]);
+    d[1] = a[1] + t * (b[1] - a[1]);
+    return d;
+};
+
+vec2.str = function(a) {
+    return "[" + a[0] + ", " + a[1] + "]";
+};
+
 var vec3 = {};
 
 vec3.create = function (a) {
