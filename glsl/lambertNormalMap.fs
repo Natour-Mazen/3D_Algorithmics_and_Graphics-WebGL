@@ -5,28 +5,29 @@ uniform sampler2D uBumpSampler; // Texture for the bump map.
 uniform vec4 uColor; // Color of the material.
 uniform vec4 uAmbientLight; // The ambiant light.
 uniform vec4 uLightColor; // The color light.
-uniform mat4 uRMatrix; // Normal Matrix.
-uniform vec3 uLightPosition; // Position of the light.
 uniform bool uBumMap; // true if the bump map is activeted, false otherwise.
 
 varying vec2 vTexCoords;
 varying vec3 vVertexNormal;
-varying vec4 vVertexPosition;
+varying vec3 vTangentVertexPosition;
+varying vec3 vTangentLightPos;
 
 void main(void)
 {
-    vec3 normal = vec3(uRMatrix * vec4(vVertexNormal, 1.0));
+    // Lambert formula by MESEURE Philippe.
+    // ColorFarg = (lightAmb + lightDiff * (normal . lightDir)) * colorMaterial
+
+    vec3 normal = vVertexNormal;
     if(uBumMap)
     {
-        // Use the normal from the bump map.
+        // The normal from the bump map.
         normal = texture2D(uBumpSampler, vTexCoords).rgb;
         normal = normal * 2.0 - 1.0;
-        normal = (uRMatrix * vec4(normal, 1.0)).xyz;
         normal = normalize(normal);
     }
 
     // Light direction
-    vec3 lightDir = normalize(uLightPosition - vVertexPosition.xyz);
+    vec3 lightDir = normalize(vTangentLightPos - vTangentVertexPosition);
     // Weight of the color.
     float weight = max(dot(normal, lightDir), 0.0);
 

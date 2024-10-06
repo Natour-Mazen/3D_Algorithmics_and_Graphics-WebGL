@@ -25,7 +25,7 @@ void main(void)
 
     vec3 finalColor = vec3(0., 0., 0.);
 
-    // If we use the
+    // If we use the pre-defined color.
     if(uIsColor)
     {
         vec3 sandColor = vec3(0.9, 0.9, 0.3);

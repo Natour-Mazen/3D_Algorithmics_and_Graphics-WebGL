@@ -9,8 +9,8 @@ let main_objectsToDraw = [];
 // The light position in the world (vec3).
 let lightPosition = [0.0, 0.0, 0.0];
 // The ambient light in the world (vec4).
-let lightAmbient = [0.1, 0.1, 0.1, 0.1];
-//let ambientLight = [0.0, 0.0, 0.0, 0.0];
+//let lightAmbient = [0.1, 0.1, 0.1, 0.1];
+let lightAmbient = [0.3, 0.3, 0.3, 0.3];
 // The light color in the world (vec4).
 let lightColor = [0.8, 0.8, 0.8, 1.0];
 // The light specular in the world (vec4).
@@ -44,6 +44,11 @@ window.addEventListener('resize', resizeCanvas);
 function initGL(canvas) {
     try {
         gl = canvas.getContext("webgl2");
+        if (!gl) {
+            console.log("WebGL 2.0 not supported.");
+        } else {
+            console.log("WebGL 2.0 supported.");
+        }
         gl.viewportWidth = canvas.width;
         gl.viewportHeight = canvas.height;
         gl.viewport(0, 0, canvas.width, canvas.height);
@@ -56,6 +61,10 @@ function initGL(canvas) {
     if (!gl) {
         console.log("Could not initialise WebGL");
     }
+    console.log("Vendor graphic card: %s\n", gl.getParameter(gl.VENDOR));
+    console.log("Renderer: %s\n", gl.getParameter(gl.RENDERER));
+    console.log("Version GL: %s\n", gl.getParameter(gl.VERSION));
+    console.log("Version GLSL: %s\n", gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
 }
 
 // =====================================================
