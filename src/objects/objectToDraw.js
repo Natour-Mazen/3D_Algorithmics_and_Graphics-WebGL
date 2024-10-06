@@ -22,6 +22,9 @@ class objectToDraw {
         this.scale = 1;
         // To display error just one time.
         this.seenErrors = new Set();
+        this.initAll().then(() => {
+            loadShaders(this);
+        });
     }
 
     /**
@@ -52,13 +55,36 @@ class objectToDraw {
     }
 
     /**
+     * Initializes the object buffers.
+     */
+    async initAll() {
+        throw new Error("Method 'initAll()' must be implemented.");
+    }
+
+    /**
+     * Sets the shader attributes.
+     * @param buffers
+     */
+    setShaderAttributes(buffers) {
+        for (const buffer of buffers) {
+            const attribLocation = gl.getAttribLocation(this.shader, buffer.attribName);
+            if(attribLocation !== -1) {
+                gl.enableVertexAttribArray(attribLocation);
+                gl.bindBuffer(gl.ARRAY_BUFFER, buffer.buffer);
+                gl.vertexAttribPointer(attribLocation, buffer.itemSize, gl.FLOAT, false, 0, 0);
+            }
+        }
+    }
+
+    /**
      * Draws the object if the shader is loaded.
      * this method should be called in the render loop and not be overridden.
      */
     draw() {
-        if(this.shader && this.loaded === 4) {
+        if(this.shader) {
+            this.#setCommonShaderParams();
             this.setShadersParams();
-            this.setCommonUniforms()
+            this.#setCommonUniforms();
             this.setUniforms();
             this.drawAux();
         }
@@ -66,20 +92,9 @@ class objectToDraw {
 
     /**
      * Sets common shader parameters.
-     * @param {Array} buffers - The buffers to use for shader attributes.
      */
-    setCommonShaderParams(buffers) {
+    #setCommonShaderParams() {
         gl.useProgram(this.shader);
-
-        for (const buffer of buffers) {
-            const attribLocation = gl.getAttribLocation(this.shader, buffer.attribName);
-            if(attribLocation !== -1)
-            {
-                gl.enableVertexAttribArray(attribLocation);
-                gl.bindBuffer(gl.ARRAY_BUFFER, buffer.buffer);
-                gl.vertexAttribPointer(attribLocation, buffer.itemSize, gl.FLOAT, false, 0, 0);
-            }
-        }
 
         this.shader.rMatrixUniform = gl.getUniformLocation(this.shader, "uRMatrix");
         this.shader.mvMatrixUniform = gl.getUniformLocation(this.shader, "uMVMatrix");
@@ -93,11 +108,12 @@ class objectToDraw {
         this.shader.uMaterialSpecular = gl.getUniformLocation(this.shader, "uMaterialSpecular");
     }
 
+
     /**
      * Sets common uniforms for the object.
      * This method is called in the draw method of the object
      */
-    setCommonUniforms() {
+    #setCommonUniforms() {
         mat4.identity(mvMatrix);
         mat4.translate(mvMatrix, distCENTER);
         mat4.scale(mvMatrix, [this.scale, this.scale, this.scale]);
@@ -168,6 +184,10 @@ class objectToDraw {
     setShaderName(newShaderName) {
         this.shaderName = newShaderName;
         loadShaders(this);
+    }
+
+    getIsShader() {
+        return this.shader === null;
     }
 
     /**
