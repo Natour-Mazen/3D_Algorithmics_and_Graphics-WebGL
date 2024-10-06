@@ -33,13 +33,18 @@ void main(void)
         vec3 forestColor = vec3(0.2, 0.45, 0.1);
         vec3 stoneColor = vec3(0.5, 0.5, 0.5);
         vec3 snowColor = vec3(1.0, 1.0, 1.0);
+        vec3 waterColor = vec3(0.0, 0.0, 1.0);
 
         // The height need to be between 0 and 1.
         // The z-axis is equal to the y-axis.
         float heightNorm = clamp(vHeight, 0.0, 1.0);
 
         // Transition between colors.
-        if (heightNorm < 0.02) { // 0.0 / 0.02 > 0.02
+        if(heightNorm < 0.01) {
+            //water
+            finalColor = waterColor;
+        }
+        else if (heightNorm < 0.02) { // 0.0 / 0.02 > 0.02
             finalColor = sandColor;
         }
         else if (heightNorm < 0.05) { // 0.02 / 0.5 > 0.03
