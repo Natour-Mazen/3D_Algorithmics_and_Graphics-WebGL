@@ -10,8 +10,11 @@ uniform float uMaterialShininess;
 uniform vec4 uMaterialSpecular;
 uniform mat4 uRMatrix;
 uniform vec3 uLightPosition; // Position of the light
+uniform bool uBumMap; // true if the bump map is activeted, false otherwise.
+
 
 varying vec4 vVertexPosition;
+varying vec3 vVertexNormal;
 varying vec2 vTexCoords;
 varying vec3 vLightDir;
 
@@ -19,11 +22,15 @@ void main(void) {
     // BlinnPhong formula by MESEURE Philippe.
     // ColorFarg = (lightAmb + lightDiff * (normal . lightDir)) * colorMaterial + lightSpec * ((normal . playerPos)^ shininess) * colorSpec
 
-    // Bump map value.
-    vec3 normal = texture2D(uBumpSampler, vTexCoords).rgb;
-    normal = normal * 2.0 - 1.0;
-    normal = (uRMatrix * vec4(normal, 1.0)).xyz;
-    normal = normalize(normal);
+    vec3 normal = vec3(uRMatrix * vec4(vVertexNormal, 1.0));
+    if(uBumMap)
+    {
+        // Bump map value.
+        normal = texture2D(uBumpSampler, vTexCoords).rgb;
+        normal = normal * 2.0 - 1.0;
+        normal = (uRMatrix * vec4(normal, 1.0)).xyz;
+        normal = normalize(normal);
+    }
 
     // Light direction
     vec3 lightDir = normalize(uLightPosition - vVertexPosition.xyz);

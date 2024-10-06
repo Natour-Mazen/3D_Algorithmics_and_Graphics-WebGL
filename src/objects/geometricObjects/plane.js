@@ -95,6 +95,7 @@ class plane extends objectToDraw {
 
         this.shader.uBumpSampler = gl.getUniformLocation(this.shader, "uBumpSampler");
         this.shader.uSampler = gl.getUniformLocation(this.shader, "uSampler");
+        this.shader.uBumpMap = gl.getUniformLocation(this.shader, "uBumMap");
     }
 
     setUniforms() {
@@ -108,6 +109,11 @@ class plane extends objectToDraw {
         gl.activeTexture(gl.TEXTURE1);
         gl.bindTexture(gl.TEXTURE_2D, texture_ForBump);
         gl.uniform1i(this.shader.uSampler, 1); // Use texture unit 1 for main texture
+        this.checkGlError();
+
+        // selectedBumpMap in bumpMapUIMenu.
+        // If a bump map is selected then we applied it to the texture.
+        gl.uniform1i(this.shader.uBumpMap, selectedBumpMap === 'None' ? 0 : 1);
         this.checkGlError();
     }
 

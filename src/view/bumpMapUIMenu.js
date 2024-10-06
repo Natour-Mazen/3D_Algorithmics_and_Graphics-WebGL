@@ -19,26 +19,30 @@ let selectedShader = "None";
 
 
 function handleShader() {
-    if (selectedTexture === "None") {
+    if (selectedShader === "None" || selectedTexture === "None") {
         bumpMap = null;
         texture_ForBump = null;
         main_plane.setShaderName('glsl/plane');
-    } else {
+    }
+    else // We have a texture and a shader.
+    {
+        // Load the texture.
         const texturePath = `res/textures/${selectedTexture}`;
         texture_ForBump = loadTexture(gl, texturePath);
-        if (selectedBumpMap === "None" || selectedShader === "None") {
-            bumpMap = null;
-            main_plane.setShaderName('glsl/planeTexture');
-        } else {
+
+        // If a bump map is selected, we load it.
+        if(selectedBumpMap !== "None")
+        {
             const bumpMapPath = `res/bumpMaps/${selectedBumpMap}`;
             bumpMap = loadTexture(gl, bumpMapPath);
-            if (selectedShader === "Lambert") {
-                main_plane.setShaderName('glsl/lambertNormalMap');
-            } else if (selectedShader === "Blinn-Phong") {
-                main_plane.setShaderName('glsl/blinnPhongNormalMap');
-            } else {
-                window.alert("Please select a shader");
-            }
+        }
+        // The bind the right shader.
+        if (selectedShader === "Lambert") {
+            main_plane.setShaderName('glsl/lambertNormalMap');
+        } else if (selectedShader === "Blinn-Phong") {
+            main_plane.setShaderName('glsl/blinnPhongNormalMap');
+        } else {
+            window.alert("Please select a shader");
         }
     }
 }
