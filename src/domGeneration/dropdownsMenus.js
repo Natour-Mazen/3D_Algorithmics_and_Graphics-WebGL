@@ -26,14 +26,7 @@ const dropdowns = [
             { type: 'select', label: 'Shader', id: 'bump_map_shader_selector', options: ['None'] },
             { type: 'select', label: 'Type', id: 'bump_map_selector', options: ['None'] },
             { type: 'select', label: 'Texture', id: 'bump_map_texture_selector', options: ['None'] },
-            { type: 'color', label: 'Colors:', id: 'bump_map_color', value: '#cccccc' }
         ]
     },
-    // {
-    //     title: 'Terrain',
-    //     items: [
-    //         { type: 'select', label: 'Type', id: 'ground_select', options: ['None'] },
-    //         { type: 'select', label: 'Terrain', id: 'terrain_selector', options: ['None'] }
-    //     ]
-    // }
+
 ];
