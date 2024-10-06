@@ -2,7 +2,6 @@ class heightMap extends objectToDraw {
     constructor() {
         super('glsl/heightMap', -1, null);
         this.color = Color.LIGHT_BLUE;
-        this.initAll();
     }
 
     setShadersParams() {
@@ -11,7 +10,7 @@ class heightMap extends objectToDraw {
             { buffer: this.nBuffer, attribName: "aVertexNormal", itemSize: this.nBuffer.itemSize },
             { buffer: this.tBuffer, attribName: "aTexCoord", itemSize: this.tBuffer.itemSize }
         ];
-        this.setCommonShaderParams(buffers);
+        this.setShaderAttributes(buffers);
         this.shader.uSampler = gl.getUniformLocation(this.shader, "uSampler");
         this.shader.uIsColor = gl.getUniformLocation(this.shader, "uIsColor");
     }
@@ -36,8 +35,8 @@ class heightMap extends objectToDraw {
         }
     }
 
-    initAll() {
-        this.loadImageIntoBuff().then(({ pointHeight, width, height }) => {
+    async initAll() {
+         await this.loadImageIntoBuff().then(({ pointHeight, width, height }) => {
             const vertices = this.createVertices(pointHeight, width, height);
             const triangles = this.createTriangles(width, height);
             const normals = this.initNormals(triangles, vertices);
@@ -49,8 +48,6 @@ class heightMap extends objectToDraw {
             this.indexBuffer = this.createBuffer(gl.ELEMENT_ARRAY_BUFFER, triangles, 3, triangles.length);
             this.nBuffer = this.createBuffer(gl.ARRAY_BUFFER, normals, 3, width * height);
             this.tBuffer = this.createBuffer(gl.ARRAY_BUFFER, new Float32Array(textureCoord), 2, width * height);
-
-            loadShaders(this);
         });
     }
 
@@ -150,7 +147,7 @@ class heightMap extends objectToDraw {
         return buffer;
     }
 
-    loadImageIntoBuff() {
+    async loadImageIntoBuff() {
         return new Promise((resolve, reject) => {
             let texture = gl.createTexture();
             texture.image = new Image();
