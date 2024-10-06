@@ -103,12 +103,19 @@ class objectToDraw {
         mat4.scale(mvMatrix, [this.scale, this.scale, this.scale]);
         mat4.multiply(mvMatrix, rotMatrix);
 
+        // Set the rotation matrix.
         gl.uniformMatrix4fv(this.shader.rMatrixUniform, false, rotMatrix);
         this.checkGlError();
+
+        // Set the model-view matrix.
         gl.uniformMatrix4fv(this.shader.mvMatrixUniform, false, mvMatrix);
         this.checkGlError();
+
+        // Set the projection matrix.
         gl.uniformMatrix4fv(this.shader.pMatrixUniform, false, pMatrix);
         this.checkGlError();
+
+        // Set the color.
         gl.uniform4fv(this.shader.colorUniform, this.color);
         this.checkGlError();
 
@@ -163,11 +170,14 @@ class objectToDraw {
         loadShaders(this);
     }
 
+    /**
+     * Checks for WebGL errors and logs them.
+     */
     checkGlError() {
         const error = gl.getError();
         if (error !== gl.NO_ERROR && !this.seenErrors.has(error)) {
             console.error("WebGL Error: ", error);
-            this.seenErrors.add(error);  // Ajoute l'erreur dans l'ensemble si elle est nouvelle
+            this.seenErrors.add(error);  // Add the error to the set if it is new
         }
     }
 
