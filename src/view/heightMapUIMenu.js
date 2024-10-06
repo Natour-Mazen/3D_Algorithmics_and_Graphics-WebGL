@@ -2,7 +2,7 @@ const heightMapElements = {
     toggle: doc.getElementById('heightMap_checkbox'),
     selector: doc.getElementById('heightMap_selector'),
     textureSelector: doc.getElementById('heightMap_texture_selector'),
-    colorPicker: doc.getElementById('heightMap_color'),
+    //colorPicker: doc.getElementById('heightMap_color'),
     scaleSlider: doc.getElementById('heightMap_scale_slider'),
     scaleValueDisplay: doc.getElementById('heightMap_scale_value'),
     flattenSlider: doc.getElementById('heightMap_flatten_slider'),
@@ -32,11 +32,7 @@ function initHeightMapToggle() {
 function handleCreateHeightMap() {
     main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof heightMap));
     theHeightMap = new heightMap();
-    if(heightMapElements.switch.checked) {
-        theHeightMap.setColor(Color.hextoRGB(heightMapElements.colorPicker.value).toArray());
-    }else {
-        theHeightMap.setColor(Color.WHITE);
-    }
+    isTherePlane = !heightMapElements.switch.checked;
 
     main_objectsToDraw.push(theHeightMap);
 }
@@ -94,17 +90,17 @@ function updateScaleHeightMap(scale) {
 
 function handleHeightMapSwitch() {
     const heightMapTextureSelectorItem = heightMapElements.textureSelector.closest('.row');
-    const heightMapColorItem = heightMapElements.colorPicker.closest('.row');
+    //const heightMapColorItem = heightMapElements.colorPicker.closest('.row');
 
 
     if (heightMapElements.switch.checked) {
-        heightMapColorItem.style.display = 'block';
+      //  heightMapColorItem.style.display = 'block';
         heightMapTextureSelectorItem.style.display = 'none';
         heightMapElements.textureSelector.value = 'None';
     } else {
-        heightMapColorItem.style.display = 'none';
+      //  heightMapColorItem.style.display = 'none';
         heightMapTextureSelectorItem.style.display = 'block';
-        heightMapElements.colorPicker.value = '#ffffff';
+   //     heightMapElements.colorPicker.value = '#ffffff';
     }
 
     if (heightMapType !== null) {
@@ -118,9 +114,9 @@ function initHeightMapUIComponents() {
     initHeightMapToggle();
     initHeightMapSelector();
     initHeightMapTexturePathMapSelector();
-    initColorPicker(heightMapElements.colorPicker, function () {
-        theHeightMap.setColor(Color.hextoRGB(this.value).toArray());
-    });
+    // initColorPicker(heightMapElements.colorPicker, function () {
+    //     theHeightMap.setColor(Color.hextoRGB(this.value).toArray());
+    // });
     initSlider(heightMapElements.scaleSlider, function () {
         updateScaleHeightMap(this.value);
     });
