@@ -8,13 +8,17 @@ class objmesh extends objectToDraw {
         this.mesh = null;
 
         this.loadObjFile(this);
-        loadShaders(this);
+    }
+
+    // --------------------------------------------
+    async initAll() {
+        // we don't need to initialize any buffers for this object
     }
 
     // --------------------------------------------
     setShadersParams() {
         if(this.mesh != null) {
-            this.setCommonShaderParams([
+            this.setShaderAttributes([
                 { attribName: "aVertexPosition", buffer: this.mesh.vertexBuffer, itemSize: this.mesh.vertexBuffer.itemSize },
                 { attribName: "aVertexNormal", buffer: this.mesh.normalBuffer, itemSize: this.mesh.vertexBuffer.itemSize }
             ]);
