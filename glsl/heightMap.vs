@@ -7,15 +7,15 @@ uniform mat4 uRMatrix;
 uniform mat4 uMVMatrix;
 uniform mat4 uPMatrix;
 
-varying vec4 pos3D;
-varying vec3 N;
+varying vec4 vVertexPosition;
+varying vec3 vVertexNormal;
 varying vec2 vTexCoord;
 varying float vHeight;
 
 void main(void) {
-    pos3D = uMVMatrix * vec4(aVertexPosition,1.0);
-    N = vec3(uRMatrix * vec4(aVertexNormal,1.0));
+    vVertexPosition = uMVMatrix * vec4(aVertexPosition,1.0);
+    vVertexNormal = vec3(uRMatrix * vec4(aVertexNormal,1.0));
     vTexCoord = aTexCoord;
-    vHeight = aVertexPosition.z; // z = y
-    gl_Position = uPMatrix * pos3D;
+    vHeight = aVertexPosition.z;
+    gl_Position = uPMatrix * vVertexPosition;
 }

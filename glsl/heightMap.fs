@@ -2,24 +2,30 @@
 precision mediump float;
 
 uniform sampler2D uSampler;
-uniform vec3 uColor;
-uniform bool uIsColor;
+uniform vec3 uColor; // Not used here.
+uniform bool uIsColor; // true we display the shader color, false otherwise.
+uniform vec4 uAmbientLight; // The ambiant light.
+uniform vec4 uLightColor; // The color light.
+uniform vec3 uLightPosition; // Position of the light.
 
-varying vec4 pos3D;
-varying vec3 N;
+varying vec4 vVertexPosition;
+varying vec3 vVertexNormal;
 varying vec2 vTexCoord;
 varying float vHeight;
 
 void main(void)
 {
-    vec3 col = uColor * dot(N,normalize(vec3(-pos3D)));
-    vec4 textureColor = texture2D(uSampler, vTexCoord);
+    // We normalize the normals.
+    vec3 normal = normalize(vVertexNormal);
 
-    // The height need to be between 0 and 1.
-    float heightNorm = clamp(vHeight, 0.0, 1.0);
+    // Light direction.
+    vec3 lightDir = normalize(uLightPosition - vVertexPosition.xyz);
+    // Weight of the color.
+    float weight = max(dot(normal, lightDir), 0.0);
 
-    vec3 finalColor = vec3(1., 1., 1.);
+    vec3 finalColor = vec3(0., 0., 0.);
 
+    // If we use the
     if(uIsColor)
     {
         vec3 sandColor = vec3(0.9, 0.9, 0.3);
@@ -27,6 +33,10 @@ void main(void)
         vec3 forestColor = vec3(0.2, 0.45, 0.1);
         vec3 stoneColor = vec3(0.5, 0.5, 0.5);
         vec3 snowColor = vec3(1.0, 1.0, 1.0);
+
+        // The height need to be between 0 and 1.
+        // The z-axis is equal to the y-axis.
+        float heightNorm = clamp(vHeight, 0.0, 1.0);
 
         // Transition between colors.
         if (heightNorm < 0.02) { // 0.0 / 0.02 > 0.02
@@ -60,7 +70,15 @@ void main(void)
         else {
             finalColor = snowColor;
         }
+        finalColor = finalColor;
+    }
+    else // We use the texture color.
+    {
+        vec4 textureColor = texture2D(uSampler, vTexCoord);
+        finalColor = textureColor.rgb;
     }
 
-    gl_FragColor =  vec4(col,1.0) * textureColor * vec4(finalColor, 1.0);
+    vec3 fragColor = finalColor * (uAmbientLight.rgb + weight * uLightColor.rgb);
+
+    gl_FragColor = vec4(fragColor, 1.0);
 }
