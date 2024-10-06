@@ -5,12 +5,11 @@ let texture_ForBump = null;
 const bumpMapElements = {
     selector: doc.getElementById('bump_map_selector'),
     shaderSelector: doc.getElementById('bump_map_shader_selector'),
-    colorPicker: doc.getElementById('bump_map_color'),
     textureSelector: doc.getElementById('bump_map_texture_selector')
 };
 
-const bumpMapLoader = ["brickNM.png", "circleNM.png", "brickNM2.png", "testNM.png", "bumpWaterNM.jpg", "brickWallNM.jpg", "waterReelNM.jpg"];
-const bumpMapTextureLoader = ['brickBM.jpg', 'poolWater.png', 'seaWater.jpg', 'circle.png', "white.png", "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg"];
+const bumpMapLoader = ["brickNM2.png", "circleNM.png", "bumpWaterNM.jpg", "brickWallNM.jpg", "waterReelNM.jpg"];
+const bumpMapTextureLoader = ["white.png",'circle.png', "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg"];
 const bumpMapShaderLoader = ['Lambert', 'Blinn-Phong'];
 
 let selectedBumpMap = "None";
@@ -47,19 +46,17 @@ function handleShader() {
     }
 }
 
-function initUIComponents() {
+function initBumpMapUIComponents() {
     initSelector(bumpMapElements.selector, bumpMapLoader, function () {
         selectedBumpMap = this.value;
         if (selectedTexture !== "None") {
             handleShader();
         }
-        main_plane.setColor(Color.hextoRGB(bumpMapElements.colorPicker.value).toArray());
     });
 
     initSelector(bumpMapElements.textureSelector, bumpMapTextureLoader, function () {
         selectedTexture = this.value;
         handleShader();
-        main_plane.setColor(Color.hextoRGB(bumpMapElements.colorPicker.value).toArray());
     });
 
     initSelector(bumpMapElements.shaderSelector, bumpMapShaderLoader, function () {
@@ -67,9 +64,6 @@ function initUIComponents() {
         handleShader();
     });
 
-    initColorPicker(bumpMapElements.colorPicker, function () {
-        main_plane.setColor(Color.hextoRGB(this.value).toArray());
-    });
 }
 
-initUIComponents();
+initBumpMapUIComponents();
