@@ -10,7 +10,7 @@ let main_objectsToDraw = [];
 let lightPosition = [0.0, 0.0, 0.0];
 // The ambient light in the world (vec4).
 //let lightAmbient = [0.1, 0.1, 0.1, 0.1];
-let lightAmbient = [0.3, 0.3, 0.3, 0.3];
+let lightAmbient = [0.1, 0.1, 0.1, 0.1];
 // The light color in the world (vec4).
 let lightColor = [0.8, 0.8, 0.8, 1.0];
 // The light specular in the world (vec4).

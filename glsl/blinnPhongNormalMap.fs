@@ -1,3 +1,4 @@
+// BlinnPhong Fragment shader.
 precision mediump float;
 
 uniform sampler2D uSampler;
@@ -8,32 +9,28 @@ uniform vec4 uAmbientColor;
 uniform vec4 uLightSpecular;
 uniform float uMaterialShininess;
 uniform vec4 uMaterialSpecular;
-uniform mat4 uRMatrix;
-uniform vec3 uLightPosition; // Position of the light
 uniform bool uBumMap; // true if the bump map is activeted, false otherwise.
 
-
-varying vec4 vVertexPosition;
-varying vec3 vVertexNormal;
 varying vec2 vTexCoords;
-varying vec3 vLightDir;
+varying vec3 vVertexNormal;
+varying vec3 vTangentVertexPosition;
+varying vec3 vTangentLightPos;
 
 void main(void) {
     // BlinnPhong formula by MESEURE Philippe.
-    // ColorFarg = (lightAmb + lightDiff * (normal . lightDir)) * colorMaterial + lightSpec * ((normal . playerPos)^ shininess) * colorSpec
+    // ColorFrag = (lightAmb + lightDiff * (normal . lightDir)) * colorMaterial + lightSpec * ((normal . playerPos)^ shininess) * colorSpec
 
-    vec3 normal = vec3(uRMatrix * vec4(vVertexNormal, 1.0));
+    vec3 normal = vVertexNormal;
     if(uBumMap)
     {
         // Bump map value.
         normal = texture2D(uBumpSampler, vTexCoords).rgb;
         normal = normal * 2.0 - 1.0;
-        normal = (uRMatrix * vec4(normal, 1.0)).xyz;
         normal = normalize(normal);
     }
 
     // Light direction
-    vec3 lightDir = normalize(uLightPosition - vVertexPosition.xyz);
+    vec3 lightDir = normalize(vTangentLightPos - vTangentVertexPosition);
     // Weight of the color (Lamberian).
     float weight = max(dot(normal, lightDir), 0.0);
 

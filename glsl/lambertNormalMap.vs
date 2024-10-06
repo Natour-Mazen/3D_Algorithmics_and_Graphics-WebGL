@@ -20,7 +20,7 @@ mat3 inverse(mat3 m);
 void main(void)
 {
     vec4 vertexPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
-    vVertexNormal = normalize((uRMatrix * vec4(aVertexNormal, 1.0)).xyz);
+    vVertexNormal = normalize(aVertexNormal);
     vTexCoords = aTexCoords;
 
     // Calculation for the bump map.
