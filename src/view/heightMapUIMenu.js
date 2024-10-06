@@ -11,7 +11,7 @@ const heightMapElements = {
 };
 
 const heightMapLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png'];
-const heighMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "white.png", "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg"];
+const heighMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "white.png", "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg", "texture2Colored.png"];
 
 let theHeightMap = null;
 let heightMapType = null;

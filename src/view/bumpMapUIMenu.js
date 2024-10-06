@@ -9,7 +9,7 @@ const bumpMapElements = {
     textureSelector: doc.getElementById('bump_map_texture_selector')
 };
 
-const bumpMapLoader = ['brickBM.jpg', 'wavesBM.jpg', "brickNM.png", "circleNM.png", "brickNM2.png", "testNM.png", "bumpWaterNM.jpg", "brickWallNM.jpg", "waterReelNM.jpg"];
+const bumpMapLoader = ["brickNM.png", "circleNM.png", "brickNM2.png", "testNM.png", "bumpWaterNM.jpg", "brickWallNM.jpg", "waterReelNM.jpg"];
 const bumpMapTextureLoader = ['brickBM.jpg', 'poolWater.png', 'seaWater.jpg', 'circle.png', "white.png", "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg"];
 const bumpMapShaderLoader = ['Lambert', 'Blinn-Phong'];
 
