@@ -114,8 +114,6 @@ function handleHeightMapSwitch() {
     }
 }
 
-heightMapElements.switch.addEventListener('change', handleHeightMapSwitch);
-
 function initHeightMapUIComponents() {
     initHeightMapToggle();
     initHeightMapSelector();
@@ -135,6 +133,12 @@ function initHeightMapUIComponents() {
             updateScaleHeightMap(heightMapElements.scaleSlider.value);
         }
     });
+
+    initSwitch(heightMapElements.switch, false, function () {
+        handleHeightMapSwitch();
+    });
+
+    // call the function to handle the switch state the first time, to display the right elements.
     handleHeightMapSwitch();
 }
 
