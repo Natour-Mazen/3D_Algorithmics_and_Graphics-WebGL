@@ -10,7 +10,7 @@ const objectsElements = {
 
 let obj = null;
 let isTherePlane = true;
-const DEFAULT_SCALE = 8;
+const DEFAULT_OBJSCALE = 8;
 const ObjectLoader = ['bunny', 'mustang', 'porsche', 'sphere'];
 
 
@@ -23,7 +23,7 @@ function handleObjectSelection(selectedObject) {
         obj.setColor(Color.hextoRGB(objectsElements.colorPicker.value).toArray());
         let scaleSliderValue = objectsElements.scaleSlider.value;
         if (scaleSliderValue === '0') {
-            updateScaleOBJ(DEFAULT_SCALE);
+            updateScaleOBJ(DEFAULT_OBJSCALE);
         } else {
             updateScaleOBJ(parseInt(scaleSliderValue));
         }
@@ -36,7 +36,7 @@ function updateScaleOBJ(scale) {
     obj.setScale(scale);
 }
 
-function initUIComponents() {
+function initObjectsUIComponents() {
     initToggle(objectsElements.planeToggle, true, function () {
         isTherePlane = this.checked;
     });
@@ -55,4 +55,4 @@ function initUIComponents() {
     });
 }
 
-initUIComponents();
+initObjectsUIComponents();
