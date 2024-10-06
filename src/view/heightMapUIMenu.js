@@ -32,7 +32,7 @@ function initHeightMapToggle() {
 function handleCreateHeightMap() {
     main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof heightMap));
     theHeightMap = new heightMap();
-    isTherePlane = !heightMapElements.switch.checked;
+    setPlaneState(!heightMapElements.switch.checked)
 
     main_objectsToDraw.push(theHeightMap);
 }
@@ -94,13 +94,10 @@ function handleHeightMapSwitch() {
 
 
     if (heightMapElements.switch.checked) {
-      //  heightMapColorItem.style.display = 'block';
         heightMapTextureSelectorItem.style.display = 'none';
         heightMapElements.textureSelector.value = 'None';
     } else {
-      //  heightMapColorItem.style.display = 'none';
         heightMapTextureSelectorItem.style.display = 'block';
-   //     heightMapElements.colorPicker.value = '#ffffff';
     }
 
     if (heightMapType !== null) {
@@ -114,9 +111,7 @@ function initHeightMapUIComponents() {
     initHeightMapToggle();
     initHeightMapSelector();
     initHeightMapTexturePathMapSelector();
-    // initColorPicker(heightMapElements.colorPicker, function () {
-    //     theHeightMap.setColor(Color.hextoRGB(this.value).toArray());
-    // });
+
     initSlider(heightMapElements.scaleSlider, function () {
         updateScaleHeightMap(this.value);
     });
