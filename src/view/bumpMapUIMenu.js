@@ -1,6 +1,7 @@
 // src/view/bumpMapUIMenu.js
-let bumpMap = null;
+let bumpMapType = null;
 let texture_ForBump = null;
+let theBumpMap = null;
 
 const bumpMapElements = {
     selector: doc.getElementById('bump_map_selector'),
@@ -17,11 +18,12 @@ let selectedTexture = "None";
 let selectedShader = "None";
 
 
-function handleShader() {
+function handleBumpMapCreation() {
+    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof bumMap));
     if (selectedShader === "None" || selectedTexture === "None") {
-        bumpMap = null;
+        bumpMapType = null;
         texture_ForBump = null;
-        main_plane.setShaderName('glsl/plane');
+        setPlaneState(true);
     }
     else // We have a texture and a shader.
     {
@@ -33,16 +35,22 @@ function handleShader() {
         if(selectedBumpMap !== "None")
         {
             const bumpMapPath = `res/bumpMaps/${selectedBumpMap}`;
-            bumpMap = loadTexture(gl, bumpMapPath);
+            bumpMapType = loadTexture(gl, bumpMapPath);
         }
+
         // The bind the right shader.
         if (selectedShader === "Lambert") {
-            main_plane.setShaderName('glsl/lambertNormalMap');
+            theBumpMap = new bumMap();
+            setPlaneState(false);
+            theBumpMap.setShaderName('glsl/lambertNormalMap');
         } else if (selectedShader === "Blinn-Phong") {
-            main_plane.setShaderName('glsl/blinnPhongNormalMap');
+            theBumpMap = new bumMap();
+            setPlaneState(false);
+            theBumpMap.setShaderName('glsl/blinnPhongNormalMap');
         } else {
             window.alert("Please select a shader");
         }
+        main_objectsToDraw.push(theBumpMap);
     }
 }
 
@@ -50,18 +58,18 @@ function initBumpMapUIComponents() {
     initSelector(bumpMapElements.selector, bumpMapLoader, function () {
         selectedBumpMap = this.value;
         if (selectedTexture !== "None") {
-            handleShader();
+            handleBumpMapCreation();
         }
     });
 
     initSelector(bumpMapElements.textureSelector, bumpMapTextureLoader, function () {
         selectedTexture = this.value;
-        handleShader();
+        handleBumpMapCreation();
     });
 
     initSelector(bumpMapElements.shaderSelector, bumpMapShaderLoader, function () {
         selectedShader = this.value;
-        handleShader();
+        handleBumpMapCreation();
     });
 
 }
