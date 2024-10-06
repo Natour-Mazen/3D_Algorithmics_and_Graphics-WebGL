@@ -11,14 +11,17 @@ const heightMapElements = {
 };
 
 const heightMapLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png'];
-const heighMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "white.png", "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg", "texture2Colored.png"];
+const heightMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg", "texture2Colored.png"];
 
 let theHeightMap = null;
 let heightMapType = null;
 let heightMap_texturePathMap = null;
 let isWireFrameActiveHeightMap = false;
 let flattenFactorHeightMap = 1;
+
+
 const DEFAULT_HEIGHTMAP_TEXTURE = 'res/textures/white.png';
+const DEFAULT_HEIGHTMAPSCALE = 1;
 
 function initHeightMapToggle() {
     initToggle(heightMapElements.toggle, isWireFrameActiveHeightMap = false, function () {
@@ -62,7 +65,7 @@ function handleHeightMapSelection(selectedHeightMap, selectionType) {
         handleCreateHeightMap();
         let scaleSliderValue = heightMapElements.scaleSlider.value;
         if (scaleSliderValue === '0') {
-            updateScaleHeightMap(DEFAULT_SCALE);
+            updateScaleHeightMap(DEFAULT_HEIGHTMAPSCALE);
         } else {
             updateScaleHeightMap(parseInt(scaleSliderValue));
         }
@@ -76,7 +79,7 @@ function initHeightMapSelector() {
 }
 
 function initHeightMapTexturePathMapSelector() {
-    initSelector(heightMapElements.textureSelector, heighMapTextureLoader, function () {
+    initSelector(heightMapElements.textureSelector, heightMapTextureLoader, function () {
         handleHeightMapSelection(this.value, 'texture');
     });
 }
@@ -113,7 +116,7 @@ function handleHeightMapSwitch() {
 
 heightMapElements.switch.addEventListener('change', handleHeightMapSwitch);
 
-function initUIComponents() {
+function initHeightMapUIComponents() {
     initHeightMapToggle();
     initHeightMapSelector();
     initHeightMapTexturePathMapSelector();
@@ -135,4 +138,4 @@ function initUIComponents() {
     handleHeightMapSwitch();
 }
 
-initUIComponents();
+initHeightMapUIComponents();
