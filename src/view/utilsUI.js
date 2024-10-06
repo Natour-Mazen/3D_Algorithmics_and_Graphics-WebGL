@@ -105,3 +105,13 @@ function initToggle(toggleElement, initialState, onChange) {
     toggleElement.addEventListener('input', onChange);
 }
 
+/**
+ * Initialize a switch with an event listener.
+ * @param {HTMLElement} switchElement - The switch element.
+ * @param {boolean} initialState - The initial state of the switch.
+ * @param {Function} onChange - The event listener for the change event.
+ */
+function initSwitch(switchElement, initialState, onChange) {
+   switchElement.checked = initialState;
+   switchElement.addEventListener('change', onChange);
+}
