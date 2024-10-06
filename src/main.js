@@ -104,10 +104,7 @@ function webGLStart() {
 
     main_plane = new plane();
 
-    sun = new objmesh('res/obj/sun.obj');
-    sun.setColor(Color.YELLOW);
-
-    main_objectsToDraw.push(main_plane, sun);
+    main_objectsToDraw.push(main_plane);
 
     tick();
 }
