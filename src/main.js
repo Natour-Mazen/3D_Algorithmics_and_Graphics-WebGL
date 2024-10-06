@@ -6,8 +6,19 @@ let rotMatrix = mat4.create();
 let distCENTER;
 let main_plane;
 let main_objectsToDraw = [];
-
-
+// The light position in the world (vec3).
+let lightPosition = [0.0, 0.0, 0.0];
+// The ambient light in the world (vec4).
+let lightAmbient = [0.1, 0.1, 0.1, 0.1];
+//let ambientLight = [0.0, 0.0, 0.0, 0.0];
+// The light color in the world (vec4).
+let lightColor = [0.8, 0.8, 0.8, 1.0];
+// The light specular in the world (vec4).
+let lightSpecular = [1.0, 1.0, 1.0, 1.0];
+// The material specular (vec4).
+let materialSpecular = [1.0, 1.0, 1.0, 1.0];
+// The shininess of the material (float).
+let materialShininess = 32.0;
 
 const canvasID = 'WebGL-canvas';
 
@@ -93,7 +104,10 @@ function webGLStart() {
 
     main_plane = new plane();
 
-    main_objectsToDraw.push(main_plane);
+    sun = new objmesh('res/obj/sun.obj');
+    sun.setColor(Color.YELLOW);
+
+    main_objectsToDraw.push(main_plane, sun);
 
     tick();
 }
