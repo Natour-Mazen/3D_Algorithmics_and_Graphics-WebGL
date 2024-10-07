@@ -74,7 +74,9 @@ class plane extends objectToDraw {
 
     // --------------------------------------------
     drawAux() {
-        gl.drawArrays(gl.TRIANGLES, 0, this.vBuffer.numItems);
-        gl.drawArrays(gl.LINE_LOOP, 0, this.vBuffer.numItems);
+        if(isTherePlane){
+            gl.drawArrays(gl.TRIANGLES, 0, this.vBuffer.numItems);
+            gl.drawArrays(gl.LINE_LOOP, 0, this.vBuffer.numItems);
+        }
     }
 }
