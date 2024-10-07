@@ -81,7 +81,7 @@ class objectToDraw {
      * this method should be called in the render loop and not be overridden.
      */
     draw() {
-        if(this.shader) {
+        if(this.shader && this.loaded >= 4) {
             this.#setCommonShaderParams();
             this.setShadersParams();
             this.#setCommonUniforms();
