@@ -7,19 +7,7 @@ let distCENTER;
 let main_plane;
 let main_boundBox;
 let main_objectsToDraw = [];
-// The light position in the world (vec3).
-let main_lightPosition = [0.0, 0.0, 10.0];
-// The ambient light in the world (vec4).
-//let lightAmbient = [0.1, 0.1, 0.1, 0.1];
-let main_lightAmbient = [0.1, 0.1, 0.1, 0.1];
-// The light color in the world (vec4).
-let main_lightColor = [1.0, 1.0, 1.0, 1.0];
-// The light specular in the world (vec4).
-let main_lightSpecular = [0.1, 0.1, 0.1, 1.0];
-// The material specular (vec4).
-let main_materialSpecular = [1.0, 1.0, 1.0, 1.0];
-// The shininess of the material (float).
-let main_materialShininess = 1000.0;
+
 
 const canvasID = 'WebGL-canvas';
 
@@ -79,7 +67,7 @@ function drawScene() {
     for (const obj of main_objectsToDraw) {
         if(obj !== null){
             obj.draw();
-            obj.setColor(obj.color);
+            obj.setColor(obj.getColor());
         }
     }
 }
@@ -107,8 +95,8 @@ function webGLStart() {
     distCENTER = vec3.create(DEFAULT_DISTCENTER);
     updateCoordinates();
 
-    main_plane = new plane();
-    main_boundBox = new boundingBox();
+    main_plane = new Plane();
+    main_boundBox = new BoundingBox();
 
     main_objectsToDraw.push(main_plane, main_boundBox);
 

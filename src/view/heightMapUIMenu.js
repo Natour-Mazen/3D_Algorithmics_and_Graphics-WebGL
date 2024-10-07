@@ -24,7 +24,7 @@ const heightMapLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'textur
 const heightMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg", "texture2Colored.png"];
 
 /**
- * @type {heightMap|null}
+ * @type {HeightMap|null}
  */
 let theHeightMap = null;
 
@@ -63,8 +63,8 @@ const DEFAULT_HEIGHTMAP_SCALE = 1;
  * Handles the creation of a new height map.
  */
 function handleCreateHeightMap() {
-    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof heightMap));
-    theHeightMap = new heightMap();
+    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof HeightMap));
+    theHeightMap = new HeightMap();
     setPlaneState(!heightMapElements.switch.checked)
 
     main_objectsToDraw.push(theHeightMap);
@@ -77,7 +77,7 @@ function handleCreateHeightMap() {
  * @param {string} selectionType - The type of selection ('type' or 'texture').
  */
 function handleHeightMapSelection(selectedHeightMap, selectionType) {
-    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof heightMap));
+    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof HeightMap));
     if (selectedHeightMap !== 'None') {
         if (selectionType === 'type') {
             heightMapType = `res/heightMaps/${selectedHeightMap}`;

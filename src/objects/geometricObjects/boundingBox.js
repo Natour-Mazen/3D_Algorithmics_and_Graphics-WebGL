@@ -1,8 +1,7 @@
-class boundingBox extends objectToDraw {
+class BoundingBox extends ObjectToDraw {
     // --------------------------------------------
     constructor(shaderName = 'glsl/box') {
         super(shaderName, -1, null);
-        this.setColor(Color.WHITE);
     }
 
     // --------------------------------------------

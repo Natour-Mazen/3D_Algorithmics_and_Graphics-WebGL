@@ -1,7 +1,7 @@
-class heightMap extends objectToDraw {
+class HeightMap extends ObjectToDraw {
+
     constructor() {
         super('glsl/heightMap', -1, null);
-        this.color = Color.LIGHT_BLUE;
     }
 
     setShadersParams() {

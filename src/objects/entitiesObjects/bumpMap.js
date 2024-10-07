@@ -1,4 +1,4 @@
-class bumpMap extends plane {
+class BumpMap extends Plane {
 
     constructor(shaderName) {
         super(shaderName);

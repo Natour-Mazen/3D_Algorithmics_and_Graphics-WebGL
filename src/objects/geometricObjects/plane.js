@@ -1,8 +1,7 @@
-class plane extends objectToDraw {
+class Plane extends ObjectToDraw {
     // --------------------------------------------
     constructor(shaderName = 'glsl/plane') {
         super(shaderName, -1, null);
-        this.setColor(Color.WHITE);
     }
 
     // --------------------------------------------

@@ -11,7 +11,7 @@ const objectsElements = {
 };
 
 /**
- * @type {objmesh|null}
+ * @type {ObjMesh|null}
  */
 let obj = null;
 
@@ -36,10 +36,10 @@ const ObjectLoader = ['bunny', 'mustang', 'porsche', 'sphere'];
  * @param {string} selectedObject - The name of the selected object.
  */
 function handleObjectSelection(selectedObject) {
-    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof objmesh));
+    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof ObjMesh));
     if (selectedObject !== 'None') {
         let objName = 'res/obj/' + selectedObject + '.obj';
-        obj = new objmesh(objName);
+        obj = new ObjMesh(objName);
         main_objectsToDraw.push(obj);
         obj.setColor(Color.hextoRGB(objectsElements.colorPicker.value).toArray());
         let scaleSliderValue = objectsElements.scaleSlider.value;

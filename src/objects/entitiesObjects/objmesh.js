@@ -1,4 +1,4 @@
-class objmesh extends objectToDraw {
+class ObjMesh extends ObjectToDraw {
 
 
     // --------------------------------------------
