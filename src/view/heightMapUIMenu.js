@@ -1,3 +1,7 @@
+// src/view/heightMapUIMenu.js
+/**
+ * @type {Object}
+ */
 const heightMapElements = {
     toggle: doc.getElementById('heightMap_checkbox'),
     selector: doc.getElementById('heightMap_selector'),
@@ -9,18 +13,51 @@ const heightMapElements = {
     switch: document.getElementById('heightMap_switch'),
 };
 
+/**
+ * @type {string[]}
+ */
 const heightMapLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png'];
+
+/**
+ * @type {string[]}
+ */
 const heightMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg", "texture2Colored.png"];
 
+/**
+ * @type {heightMap|null}
+ */
 let theHeightMap = null;
+
+/**
+ * @type {string|null}
+ */
 let heightMapType = null;
+
+/**
+ * @type {string|null}
+ */
 let heightMap_texturePathMap = null;
+
+/**
+ * @type {boolean}
+ */
 let isWireFrameActiveHeightMap = false;
+
+/**
+ * @type {number}
+ */
 let flattenFactorHeightMap = 1;
 
-
+/**
+ * @constant {string}
+ */
 const DEFAULT_HEIGHTMAP_TEXTURE = 'res/textures/white.png';
+
+/**
+ * @constant {number}
+ */
 const DEFAULT_HEIGHTMAP_SCALE = 1;
+
 
 /**
  * Handles the creation of a new height map.

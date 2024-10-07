@@ -1,8 +1,7 @@
 // src/view/bumpMapUIMenu.js
-let bumpMapType = null;
-let texture_ForBump = null;
-let theBumpMap = null;
-
+/**
+ * @type {Object}
+ */
 const bumpMapElements = {
     selector: doc.getElementById('bump_map_selector'),
     shaderSelector: doc.getElementById('bump_map_shader_selector'),
@@ -14,14 +13,55 @@ const bumpMapElements = {
     lightingColorPicker: doc.getElementById('bump_map_lightColor'),
 };
 
+/**
+ * @type {string|null}
+ */
+let bumpMapType = null;
+
+/**
+ * @type {WebGLTexture|null}
+ */
+let texture_ForBump = null;
+
+/**
+ * @type {bumpMap|null}
+ */
+let theBumpMap = null;
+
+
+/**
+ * @type {string[]}
+ */
 const bumpMapLoader = ["brickNM2.png", "circleNM.png", "bumpWaterNM.jpg", "brickWallNM.jpg", "waterReelNM.jpg", "testNM.png"];
+
+/**
+ * @type {string[]}
+ */
 const bumpMapTextureLoader = ["white.png",'circle.png', "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg"];
+
+/**
+ * @type {string[]}
+ */
 const bumpMapShaderLoader = ['Lambert', 'Blinn-Phong'];
 
+/**
+ * @type {string}
+ */
 let selectedBumpMap = "None";
+
+/**
+ * @type {string}
+ */
 let selectedTexture = "None";
+
+/**
+ * @type {string}
+ */
 let selectedShader = "None";
 
+/**
+ * Handles the creation of the bump map.
+ */
 function handleBumpMapCreation() {
     resetBumpMap();
     updateLightColor(bumpMapElements.lightingColorPicker.value);
@@ -34,15 +74,25 @@ function handleBumpMapCreation() {
     }
 }
 
+/**
+ * Resets the bump map.
+ */
 function resetBumpMap() {
     main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof bumpMap));
     handleDisplayLightBrightnessSlider('none');
 }
 
+/**
+ * Updates the light color.
+ * @param {string} value - The hex value of the color.
+ */
 function updateLightColor(value) {
     main_lightColor = Color.hextoRGB(value).toArray();
 }
 
+/**
+ * Resets the bump map settings.
+ */
 function resetBumpMapSettings() {
     bumpMapType = null;
     texture_ForBump = null;
@@ -51,6 +101,9 @@ function resetBumpMapSettings() {
     handleDisplayLightBrightnessSlider('none');
 }
 
+/**
+ * Loads the textures for the bump map.
+ */
 function loadTextures() {
     const texturePath = `res/textures/${selectedTexture}`;
     texture_ForBump = loadTexture(gl, texturePath);
@@ -61,6 +114,9 @@ function loadTextures() {
     }
 }
 
+/**
+ * Binds the shader for the bump map.
+ */
 function bindShader() {
     if (selectedShader === "Lambert") {
         theBumpMap = new bumpMap('glsl/lambertNormalMap');
@@ -79,16 +135,27 @@ function bindShader() {
     }
 }
 
+/**
+ * Handles the display of the light intensity slider.
+ * @param {string} value - The display value (e.g., 'block', 'none').
+ */
 function handleDisplayLightIntensitySlider(value) {
     const bumpMapElementsLightIntensitySlide = bumpMapElements.lightIntensityValue.closest('.row');
     bumpMapElementsLightIntensitySlide.style.display = value;
 }
 
+/**
+ * Handles the display of the light brightness slider.
+ * @param {string} value - The display value (e.g., 'block', 'none').
+ */
 function handleDisplayLightBrightnessSlider(value) {
     const bumpMapElementsLightBrightnessSlide = bumpMapElements.lightBrightnessSlider.closest('.row');
     bumpMapElementsLightBrightnessSlide.style.display = value;
 }
 
+/**
+ * Initializes the UI components for the bump map.
+ */
 function initBumpMapUIComponents() {
     initSelector(bumpMapElements.selector, bumpMapLoader, function () {
         selectedBumpMap = this.value;
