@@ -8,18 +8,18 @@ let main_plane;
 let main_boundBox;
 let main_objectsToDraw = [];
 // The light position in the world (vec3).
-let lightPosition = [0.0, 0.0, 10.0];
+let main_lightPosition = [0.0, 0.0, 10.0];
 // The ambient light in the world (vec4).
 //let lightAmbient = [0.1, 0.1, 0.1, 0.1];
-let lightAmbient = [0.1, 0.1, 0.1, 0.1];
+let main_lightAmbient = [0.1, 0.1, 0.1, 0.1];
 // The light color in the world (vec4).
-let lightColor = [1.0, 1.0, 1.0, 1.0];
+let main_lightColor = [1.0, 1.0, 1.0, 1.0];
 // The light specular in the world (vec4).
-let lightSpecular = [0.1, 0.1, 0.1, 1.0];
+let main_lightSpecular = [0.1, 0.1, 0.1, 1.0];
 // The material specular (vec4).
-let materialSpecular = [1.0, 1.0, 1.0, 1.0];
+let main_materialSpecular = [1.0, 1.0, 1.0, 1.0];
 // The shininess of the material (float).
-let materialShininess = 1000.0;
+let main_materialShininess = 1000.0;
 
 const canvasID = 'WebGL-canvas';
 

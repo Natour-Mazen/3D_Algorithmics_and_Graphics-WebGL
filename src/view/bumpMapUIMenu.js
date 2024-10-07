@@ -11,6 +11,7 @@ const bumpMapElements = {
     lightIntensityValue: doc.getElementById('heightMap_lightIntensity_value'),
     lightBrightnessSlider: doc.getElementById('heightMap_lightBrightness_slider'),
     lightBrightnessValue: doc.getElementById('heightMap_lightBrightness_value'),
+    lightingColorPicker: doc.getElementById('bump_map_lightColor'),
 };
 
 const bumpMapLoader = ["brickNM2.png", "circleNM.png", "bumpWaterNM.jpg", "brickWallNM.jpg", "waterReelNM.jpg", "testNM.png"];
@@ -22,43 +23,59 @@ let selectedTexture = "None";
 let selectedShader = "None";
 
 function handleBumpMapCreation() {
+    resetBumpMap();
+    updateLightColor(bumpMapElements.lightingColorPicker.value);
+    if (selectedShader === "None" || selectedTexture === "None") {
+        resetBumpMapSettings();
+    } else {
+        loadTextures();
+        bindShader();
+        main_objectsToDraw.push(theBumpMap);
+    }
+}
+
+function resetBumpMap() {
     main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof bumpMap));
     handleDisplayLightBrightnessSlider('none');
-    if (selectedShader === "None" || selectedTexture === "None") {
-        bumpMapType = null;
-        texture_ForBump = null;
-        setPlaneState(true);
-        handleDisplayLightIntensitySlider('none');
-        handleDisplayLightBrightnessSlider('none');
+}
+
+function updateLightColor(value) {
+    main_lightColor = Color.hextoRGB(value).toArray();
+}
+
+function resetBumpMapSettings() {
+    bumpMapType = null;
+    texture_ForBump = null;
+    setPlaneState(true);
+    handleDisplayLightIntensitySlider('none');
+    handleDisplayLightBrightnessSlider('none');
+}
+
+function loadTextures() {
+    const texturePath = `res/textures/${selectedTexture}`;
+    texture_ForBump = loadTexture(gl, texturePath);
+
+    if (selectedBumpMap !== "None") {
+        const bumpMapPath = `res/bumpMaps/${selectedBumpMap}`;
+        bumpMapType = loadTexture(gl, bumpMapPath);
     }
-    else // We have a texture and a shader.
-    {
-        // Load the texture.
-        const texturePath = `res/textures/${selectedTexture}`;
-        texture_ForBump = loadTexture(gl, texturePath);
+}
 
-        // If a bump map is selected, we load it.
-        if(selectedBumpMap !== "None")
-        {
-            const bumpMapPath = `res/bumpMaps/${selectedBumpMap}`;
-            bumpMapType = loadTexture(gl, bumpMapPath);
-        }
-
-        // The bind the right shader.
-        if (selectedShader === "Lambert") {
-            theBumpMap = new bumpMap('glsl/lambertNormalMap');
-            setPlaneState(false);
-            handleDisplayLightIntensitySlider('block');
-            handleDisplayLightBrightnessSlider('none');
-        } else if (selectedShader === "Blinn-Phong") {
-            theBumpMap = new bumpMap('glsl/blinnPhongNormalMap');
-            setPlaneState(false);
-            handleDisplayLightIntensitySlider('none');
-            handleDisplayLightBrightnessSlider('block');
-        } else {
-            window.alert("Please select a shader");
-        }
-        main_objectsToDraw.push(theBumpMap);
+function bindShader() {
+    if (selectedShader === "Lambert") {
+        theBumpMap = new bumpMap('glsl/lambertNormalMap');
+        setPlaneState(false);
+        handleDisplayLightIntensitySlider('block');
+        handleDisplayLightBrightnessSlider('none');
+        theBumpMap.setLightIntensity(bumpMapElements.lightIntensitySlider.value);
+    } else if (selectedShader === "Blinn-Phong") {
+        theBumpMap = new bumpMap('glsl/blinnPhongNormalMap');
+        setPlaneState(false);
+        handleDisplayLightIntensitySlider('none');
+        handleDisplayLightBrightnessSlider('block');
+        theBumpMap.setLightBrightness(bumpMapElements.lightBrightnessSlider.value);
+    } else {
+        window.alert("Please select a shader");
     }
 }
 
@@ -103,6 +120,13 @@ function initBumpMapUIComponents() {
             bumpMapElements.lightBrightnessValue.textContent = this.value;
         }
     });
+
+    initColorPicker(bumpMapElements.lightingColorPicker, function () {
+        if (theBumpMap !== null) {
+            updateLightColor(this.value);
+        }
+    });
+
     handleDisplayLightIntensitySlider('none');
     handleDisplayLightBrightnessSlider('none');
 }

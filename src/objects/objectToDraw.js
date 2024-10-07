@@ -137,27 +137,27 @@ class objectToDraw {
         this.checkGlError();
 
         // Set the light position.
-        gl.uniform3fv(this.shader.uLightPosition, lightPosition);
+        gl.uniform3fv(this.shader.uLightPosition, main_lightPosition);
         this.checkGlError();
 
         // Set the light color
-        gl.uniform4fv(this.shader.uLightColor, lightColor);
+        gl.uniform4fv(this.shader.uLightColor, main_lightColor);
         this.checkGlError();
 
         // Set the ambient color
-        gl.uniform4fv(this.shader.uAmbientColor, lightAmbient);
+        gl.uniform4fv(this.shader.uAmbientColor, main_lightAmbient);
         this.checkGlError();
 
         // Set the specular light color.
-        gl.uniform4fv(this.shader.uLightSpecular, lightSpecular);
+        gl.uniform4fv(this.shader.uLightSpecular, main_lightSpecular);
         this.checkGlError();
 
         // Set the material specular
-        gl.uniform4fv(this.shader.uMaterialSpecular, materialSpecular);
+        gl.uniform4fv(this.shader.uMaterialSpecular, main_materialSpecular);
         this.checkGlError();
 
         // Set the material shininess.
-        gl.uniform1f(this.shader.uMaterialShininess, materialShininess);
+        gl.uniform1f(this.shader.uMaterialShininess, main_materialShininess);
         this.checkGlError();
 
     }
