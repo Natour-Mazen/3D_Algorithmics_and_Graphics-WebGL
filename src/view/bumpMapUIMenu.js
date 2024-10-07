@@ -43,9 +43,11 @@ function handleBumpMapCreation() {
             theBumpMap = new bumMap();
             setPlaneState(false);
             theBumpMap.setShaderName('glsl/lambertNormalMap');
+            theBumpMap.setShaderName('glsl/lambertNormalMap');
         } else if (selectedShader === "Blinn-Phong") {
             theBumpMap = new bumMap();
             setPlaneState(false);
+            theBumpMap.setShaderName('glsl/blinnPhongNormalMap');
             theBumpMap.setShaderName('glsl/blinnPhongNormalMap');
         } else {
             window.alert("Please select a shader");
