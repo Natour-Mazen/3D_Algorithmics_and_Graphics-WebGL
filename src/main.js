@@ -5,6 +5,7 @@ let pMatrix = mat4.create();
 let rotMatrix = mat4.create();
 let distCENTER;
 let main_plane;
+let main_boundBox;
 let main_objectsToDraw = [];
 // The light position in the world (vec3).
 let lightPosition = [0.0, 0.0, 0.0];
@@ -76,17 +77,7 @@ function drawScene() {
     gl.clear(gl.COLOR_BUFFER_BIT);
     for (const obj of main_objectsToDraw) {
         if(obj !== null){
-            if (obj instanceof plane) {
-                if(obj instanceof bumpMap){
-                    obj.draw();
-                }else{
-                    if (isTherePlane) {
-                        obj.draw();
-                    }
-                }
-            }else {
-                obj.draw();
-            }
+            obj.draw();
             obj.setColor(obj.color);
         }
     }
@@ -116,9 +107,9 @@ function webGLStart() {
     updateCoordinates();
 
     main_plane = new plane();
-    cube = new boundingBox();
+    main_boundBox = new boundingBox();
 
-    main_objectsToDraw.push(main_plane, cube);
+    main_objectsToDraw.push(main_plane, main_boundBox);
 
     tick();
 }
