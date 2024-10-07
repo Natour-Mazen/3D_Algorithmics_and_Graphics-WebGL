@@ -191,17 +191,16 @@ class boundingBox extends objectToDraw {
         this.drawTriangles(this.tRedBuffer, this.nRedBuffer);
     }
 
-    drawTriangles(tBuffer, nBuffer){
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, tBuffer);
+    drawTriangles(tBuffer){
+        if(isThereBoundingBox){
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, tBuffer);
 
-        if(isWireFrameActiveHeightMap){
-            gl.drawElements(gl.LINE_STRIP, tBuffer.numItems, gl.UNSIGNED_INT, 0);
-        }else{
-            gl.drawElements(gl.TRIANGLES, tBuffer.numItems, gl.UNSIGNED_INT, 0);
+            if(isWireFrameActiveBoundingBox){
+                gl.drawElements(gl.TRIANGLES, tBuffer.numItems, gl.UNSIGNED_INT, 0);
+            }else{
+                gl.drawElements(gl.LINE_STRIP, tBuffer.numItems, gl.UNSIGNED_INT, 0);
+
+            }
         }
-
-        this.setShaderAttributes([
-            { attribName: "aVertexNormal", buffer: nBuffer, itemSize: nBuffer.itemSize },
-        ]);
     }
 }
