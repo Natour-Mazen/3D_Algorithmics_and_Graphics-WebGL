@@ -1,8 +1,8 @@
 /* Switch container */
 .switch {
-    width: 60px;
+    width: 55px;
     height: 34px;
-    margin: 0 72px;
+    margin: 0 78px;
 }
 
 /* The slider */
@@ -35,7 +35,7 @@ input:checked + .sliderSwitch {
 }
 
 input:checked + .sliderSwitch:before {
-    transform: translateX(26px);
+    transform: translateX(20px);
 }
 
 .sliderSwitch.round:before {
