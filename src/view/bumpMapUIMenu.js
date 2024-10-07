@@ -99,6 +99,7 @@ function resetBumpMapSettings() {
     setPlaneState(true);
     handleDisplayLightIntensitySlider('none');
     handleDisplayLightBrightnessSlider('none');
+    updateLightColor('#ffffff');
 }
 
 /**
