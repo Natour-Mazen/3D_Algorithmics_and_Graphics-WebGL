@@ -116,8 +116,9 @@ function webGLStart() {
     updateCoordinates();
 
     main_plane = new plane();
+    cube = new boundingBox();
 
-    main_objectsToDraw.push(main_plane);
+    main_objectsToDraw.push(main_plane, cube);
 
     tick();
 }

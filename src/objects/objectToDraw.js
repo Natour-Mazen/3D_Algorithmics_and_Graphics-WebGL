@@ -171,6 +171,15 @@ class objectToDraw {
     }
 
     /**
+     * Sets the color of the uniform 'uColor'.
+     * @param {Array} color - The color to apply.
+     */
+    setUniformColor(color){
+        gl.uniform4fv(this.shader.colorUniform, color);
+        this.checkGlError();
+    }
+
+    /**
      * Sets the scale of the object.
      * @param {number} scale - The scale to apply.
      */
