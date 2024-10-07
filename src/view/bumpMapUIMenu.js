@@ -24,6 +24,7 @@ let selectedShader = "None";
 
 function handleBumpMapCreation() {
     main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof bumpMap));
+    handleDisplayLightBrightnessSlider('none');
     if (selectedShader === "None" || selectedTexture === "None") {
         bumpMapType = null;
         texture_ForBump = null;
@@ -46,11 +47,11 @@ function handleBumpMapCreation() {
         if (selectedShader === "Lambert") {
             theBumpMap = new bumpMap('glsl/lambertNormalMap');
             setPlaneState(false);
-            handleHideLightBrightnessSlider('none');
+
         } else if (selectedShader === "Blinn-Phong") {
             theBumpMap = new bumpMap('glsl/blinnPhongNormalMap');
             setPlaneState(false);
-            handleHideLightBrightnessSlider('block');
+            handleDisplayLightBrightnessSlider('block');
         } else {
             window.alert("Please select a shader");
         }
@@ -58,7 +59,7 @@ function handleBumpMapCreation() {
     }
 }
 
-function handleHideLightBrightnessSlider(value) {
+function handleDisplayLightBrightnessSlider(value) {
     const bumpMapElementsLightBrightnessSlide = bumpMapElements.lightBrightnessSlider.closest('.row');
     bumpMapElementsLightBrightnessSlide.style.display = value;
 }
@@ -95,7 +96,7 @@ function initBumpMapUIComponents() {
         }
     });
 
-    handleHideLightBrightnessSlider('none');
+    handleDisplayLightBrightnessSlider('none');
 }
 
 initBumpMapUIComponents();
