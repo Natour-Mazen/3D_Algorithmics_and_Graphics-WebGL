@@ -28,8 +28,8 @@ function handleBumpMapCreation() {
         bumpMapType = null;
         texture_ForBump = null;
         setPlaneState(true);
-        handleHideLightIntensitySlider('none');
-        handleHideLightBrightnessSlider('none');
+        handleDisplayLightIntensitySlider('none');
+        handleDisplayLightBrightnessSlider('none');
     }
     else // We have a texture and a shader.
     {
@@ -48,13 +48,13 @@ function handleBumpMapCreation() {
         if (selectedShader === "Lambert") {
             theBumpMap = new bumpMap('glsl/lambertNormalMap');
             setPlaneState(false);
-            handleHideLightIntensitySlider('block');
-            handleHideLightBrightnessSlider('none');
+            handleDisplayLightIntensitySlider('block');
+            handleDisplayLightBrightnessSlider('none');
         } else if (selectedShader === "Blinn-Phong") {
             theBumpMap = new bumpMap('glsl/blinnPhongNormalMap');
             setPlaneState(false);
-            handleHideLightIntensitySlider('none');
-            handleHideLightBrightnessSlider('block');
+            handleDisplayLightIntensitySlider('none');
+            handleDisplayLightBrightnessSlider('block');
         } else {
             window.alert("Please select a shader");
         }
@@ -62,12 +62,12 @@ function handleBumpMapCreation() {
     }
 }
 
-function handleHideLightIntensitySlider(value) {
+function handleDisplayLightIntensitySlider(value) {
     const bumpMapElementsLightIntensitySlide = bumpMapElements.lightIntensityValue.closest('.row');
     bumpMapElementsLightIntensitySlide.style.display = value;
 }
 
-function handleHideLightBrightnessSlider(value) {
+function handleDisplayLightBrightnessSlider(value) {
     const bumpMapElementsLightBrightnessSlide = bumpMapElements.lightBrightnessSlider.closest('.row');
     bumpMapElementsLightBrightnessSlide.style.display = value;
 }
@@ -103,8 +103,8 @@ function initBumpMapUIComponents() {
             bumpMapElements.lightBrightnessValue.textContent = this.value;
         }
     });
-    handleHideLightIntensitySlider('none');
-    handleHideLightBrightnessSlider('none');
+    handleDisplayLightIntensitySlider('none');
+    handleDisplayLightBrightnessSlider('none');
 }
 
 initBumpMapUIComponents();
