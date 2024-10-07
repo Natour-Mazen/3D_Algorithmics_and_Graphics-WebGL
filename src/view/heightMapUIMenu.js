@@ -20,7 +20,7 @@ let flattenFactorHeightMap = 1;
 
 
 const DEFAULT_HEIGHTMAP_TEXTURE = 'res/textures/white.png';
-const DEFAULT_HEIGHTMAPSCALE = 1;
+const DEFAULT_HEIGHTMAP_SCALE = 1;
 
 /**
  * Handles the creation of a new height map.
@@ -63,7 +63,7 @@ function handleHeightMapSelection(selectedHeightMap, selectionType) {
         handleCreateHeightMap();
         let scaleSliderValue = heightMapElements.scaleSlider.value;
         if (scaleSliderValue === '0') {
-            updateScaleHeightMap(DEFAULT_HEIGHTMAPSCALE);
+            updateScaleHeightMap(DEFAULT_HEIGHTMAP_SCALE);
         } else {
             updateScaleHeightMap(parseInt(scaleSliderValue));
         }
