@@ -2,7 +2,7 @@
  * Base class for drawable objects.
  * @abstract
  */
-class objectToDraw {
+class ObjectToDraw {
 
     /**
      * Constructor for objectToDraw.
@@ -12,14 +12,16 @@ class objectToDraw {
      * @throws {TypeError} If an instance of objectToDraw is created directly.
      */
     constructor(shaderName, loaded, shader) {
-        if (new.target === objectToDraw) {
+        if (new.target === ObjectToDraw) {
             throw new TypeError("Cannot construct ObjectToDraw instances directly");
         }
         this.shaderName = shaderName;
         this.loaded = loaded;
         this.shader = shader;
-        this.color = Color.WHITE;
-        this.scale = 1;
+        this.objectColor = Color.WHITE;
+        this.objectScale = 1;
+
+        this.objectRay = new Ray(); // The ray object. a classic light model.
 
         // To display error just one time.
         this.seenErrors = new Set();
@@ -117,7 +119,7 @@ class objectToDraw {
     #setCommonUniforms() {
         mat4.identity(mvMatrix);
         mat4.translate(mvMatrix, distCENTER);
-        mat4.scale(mvMatrix, [this.scale, this.scale, this.scale]);
+        mat4.scale(mvMatrix, [this.objectScale, this.objectScale, this.objectScale]);
         mat4.multiply(mvMatrix, rotMatrix);
 
         // Set the rotation matrix.
@@ -133,31 +135,31 @@ class objectToDraw {
         this.checkGlError();
 
         // Set the color.
-        gl.uniform4fv(this.shader.colorUniform, this.color);
+        gl.uniform4fv(this.shader.colorUniform, this.objectColor);
         this.checkGlError();
 
         // Set the light position.
-        gl.uniform3fv(this.shader.uLightPosition, main_lightPosition);
+        gl.uniform3fv(this.shader.uLightPosition, this.objectRay.getLightPosition());
         this.checkGlError();
 
         // Set the light color
-        gl.uniform4fv(this.shader.uLightColor, main_lightColor);
+        gl.uniform4fv(this.shader.uLightColor, this.objectRay.getLightColor());
         this.checkGlError();
 
         // Set the ambient color
-        gl.uniform4fv(this.shader.uAmbientColor, main_lightAmbient);
+        gl.uniform4fv(this.shader.uAmbientColor, this.objectRay.getLightAmbient() );
         this.checkGlError();
 
         // Set the specular light color.
-        gl.uniform4fv(this.shader.uLightSpecular, main_lightSpecular);
+        gl.uniform4fv(this.shader.uLightSpecular, this.objectRay.getLightSpecular());
         this.checkGlError();
 
         // Set the material specular
-        gl.uniform4fv(this.shader.uMaterialSpecular, main_materialSpecular);
+        gl.uniform4fv(this.shader.uMaterialSpecular, this.objectRay.getMaterialSpecular());
         this.checkGlError();
 
         // Set the material shininess.
-        gl.uniform1f(this.shader.uMaterialShininess, main_materialShininess);
+        gl.uniform1f(this.shader.uMaterialShininess, this.objectRay.getMaterialShininess());
         this.checkGlError();
 
     }
@@ -167,7 +169,7 @@ class objectToDraw {
      * @param {Array} color - The color to apply.
      */
     setColor(color) {
-        this.color = color;
+        this.objectColor = color;
     }
 
     /**
@@ -184,7 +186,22 @@ class objectToDraw {
      * @param {number} scale - The scale to apply.
      */
     setScale(scale) {
-        this.scale = scale;
+        this.objectScale = scale;
+    }
+
+    /**
+     * sets the ray object.
+     */
+    setRay(ray) {
+        this.objectRay = ray;
+    }
+
+    /**
+     * Returns the color of the object.
+     * @returns {number[]}
+     */
+    getColor() {
+        return this.objectColor;
     }
 
     /**

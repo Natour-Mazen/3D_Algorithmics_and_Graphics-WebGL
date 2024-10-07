@@ -24,7 +24,7 @@ let bumpMapType = null;
 let texture_ForBump = null;
 
 /**
- * @type {bumpMap|null}
+ * @type {BumpMap|null}
  */
 let theBumpMap = null;
 
@@ -64,12 +64,12 @@ let selectedShader = "None";
  */
 function handleBumpMapCreation() {
     resetBumpMap();
-    updateLightColor(bumpMapElements.lightingColorPicker.value);
     if (selectedShader === "None" || selectedTexture === "None") {
         resetBumpMapSettings();
     } else {
         loadTextures();
         bindShader();
+        updateLightColor(bumpMapElements.lightingColorPicker.value);
         main_objectsToDraw.push(theBumpMap);
     }
 }
@@ -78,7 +78,7 @@ function handleBumpMapCreation() {
  * Resets the bump map.
  */
 function resetBumpMap() {
-    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof bumpMap));
+    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof BumpMap));
     handleDisplayLightBrightnessSlider('none');
 }
 
@@ -87,7 +87,11 @@ function resetBumpMap() {
  * @param {string} value - The hex value of the color.
  */
 function updateLightColor(value) {
-    main_lightColor = Color.hextoRGB(value).toArray();
+    const theBumpMapRay = new Ray();
+    theBumpMapRay.setLightColor(Color.hextoRGB(value).toArray());
+    if(theBumpMap !== null) {
+        theBumpMap.setRay(theBumpMapRay);
+    }
 }
 
 /**
@@ -99,7 +103,6 @@ function resetBumpMapSettings() {
     setPlaneState(true);
     handleDisplayLightIntensitySlider('none');
     handleDisplayLightBrightnessSlider('none');
-    updateLightColor('#ffffff');
 }
 
 /**
@@ -120,13 +123,13 @@ function loadTextures() {
  */
 function bindShader() {
     if (selectedShader === "Lambert") {
-        theBumpMap = new bumpMap('glsl/lambertNormalMap');
+        theBumpMap = new BumpMap('glsl/lambertNormalMap');
         setPlaneState(false);
         handleDisplayLightIntensitySlider('block');
         handleDisplayLightBrightnessSlider('none');
         theBumpMap.setLightIntensity(bumpMapElements.lightIntensitySlider.value);
     } else if (selectedShader === "Blinn-Phong") {
-        theBumpMap = new bumpMap('glsl/blinnPhongNormalMap');
+        theBumpMap = new BumpMap('glsl/blinnPhongNormalMap');
         setPlaneState(false);
         handleDisplayLightIntensitySlider('none');
         handleDisplayLightBrightnessSlider('block');
