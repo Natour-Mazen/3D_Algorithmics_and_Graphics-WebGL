@@ -8,14 +8,14 @@ let main_plane;
 let main_boundBox;
 let main_objectsToDraw = [];
 // The light position in the world (vec3).
-let lightPosition = [0.0, 0.0, 0.0];
+let lightPosition = [0.0, 0.0, 10.0];
 // The ambient light in the world (vec4).
 //let lightAmbient = [0.1, 0.1, 0.1, 0.1];
 let lightAmbient = [0.1, 0.1, 0.1, 0.1];
 // The light color in the world (vec4).
-let lightColor = [0.8, 0.8, 0.8, 1.0];
+let lightColor = [1.0, 1.0, 1.0, 1.0];
 // The light specular in the world (vec4).
-let lightSpecular = [1.0, 1.0, 1.0, 1.0];
+let lightSpecular = [0.1, 0.1, 0.1, 1.0];
 // The material specular (vec4).
 let materialSpecular = [1.0, 1.0, 1.0, 1.0];
 // The shininess of the material (float).

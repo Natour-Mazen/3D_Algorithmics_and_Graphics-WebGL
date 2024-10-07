@@ -1,6 +1,8 @@
 // BlinnPhong Fragment shader.
 precision mediump float;
 
+#define PI 3.1415926535897932384626433832795
+
 uniform sampler2D uSampler;
 uniform sampler2D uBumpSampler;
 uniform vec4 uColor;
@@ -10,6 +12,7 @@ uniform vec4 uLightSpecular;
 uniform float uMaterialShininess;
 uniform vec4 uMaterialSpecular;
 uniform bool uBumMap; // true if the bump map is activeted, false otherwise.
+uniform float uLightBrightness; // The light brighness effect, the more, the smaller is the light.
 
 varying vec2 vTexCoords;
 varying vec3 vVertexNormal;
@@ -17,8 +20,7 @@ varying vec3 vTangentVertexPosition;
 varying vec3 vTangentLightPos;
 
 void main(void) {
-    // BlinnPhong formula by MESEURE Philippe.
-    // ColorFrag = (lightAmb + lightDiff * (normal . lightDir)) * colorMaterial + lightSpec * ((normal . playerPos)^ shininess) * colorSpec
+
 
     vec3 normal = vVertexNormal;
     if(uBumMap)
@@ -34,14 +36,25 @@ void main(void) {
     // Weight of the color (Lamberian).
     float weight = max(dot(normal, lightDir), 0.0);
 
-    vec3 directionBissectrice = lightDir + vec3(0, 0, 0)/* player position*/;
-    float weightSpec = pow(max(dot(normal, directionBissectrice), 0.0), uMaterialShininess);
-
     // Texture color.
     vec4 texColor = texture2D(uSampler, vTexCoords);
 
-    //vec4 fragColor = uColor * (uAmbientColor + weight * uLightColor) + uLightSpecular * weightSpec * uMaterialSpecular;
-    vec3 fragColor = texColor.rgb * (uAmbientColor.rgb + weight * uLightColor.rgb) + uLightSpecular.rgb * weightSpec * uMaterialSpecular.rgb;
+    float n = 10. * uLightBrightness * uLightBrightness * 2.0;
+
+    vec3 bissectriceDir = lightDir + vec3(0, 0, 0)/* player position*/;
+    float weightSpec = pow(max(dot(normal, bissectriceDir), 0.0), n);
+
+    /* For the old formula
+    vec3 directionBissectrice = lightDir + vec3(0, 0, 0); // lightDir + player position
+    float weightSpec = pow(max(dot(normal, directionBissectrice), 0.0), uMaterialShininess);
+    */
+
+    // BlinnPhong formula by MESEURE Philippe.
+    // ColorFrag = (lightAmb + lightDiff * (normal . lightDir)) * colorMaterial + lightSpec * ((normal . playerPos)^ shininess) * colorSpec
+    //vec3 fragColor = texColor.rgb * (uAmbientColor.rgb + weight * uLightColor.rgb) + uLightSpecular.rgb * weightSpec * uMaterialSpecular.rgb;
+
+    // Course Formula.
+    vec3 fragColor = uLightColor.rgb * ((1. - uLightSpecular.rgb) * texColor.rgb + ((8. + n) / (8. * PI)) * uLightSpecular.rgb * weightSpec) * weight;
 
     gl_FragColor = vec4(fragColor, texColor.a);
 }

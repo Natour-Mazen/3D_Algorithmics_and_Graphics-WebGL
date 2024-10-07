@@ -74,7 +74,8 @@ class bumpMap extends plane {
         this.shader.uBumpSampler = gl.getUniformLocation(this.shader, "uBumpSampler");
         this.shader.uSampler = gl.getUniformLocation(this.shader, "uSampler");
         this.shader.uBumpMap = gl.getUniformLocation(this.shader, "uBumMap");
-
+        this.shader.uLightIntensity = gl.getUniformLocation(this.shader, "uLightIntensity");
+        this.shader.uLightBrightness = gl.getUniformLocation(this.shader, "uLightBrightness");
     }
 
     setUniforms() {
@@ -94,6 +95,14 @@ class bumpMap extends plane {
         // selectedBumpMap in bumpMapUIMenu.
         // If a bump map is selected then we applied it to the texture.
         gl.uniform1i(this.shader.uBumpMap, selectedBumpMap === 'None' ? 0 : 1);
+        this.checkGlError();
+
+        // Set the light intensity.
+        gl.uniform1f(this.shader.uLightIntensity, this.lightIntensity);
+        this.checkGlError();
+
+        // Set the light brightness.
+        gl.uniform1f(this.shader.uLightBrightness, this.lightBrightness);
         this.checkGlError();
     }
 
