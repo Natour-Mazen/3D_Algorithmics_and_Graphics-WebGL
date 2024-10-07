@@ -27,5 +27,13 @@ const dropdowns = [
             { type: 'select', label: 'Texture', id: 'bump_map_texture_selector', options: ['None'] },
         ]
     },
+    {
+        title: 'Bounding Box',
+        items: [
+            { type: 'checkbox', label: 'On/off', id: 'boundingBox_checkbox', checked: false },
+            { type: 'switch', label1: 'WireFrame', label2: 'Opaque', id: 'boundingBox_switch' },
+            { type: 'select', label: 'Height Map Type', id: 'boundingBox_heightMap_texture_selector', options: ['None'] },
+        ]
+    },
 
 ];
