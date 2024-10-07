@@ -20,6 +20,7 @@ class objectToDraw {
         this.shader = shader;
         this.color = Color.WHITE;
         this.scale = 1;
+
         // To display error just one time.
         this.seenErrors = new Set();
         this.initAll().then(() => {
@@ -81,7 +82,7 @@ class objectToDraw {
      * this method should be called in the render loop and not be overridden.
      */
     draw() {
-        if(this.shader && this.loaded >= 4) {
+        if(this.shader && this.loaded === 4) {
             this.#setCommonShaderParams();
             this.setShadersParams();
             this.#setCommonUniforms();
@@ -175,19 +176,6 @@ class objectToDraw {
      */
     setScale(scale) {
         this.scale = scale;
-    }
-
-    /**
-     * Sets the shader name and reloads the shaders.
-     * @param {string} newShaderName - The new shader name.
-     */
-    setShaderName(newShaderName) {
-        this.shaderName = newShaderName;
-        loadShaders(this);
-    }
-
-    getIsShader() {
-        return this.shader === null;
     }
 
     /**

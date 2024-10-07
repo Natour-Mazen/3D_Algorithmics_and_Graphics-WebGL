@@ -77,7 +77,7 @@ function drawScene() {
     for (const obj of main_objectsToDraw) {
         if(obj !== null){
             if (obj instanceof plane) {
-                if(obj instanceof bumMap){
+                if(obj instanceof bumpMap){
                     obj.draw();
                 }else{
                     if (isTherePlane) {

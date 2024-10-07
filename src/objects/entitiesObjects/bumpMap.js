@@ -1,8 +1,7 @@
-class bumMap extends plane {
+class bumpMap extends plane {
 
-    constructor() {
-        super();
-
+    constructor(shaderName) {
+        super(shaderName);
     }
 
     async initAll() {

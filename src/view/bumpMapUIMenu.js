@@ -19,7 +19,7 @@ let selectedShader = "None";
 
 
 function handleBumpMapCreation() {
-    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof bumMap));
+    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof bumpMap));
     if (selectedShader === "None" || selectedTexture === "None") {
         bumpMapType = null;
         texture_ForBump = null;
@@ -40,13 +40,11 @@ function handleBumpMapCreation() {
 
         // The bind the right shader.
         if (selectedShader === "Lambert") {
-            theBumpMap = new bumMap();
+            theBumpMap = new bumpMap('glsl/lambertNormalMap');
             setPlaneState(false);
-            theBumpMap.setShaderName('glsl/lambertNormalMap');
         } else if (selectedShader === "Blinn-Phong") {
-            theBumpMap = new bumMap();
+            theBumpMap = new bumpMap('glsl/blinnPhongNormalMap');
             setPlaneState(false);
-            theBumpMap.setShaderName('glsl/blinnPhongNormalMap');
         } else {
             window.alert("Please select a shader");
         }
