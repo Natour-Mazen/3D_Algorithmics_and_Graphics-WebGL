@@ -6,7 +6,11 @@ let theBumpMap = null;
 const bumpMapElements = {
     selector: doc.getElementById('bump_map_selector'),
     shaderSelector: doc.getElementById('bump_map_shader_selector'),
-    textureSelector: doc.getElementById('bump_map_texture_selector')
+    textureSelector: doc.getElementById('bump_map_texture_selector'),
+    lightIntensitySlider: doc.getElementById('heightMap_lightIntensity_slider'),
+    lightIntensityValue: doc.getElementById('heightMap_lightIntensity_value'),
+    lightBrightnessSlider: doc.getElementById('heightMap_lightBrightness_slider'),
+    lightBrightnessValue: doc.getElementById('heightMap_lightBrightness_value'),
 };
 
 const bumpMapLoader = ["brickNM2.png", "circleNM.png", "bumpWaterNM.jpg", "brickWallNM.jpg", "waterReelNM.jpg", "testNM.png"];
@@ -42,14 +46,21 @@ function handleBumpMapCreation() {
         if (selectedShader === "Lambert") {
             theBumpMap = new bumpMap('glsl/lambertNormalMap');
             setPlaneState(false);
+            handleHideLightBrightnessSlider('none');
         } else if (selectedShader === "Blinn-Phong") {
             theBumpMap = new bumpMap('glsl/blinnPhongNormalMap');
             setPlaneState(false);
+            handleHideLightBrightnessSlider('block');
         } else {
             window.alert("Please select a shader");
         }
         main_objectsToDraw.push(theBumpMap);
     }
+}
+
+function handleHideLightBrightnessSlider(value) {
+    const bumpMapElementsLightBrightnessSlide = bumpMapElements.lightBrightnessSlider.closest('.row');
+    bumpMapElementsLightBrightnessSlide.style.display = value;
 }
 
 function initBumpMapUIComponents() {
@@ -70,6 +81,21 @@ function initBumpMapUIComponents() {
         handleBumpMapCreation();
     });
 
+    initSlider(bumpMapElements.lightIntensitySlider, function () {
+        if (theBumpMap !== null) {
+            theBumpMap.setLightIntensity(this.value);
+            bumpMapElements.lightIntensityValue.textContent = this.value;
+        }
+    });
+
+    initSlider(bumpMapElements.lightBrightnessSlider, function () {
+        if (theBumpMap !== null) {
+            theBumpMap.setLightBrightness(this.value);
+            bumpMapElements.lightBrightnessValue.textContent = this.value;
+        }
+    });
+
+    handleHideLightBrightnessSlider('none');
 }
 
 initBumpMapUIComponents();

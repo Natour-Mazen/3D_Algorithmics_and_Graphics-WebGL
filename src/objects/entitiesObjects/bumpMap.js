@@ -2,6 +2,8 @@ class bumpMap extends plane {
 
     constructor(shaderName) {
         super(shaderName);
+        this.lightIntensity = 1.0;
+        this.lightBrightness = 1.0;
     }
 
     async initAll() {
@@ -98,5 +100,13 @@ class bumpMap extends plane {
     drawAux() {
         gl.drawArrays(gl.TRIANGLES, 0, this.vBuffer.numItems);
         gl.drawArrays(gl.LINE_LOOP, 0, this.vBuffer.numItems);
+    }
+
+    setLightIntensity(value) {
+        this.lightIntensity = value;
+    }
+
+    setLightBrightness(value) {
+        this.lightBrightness = value;
     }
 }
