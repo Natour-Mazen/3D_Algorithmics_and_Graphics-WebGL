@@ -96,6 +96,7 @@ class bumpMap extends plane {
     }
 
     drawAux() {
-        super.drawAux();
+        gl.drawArrays(gl.TRIANGLES, 0, this.vBuffer.numItems);
+        gl.drawArrays(gl.LINE_LOOP, 0, this.vBuffer.numItems);
     }
 }
