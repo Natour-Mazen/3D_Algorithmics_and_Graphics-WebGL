@@ -15,6 +15,7 @@ doc.addEventListener('DOMContentLoaded', () => {
         'src/rendering/glMatrix.js',
         'src/rendering/callbacks.js',
         'src/utils/color.js',
+        'src/utils/ray.js',
         'src/rendering/textureLoader.js',
         // ============== SHADERS ==============
         'src/shaders/shaders.js',
