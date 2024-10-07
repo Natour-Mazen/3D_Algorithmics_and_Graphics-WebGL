@@ -1,16 +1,31 @@
 // src/view/boundingBoxUIMenu.js
-
+/**
+ * @type {Object}
+ */
 const boundingBoxElements = {
     toggle: doc.getElementById('boundingBox_checkbox'),
     switch: doc.getElementById('boundingBox_switch'),
     heightMapTextureSelector: doc.getElementById('boundingBox_heightMap_texture_selector'),
 };
 
-
+/**
+ * @type {Boolean}
+ */
 let isThereBoundingBox = false;
+
+/**
+ * @type {Boolean}
+ */
 let isWireFrameActiveBoundingBox = false;
+
+/**
+ * @type {String}
+ */
 let selectedHeightMapTextureBoundingBox = "None";
 
+/**
+ * @constant {string[]}
+ */
 const boundingBoxheightMapLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png'];
 
 
