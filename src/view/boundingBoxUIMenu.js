@@ -21,7 +21,7 @@ function initBoundingBoxUIComponents() {
 
     initSelector(boundingBoxElements.heightMapTextureSelector, boundingBoxheightMapLoader, function () {
         selectedHeightMapTextureBoundingBox = this.value;
-        console.log("Selected height map texture: " + heightMapTextureBoundingBox);
+        console.log("Selected height map texture: " + selectedHeightMapTextureBoundingBox);
     });
 
     initToggle(boundingBoxElements.toggle, isThereBoundingBox = false, function () {
