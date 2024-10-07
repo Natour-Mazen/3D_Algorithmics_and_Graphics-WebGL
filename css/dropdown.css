@@ -5,8 +5,8 @@
     width: 100%;
     display: inline-block;
     /* glass effect */
-    backdrop-filter: blur(6.3px);
-    -webkit-backdrop-filter: blur(6.3px);
+    backdrop-filter: blur(8px);
+
 }
 
 /* Dropdown header style */
@@ -16,8 +16,6 @@
     font-size: 20px;
     display: flex;
     cursor: default;
-    padding-left: 5%;
-    padding-right: 5%;
 }
 
 /* Personal caret creation */
@@ -26,7 +24,6 @@
     display: flex;
     justify-content: start;
     left: 0;
-
     transform: translateY(-50%);
     margin-right: 5%;
 }
@@ -62,12 +59,12 @@
 /* Dropdown's row */
 .row {
     color: white;
-    height: 45px;
+    height: 38px;
     position: relative;
     font-size: 14px;
     width: 100%;
 }
 
 .row:hover:not(.slider) {
-    background-color: rgb(105, 105, 105, 0.5);
+    background-color: rgba(85, 85, 85, 0.81);
 }

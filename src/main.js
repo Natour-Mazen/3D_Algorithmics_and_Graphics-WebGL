@@ -25,8 +25,8 @@ const canvasID = 'WebGL-canvas';
 
 // =====================================================
 function resizeCanvas() {
-    const canvas = document.getElementById(canvasID);
-    const padding = 9 * 2;
+    const canvas = doc.getElementById(canvasID);
+    const padding = 18;
     canvas.width = window.innerWidth - padding;
     canvas.height = window.innerHeight - padding;
 
@@ -39,6 +39,7 @@ function resizeCanvas() {
 
 window.addEventListener('load', resizeCanvas);
 window.addEventListener('resize', resizeCanvas);
+window.addEventListener('scroll', resizeCanvas);
 
 // =====================================================
 

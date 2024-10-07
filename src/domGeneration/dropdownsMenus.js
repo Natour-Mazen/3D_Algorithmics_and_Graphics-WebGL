@@ -15,8 +15,8 @@ const dropdowns = [
             { type: 'select', label: 'Type', id: 'heightMap_selector', options: ['None'] },
             { type: 'switch', label1: 'Texture', label2: 'Color', id: 'heightMap_switch' },
             { type: 'select', label: 'Texture', id: 'heightMap_texture_selector', options: ['None'] },
-            { type: 'slider', label: 'Scale:', id: 'heightMap_scale_slider', min: 1, max: 10, step: 1, value: 0, displayId: 'heightMap_scale_value' },
-            { type: 'slider', label: 'Flatten Factor:', id: 'heightMap_flatten_slider', min: 1, max: 10, step: 1, value: 0, displayId: 'heightMap_flatten_value' }
+            { type: 'slider', label: 'Scale:', id: 'heightMap_scale_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'heightMap_scale_value' },
+            { type: 'slider', label: 'Flatten Factor:', id: 'heightMap_flatten_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'heightMap_flatten_value' }
         ]
     },
     {
@@ -25,8 +25,8 @@ const dropdowns = [
             { type: 'select', label: 'Shader', id: 'bump_map_shader_selector', options: ['None'] },
             { type: 'select', label: 'Type', id: 'bump_map_selector', options: ['None'] },
             { type: 'select', label: 'Texture', id: 'bump_map_texture_selector', options: ['None'] },
-            { type: 'slider', label: 'Light Intensity:', id: 'heightMap_lightIntensity_slider', min: 1, max: 5, step: 1, value: 0, displayId: 'heightMap_lightIntensity_value' },
-            { type: 'slider', label: 'Light Brightness:', id: 'heightMap_lightBrightness_slider', min: 1, max: 10, step: 1, value: 0, displayId: 'heightMap_lightBrightness_value' },
+            { type: 'slider', label: 'Light Intensity:', id: 'heightMap_lightIntensity_slider', min: 1, max: 5, step: 1, value: 1, displayId: 'heightMap_lightIntensity_value' },
+            { type: 'slider', label: 'Light Brightness:', id: 'heightMap_lightBrightness_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'heightMap_lightBrightness_value' },
         ]
     },
     {
