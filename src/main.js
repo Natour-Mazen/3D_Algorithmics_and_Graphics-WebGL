@@ -5,7 +5,6 @@ let pMatrix = mat4.create();
 let rotMatrix = mat4.create();
 let distCENTER;
 let main_plane;
-let main_boundBox;
 let main_objectsToDraw = [];
 
 
@@ -96,9 +95,8 @@ function webGLStart() {
     updateCoordinates();
 
     main_plane = new Plane();
-    main_boundBox = new BoundingBox();
 
-    main_objectsToDraw.push(main_plane, main_boundBox);
+    main_objectsToDraw.push(main_plane);
 
     tick();
 }

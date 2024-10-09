@@ -24,7 +24,6 @@ doc.addEventListener('DOMContentLoaded', () => {
         'src/objects/entitiesObjects/objLoader.js',
         'src/objects/geometricObjects/plane.js',
         'src/objects/geometricObjects/heightMap.js',
-        'src/objects/geometricObjects/boundingBox.js',
         'src/objects/entitiesObjects/bumpMap.js',
         'src/objects/entitiesObjects/objmesh.js',
         // ============== VIEW ==============
@@ -32,7 +31,6 @@ doc.addEventListener('DOMContentLoaded', () => {
         'src/view/objectsUIMenu.js',
         'src/view/bumpMapUIMenu.js',
         'src/view/heightMapUIMenu.js',
-        'src/view/boundingBoxUIMenu.js',
         // ============== MAIN ==============
         'src/main.js'
     ];

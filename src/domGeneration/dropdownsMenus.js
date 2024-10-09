@@ -30,13 +30,4 @@ const dropdowns = [
             { type: 'slider', label: 'Light Brightness:', id: 'heightMap_lightBrightness_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'heightMap_lightBrightness_value' },
         ]
     },
-    {
-        title: 'Bounding Box',
-        items: [
-            { type: 'checkbox', label: 'On/off', id: 'boundingBox_checkbox', checked: false },
-            { type: 'switch', label1: 'WireFrame', label2: 'Opaque', id: 'boundingBox_switch' },
-            { type: 'select', label: 'Height Map Type', id: 'boundingBox_heightMap_texture_selector', options: ['None'] },
-        ]
-    },
-
 ];
