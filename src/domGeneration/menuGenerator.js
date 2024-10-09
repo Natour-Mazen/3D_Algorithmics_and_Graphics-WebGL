@@ -15,6 +15,8 @@ doc.addEventListener('DOMContentLoaded', () => {
         const dropdownElement = createDropdown(dropdown.title, dropdown.items);
         dropdownContainer.appendChild(dropdownElement);
     });
+
+
 });
 
 /**

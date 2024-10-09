@@ -111,13 +111,15 @@ function handleKeyDown(event) {
 	updateCoordinates();
 }
 
-document.addEventListener('keydown', handleKeyDown);
+doc.addEventListener('keydown', handleKeyDown);
+
+
 
 // =====================================================
 function updateCoordinates() {
-    document.getElementById('coordinate__content__data__x').innerText = `X: ${distCENTER[0].toFixed(2)}`;
-    document.getElementById('coordinate__content__data__y').innerText = `Y: ${distCENTER[1].toFixed(2)}`;
-    document.getElementById('coordinate__content__data__z').innerText = `Z: ${distCENTER[2].toFixed(2)}`;
+	doc.getElementById('coordinate__content__data__x').innerText = `X: ${distCENTER[0].toFixed(2)}`;
+	doc.getElementById('coordinate__content__data__y').innerText = `Y: ${distCENTER[1].toFixed(2)}`;
+	doc.getElementById('coordinate__content__data__z').innerText = `Z: ${distCENTER[2].toFixed(2)}`;
 }
 let DEFAULT_DISTCENTER = [0, 0, -30];
 
@@ -126,4 +128,17 @@ function resetCoordinates() {
 	updateCoordinates();
 }
 
-document.getElementById('reset_coordinate_btn').addEventListener('click', resetCoordinates);
+doc.getElementById('reset_coordinate_btn').addEventListener('click', resetCoordinates);
+
+// =====================================================
+
+const tooltipCoordinates = doc.getElementById('tooltip__Coordinate');
+const targetElementCoordinates = doc.getElementById('coordinate__InfosBtn');
+
+targetElementCoordinates.addEventListener('mouseenter', () => {
+	tooltipCoordinates.classList.add('show');
+});
+
+targetElementCoordinates.addEventListener('mouseleave', () => {
+	tooltipCoordinates.classList.remove('show');
+});

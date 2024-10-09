@@ -1,3 +1,25 @@
+.tooltip__Coordinate {
+    visibility: hidden;
+    opacity: 0;
+    background-color: #44444498;
+    padding: 1rem;
+    z-index: 1;
+    width: 250px;
+    position: absolute;
+    top: 110px;
+    left: 41px;
+    /* glass effect */
+    backdrop-filter: blur(6px);
+    color: white;
+    border-radius: 10px;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+}
+
+.tooltip__Coordinate.show {
+    visibility: visible;
+    opacity: 1;
+}
+
 #coordinate__content {
     background-color: #44444498;
     padding: 1rem;
@@ -10,6 +32,15 @@
     backdrop-filter: blur(6px);
     color: white;
     border-radius: 10px;
+}
+
+#coordinate__InfosBtn {
+    cursor: pointer;
+    font-size: medium;
+}
+
+#coordinate__InfosBtn:hover {
+    opacity: 0.8;
 }
 
 #coordinate__content__data, #coordinate__content__title{
@@ -31,3 +62,4 @@
 #reset_coordinate_btn:hover {
     opacity: 0.8;
 }
+
