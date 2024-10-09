@@ -18,11 +18,10 @@
 ## Structure des Fichiers
 
 ### `main.html`
-- Contient la structure de base de la page Web, incluant le canvas WebGL et les menus interactifs.
+- Contient la structure de base de la page Web, incluant le canvas WebGL et quelques menus interactifs non générés dynamiquement.
 
 ### `src/main.js`
 - Ce fichier initialise le contexte WebGL, configure les matrices de transformation, et gère la boucle de rendu principale. Il contient également des fonctions pour redimensionner le canvas et dessiner la scène.
-
 
 ### `src/domGeneration/dropdownsMenus.js`
 - Ce fichier contient la configuration des menus déroulants pour l'interface utilisateur. Chaque menu déroulant est défini par un titre et une liste d'éléments (comme des cases à cocher, des sélecteurs, des curseurs, etc.). Ces éléments permettent à l'utilisateur de sélectionner et de manipuler les objets 3D, les cartes de hauteur, et les bump maps.
