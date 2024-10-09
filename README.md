@@ -33,9 +33,6 @@
 ### `src/domGeneration/scriptsLoader.js`
 - Ce fichier charge les scripts nécessaires dans le bon ordre pour initialiser l'application WebGL. Il utilise une méthode simple pour charger les scripts séquentiellement, en s'assurant que chaque script est chargé avant de passer au suivant. Une fois tous les scripts chargés, il appelle la fonction `webGLStart` pour démarrer l'application.
 
-### `css/`
-- Contient les fichiers CSS pour le style de la page Web et des composants de l'interface utilisateur.
- 
 ### `src/objects/entitiesObjects/objmesh.js`
 - Ce fichier définit la classe ObjMesh, qui hérite de ObjectToDraw. Cette classe est responsable du chargement et du rendu des fichiers .obj. Elle configure les paramètres des shaders et les uniformes nécessaires pour dessiner les objets 3D.
 
@@ -62,6 +59,10 @@
 
 ### `src/view/bumpMapUIMenu.js`
 - Ce fichier gère les composants UI liés aux bump maps. Il inclut des fonctions pour gérer la création de bump maps, réinitialiser les paramètres des bump maps, charger les textures, lier les shaders, mettre à jour la couleur de la lumière, et initialiser les composants UI pour les bump maps.
+
+### `css/`
+- Contient les fichiers CSS pour le style de la page Web et des composants de l'interface utilisateur.
+
 
 ## Instructions pour Exécuter le Projet
 1. Bien changé la configuration de Firefox avec : about:config --> security.fileuri.strict_origin_policy --> true to false
