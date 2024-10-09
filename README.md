@@ -70,6 +70,5 @@
 3. Utilisez les menus pour interagir avec les objets 3D et ajuster les paramètres de visualisation.
 
 ## Remarques
-- Ce projet utilise WebGL pour le rendu des objets 3D et des terrains.
 - L'interface utilisateur est entièrement générée en JavaScript pour permettre une interaction dynamique.
 - L'application a été testée plusieurs fois et tout fonctionne correctement sans erreurs.
