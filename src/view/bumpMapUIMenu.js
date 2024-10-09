@@ -87,10 +87,10 @@ function resetBumpMap() {
  * @param {string} value - The hex value of the color.
  */
 function updateLightColor(value) {
-    const theBumpMapRay = new Ray();
-    theBumpMapRay.setLightColor(Color.hextoRGB(value).toArray());
+    const theBumpMapLight = new Light();
+    theBumpMapLight.setLightColor(Color.hextoRGB(value).toArray());
     if(theBumpMap !== null) {
-        theBumpMap.setRay(theBumpMapRay);
+        theBumpMap.setLight(theBumpMapLight);
     }
 }
 

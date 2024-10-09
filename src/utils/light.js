@@ -1,14 +1,14 @@
-class Ray {
+class Light {
 
     constructor() {
         // The light position in the world (vec3).
-        this.lightPosition = [0.0, 0.0, 10.0];
+        this.position = [0.0, 0.0, 10.0];
         // The ambient light in the world (vec4).
-        this.lightAmbient = [0.1, 0.1, 0.1, 0.1];
+        this.ambient = [0.1, 0.1, 0.1, 0.1];
         // The light color in the world (vec4).
-        this.lightColor = [1.0, 1.0, 1.0, 1.0];
+        this.color = [1.0, 1.0, 1.0, 1.0];
         // The light specular in the world (vec4).
-        this.lightSpecular = [0.1, 0.1, 0.1, 1.0];
+        this.specular = [0.1, 0.1, 0.1, 1.0];
         // The material specular (vec4).
         this.materialSpecular = [1.0, 1.0, 1.0, 1.0];
         // The shininess of the material (float).
@@ -17,19 +17,19 @@ class Ray {
 
     // Getters
     getLightPosition() {
-        return this.lightPosition;
+        return this.position;
     }
 
     getLightAmbient() {
-        return this.lightAmbient;
+        return this.ambient;
     }
 
     getLightColor() {
-        return this.lightColor;
+        return this.color;
     }
 
     getLightSpecular() {
-        return this.lightSpecular;
+        return this.specular;
     }
 
     getMaterialSpecular() {
@@ -42,19 +42,19 @@ class Ray {
 
     // Setters
     setLightPosition(position) {
-        this.lightPosition = position;
+        this.position = position;
     }
 
     setLightAmbient(ambient) {
-        this.lightAmbient = ambient;
+        this.ambient = ambient;
     }
 
     setLightColor(color) {
-        this.lightColor = color;
+        this.color = color;
     }
 
     setLightSpecular(specular) {
-        this.lightSpecular = specular;
+        this.specular = specular;
     }
 
     setMaterialSpecular(specular) {

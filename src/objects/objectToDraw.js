@@ -21,7 +21,7 @@ class ObjectToDraw {
         this.objectColor = Color.WHITE;
         this.objectScale = 1;
 
-        this.objectRay = new Ray(); // The ray object. a classic light model.
+        this.objectLight = new Light(); // The ray object. a classic light model.
 
         // To display error just one time.
         this.seenErrors = new Set();
@@ -139,27 +139,27 @@ class ObjectToDraw {
         this.checkGlError();
 
         // Set the light position.
-        gl.uniform3fv(this.shader.uLightPosition, this.objectRay.getLightPosition());
+        gl.uniform3fv(this.shader.uLightPosition, this.objectLight.getLightPosition());
         this.checkGlError();
 
         // Set the light color
-        gl.uniform4fv(this.shader.uLightColor, this.objectRay.getLightColor());
+        gl.uniform4fv(this.shader.uLightColor, this.objectLight.getLightColor());
         this.checkGlError();
 
         // Set the ambient color
-        gl.uniform4fv(this.shader.uAmbientColor, this.objectRay.getLightAmbient() );
+        gl.uniform4fv(this.shader.uAmbientColor, this.objectLight.getLightAmbient() );
         this.checkGlError();
 
         // Set the specular light color.
-        gl.uniform4fv(this.shader.uLightSpecular, this.objectRay.getLightSpecular());
+        gl.uniform4fv(this.shader.uLightSpecular, this.objectLight.getLightSpecular());
         this.checkGlError();
 
         // Set the material specular
-        gl.uniform4fv(this.shader.uMaterialSpecular, this.objectRay.getMaterialSpecular());
+        gl.uniform4fv(this.shader.uMaterialSpecular, this.objectLight.getMaterialSpecular());
         this.checkGlError();
 
         // Set the material shininess.
-        gl.uniform1f(this.shader.uMaterialShininess, this.objectRay.getMaterialShininess());
+        gl.uniform1f(this.shader.uMaterialShininess, this.objectLight.getMaterialShininess());
         this.checkGlError();
 
     }
@@ -190,10 +190,10 @@ class ObjectToDraw {
     }
 
     /**
-     * sets the ray object.
+     * sets the Light object.
      */
-    setRay(ray) {
-        this.objectRay = ray;
+    setLight(light) {
+        this.objectLight = light;
     }
 
     /**
