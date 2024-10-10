@@ -11,6 +11,8 @@ class Light {
         this.materialSpecular = [1.0, 1.0, 1.0, 1.0];
         // The shininess of the material (float).
         this.materialShininess = 1000.0;
+        // The light intensity
+        this.intensity = 3.0;
     }
 
     // Getters
@@ -34,6 +36,10 @@ class Light {
         return this.materialShininess;
     }
 
+    getLightIntensity() {
+        return this.intensity;
+    }
+
     // Setters
     setLightPosition(position) {
         this.position = position;
@@ -53,6 +59,10 @@ class Light {
 
     setMaterialShininess(shininess) {
         this.materialShininess = shininess;
+    }
+
+    setLightIntensity(intensity) {
+        this.intensity = intensity;
     }
 
 }

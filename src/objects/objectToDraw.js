@@ -145,6 +145,10 @@ class ObjectToDraw {
         gl.uniform4fv(this.shader.uLightColor, this.objectLight.getLightColor());
         this.checkGlError();
 
+        // Set the light intensity.
+        gl.uniform1f(this.shader.uLightIntensity, this.objectLight.getLightIntensity());
+        this.checkGlError();
+
         // Set the specular light color.
         gl.uniform4fv(this.shader.uLightSpecular, this.objectLight.getLightSpecular());
         this.checkGlError();

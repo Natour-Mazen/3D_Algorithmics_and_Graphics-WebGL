@@ -6,8 +6,6 @@ const bumpMapElements = {
     selector: doc.getElementById('bump_map_selector'),
     shaderSelector: doc.getElementById('bump_map_shader_selector'),
     textureSelector: doc.getElementById('bump_map_texture_selector'),
-    lightIntensitySlider: doc.getElementById('heightMap_lightIntensity_slider'),
-    lightIntensityValue: doc.getElementById('heightMap_lightIntensity_value'),
     lightBrightnessSlider: doc.getElementById('heightMap_lightBrightness_slider'),
     lightBrightnessValue: doc.getElementById('heightMap_lightBrightness_value'),
 };
@@ -58,6 +56,17 @@ let selectedTexture = "None";
  */
 let selectedShader = "None";
 
+
+/**
+ * Updates the default light brightness slider value.
+ * @param value
+ */
+function updateTheDefaultLightBrightnessSliderValue(value) {
+    bumpMapElements.lightBrightnessSlider.value = value;
+    bumpMapElements.lightBrightnessValue.textContent = value;
+}
+
+
 /**
  * Handles the creation of the bump map.
  */
@@ -87,7 +96,6 @@ function resetBumpMapSettings() {
     bumpMapType = null;
     texture_ForBump = null;
     setPlaneState(true);
-    handleDisplayLightIntensitySlider('none');
     handleDisplayLightBrightnessSlider('none');
 }
 
@@ -111,27 +119,16 @@ function bindShader() {
     if (selectedShader === "Lambert") {
         theBumpMap = new BumpMap('glsl/lambertNormalMap');
         setPlaneState(false);
-        handleDisplayLightIntensitySlider('block');
         handleDisplayLightBrightnessSlider('none');
-        theBumpMap.setLightIntensity(bumpMapElements.lightIntensitySlider.value);
     } else if (selectedShader === "Blinn-Phong") {
         theBumpMap = new BumpMap('glsl/blinnPhongNormalMap');
         setPlaneState(false);
-        handleDisplayLightIntensitySlider('none');
         handleDisplayLightBrightnessSlider('block');
         theBumpMap.setLightBrightness(bumpMapElements.lightBrightnessSlider.value);
+        updateTheDefaultLightBrightnessSliderValue(theBumpMap.getLightBrightness());
     } else {
         window.alert("Please select a shader");
     }
-}
-
-/**
- * Handles the display of the light intensity slider.
- * @param {string} value - The display value (e.g., 'block', 'none').
- */
-function handleDisplayLightIntensitySlider(value) {
-    const bumpMapElementsLightIntensitySlide = bumpMapElements.lightIntensityValue.closest('.row');
-    bumpMapElementsLightIntensitySlide.style.display = value;
 }
 
 /**
@@ -164,13 +161,6 @@ function initBumpMapUIComponents() {
         handleBumpMapCreation();
     });
 
-    initSlider(bumpMapElements.lightIntensitySlider, function () {
-        if (theBumpMap !== null) {
-            theBumpMap.setLightIntensity(this.value);
-            bumpMapElements.lightIntensityValue.textContent = this.value;
-        }
-    });
-
     initSlider(bumpMapElements.lightBrightnessSlider, function () {
         if (theBumpMap !== null) {
             theBumpMap.setLightBrightness(this.value);
@@ -178,8 +168,6 @@ function initBumpMapUIComponents() {
         }
     });
 
-
-    handleDisplayLightIntensitySlider('none');
     handleDisplayLightBrightnessSlider('none');
 }
 

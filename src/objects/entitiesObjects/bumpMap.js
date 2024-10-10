@@ -2,8 +2,7 @@ class BumpMap extends Plane {
 
     constructor(shaderName) {
         super(shaderName);
-        this.lightIntensity = 1.0;
-        this.lightBrightness = 1.0;
+        this.lightBrightness = 4.0;
     }
 
     async initAll() {
@@ -97,9 +96,7 @@ class BumpMap extends Plane {
         gl.uniform1i(this.shader.uBumpMap, selectedBumpMap === 'None' ? 0 : 1);
         this.checkGlError();
 
-        // Set the light intensity.
-        gl.uniform1f(this.shader.uLightIntensity, this.lightIntensity);
-        this.checkGlError();
+
 
         // Set the light brightness.
         gl.uniform1f(this.shader.uLightBrightness, this.lightBrightness);
@@ -111,8 +108,8 @@ class BumpMap extends Plane {
         gl.drawArrays(gl.LINE_LOOP, 0, this.vBuffer.numItems);
     }
 
-    setLightIntensity(value) {
-        this.lightIntensity = value;
+    getLightBrightness() {
+        return this.lightBrightness;
     }
 
     setLightBrightness(value) {
