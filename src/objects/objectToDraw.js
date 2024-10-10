@@ -108,6 +108,7 @@ class ObjectToDraw {
         this.shader.uLightSpecular = gl.getUniformLocation(this.shader, "uLightSpecular");
         this.shader.uMaterialShininess = gl.getUniformLocation(this.shader, "uMaterialShininess");
         this.shader.uMaterialSpecular = gl.getUniformLocation(this.shader, "uMaterialSpecular");
+        this.shader.uPI = gl.getUniformLocation(this.shader, "uPI");
     }
 
 
@@ -161,6 +162,9 @@ class ObjectToDraw {
         gl.uniform1f(this.shader.uMaterialShininess, this.objectLight.getMaterialShininess());
         this.checkGlError();
 
+        // Set the PI variable.
+        gl.uniform1f(this.shader.uPI, 3.1415926535897932384626433832795);
+        this.checkGlError();
     }
 
     /**

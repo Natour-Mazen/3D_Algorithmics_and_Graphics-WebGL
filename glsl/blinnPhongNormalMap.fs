@@ -1,8 +1,6 @@
 // BlinnPhong Fragment shader.
 precision mediump float;
 
-#define PI 3.1415926535897932384626433832795
-
 uniform sampler2D uSampler;
 uniform sampler2D uBumpSampler;
 uniform vec4 uColor;
@@ -13,6 +11,7 @@ uniform float uMaterialShininess;
 uniform vec4 uMaterialSpecular;
 uniform bool uBumMap; // true if the bump map is activeted, false otherwise.
 uniform float uLightBrightness; // The light brighness effect, the more, the smaller is the light.
+uniform float uPI;
 
 varying vec2 vTexCoords;
 varying vec3 vVertexNormal;
@@ -54,7 +53,7 @@ void main(void) {
     //vec3 fragColor = texColor.rgb * (uAmbientColor.rgb + weight * uLightColor.rgb) + uLightSpecular.rgb * weightSpec * uMaterialSpecular.rgb;
 
     // Course Formula.
-    vec3 fragColor = uLightColor.rgb * ((1. - uLightSpecular.rgb) * texColor.rgb + ((8. + n) / (8. * PI)) * uLightSpecular.rgb * weightSpec) * weight;
+    vec3 fragColor = uLightColor.rgb * ((1. - uLightSpecular.rgb) * texColor.rgb + ((8. + n) / (8. * uPI)) * uLightSpecular.rgb * weightSpec) * weight;
 
     gl_FragColor = vec4(fragColor, texColor.a);
 }

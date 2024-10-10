@@ -7,6 +7,7 @@ uniform bool uIsColor; // true we display the shader color, false otherwise.
 uniform vec4 uAmbientLight; // The ambiant light.
 uniform vec4 uLightColor; // The color light.
 uniform vec3 uLightPosition; // Position of the light.
+uniform float uPI;
 
 varying vec4 vVertexPosition;
 varying vec3 vVertexNormal;
@@ -83,7 +84,9 @@ void main(void)
         finalColor = textureColor.rgb;
     }
 
-    vec3 fragColor = finalColor * (uAmbientLight.rgb + weight * uLightColor.rgb);
+    // OLD Formula.
+    //vec3 fragColor = finalColor * (uAmbientLight.rgb + weight * uLightColor.rgb);
+    vec3 fragColor = uLightColor.rgb * finalColor * (1.0 / uPI) * weight;
 
     gl_FragColor = vec4(fragColor, 1.0);
 }

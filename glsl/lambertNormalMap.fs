@@ -1,8 +1,6 @@
 // Lambert Fragment shader.
 precision mediump float;
 
-#define PI 3.1415926535897932384626433832795
-
 uniform sampler2D uSampler; // Texture.
 uniform sampler2D uBumpSampler; // Texture for the bump map.
 uniform vec4 uColor; // Color of the material.
@@ -10,6 +8,7 @@ uniform vec4 uAmbientLight; // The ambiant light.
 uniform vec4 uLightColor; // The color light.
 uniform bool uBumMap; // true if the bump map is activeted, false otherwise.
 uniform float uLightIntensity; // The light intensity.
+uniform float uPI;
 
 varying vec2 vTexCoords;
 varying vec3 vVertexNormal;
@@ -41,7 +40,7 @@ void main(void)
     //vec3 fragColor = texColor.rgb * weight * (uAmbientLight.rgb + weight * uLightColor.rgb);
 
     // Course Formula.
-    vec3 fragColor = uLightColor.rgb * texColor.rgb * (1.0 / PI) * weight * uLightIntensity;
+    vec3 fragColor = uLightColor.rgb * texColor.rgb * (1.0 / uPI) * weight * uLightIntensity;
 
     gl_FragColor = vec4(fragColor, 1.0);
 }
