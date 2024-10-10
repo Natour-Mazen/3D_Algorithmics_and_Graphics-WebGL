@@ -38,8 +38,8 @@ function degToRad(degrees) {
 
 // =====================================================
 function handleMouseWheel(event) {
-
-	distCENTER[2] -= event.deltaY/100.0;
+	distCENTER[2] -= event.deltaY / 100.0;
+	distCENTER[2] = Math.min(distCENTER[2], -2); // Ensure distCENTER[2] stays between -30 and -2
 	updateCoordinates();
 }
 
@@ -66,13 +66,17 @@ function handleMouseMove(event) {
 	var newY = event.clientY;	
 	var deltaX = newX - lastMouseX;
 	var deltaY = newY - lastMouseY;
-	
-	if(event.shiftKey) {
-		distCENTER[2] += deltaY/100.0;
-	} else {
+
+	if (event.shiftKey) {
+		distCENTER[2] += deltaY / 100.0;
+		distCENTER[2] =Math.min(distCENTER[2], -2); // Ensure distCENTER[2] stays -2
+	}else {
 
 		rotY += degToRad(deltaX / 5);
 		rotX += degToRad(deltaY / 5);
+
+		// Limit the rotation around the x-axis to the range -PI/2 to PI/2
+		rotX = Math.max(-Math.PI / 2.3, Math.min(Math.PI / 2.3, rotX));
 
 		mat4.identity(rotMatrix);
 		mat4.rotate(rotMatrix, rotX, [1, 0, 0]);
@@ -91,6 +95,7 @@ function handleKeyDown(event) {
 	switch (key) {
 		case 'z': // Move forward
 			distCENTER[2] += moveSpeed;
+			distCENTER[2] = Math.min(distCENTER[2], -2); // Ensure distCENTER[2] -2
 			break;
 		case 's': // Move backward
 			distCENTER[2] -= moveSpeed;
@@ -100,12 +105,6 @@ function handleKeyDown(event) {
 			break;
 		case 'd': // Move right
 			distCENTER[0] -= moveSpeed;
-			break;
-		case ' ': // Move up (spacebar)
-			distCENTER[1] -= moveSpeed;
-			break;
-		case 'shift': // Move down (shift key)
-			distCENTER[1] += moveSpeed;
 			break;
 	}
 	updateCoordinates();
