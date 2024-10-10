@@ -83,7 +83,8 @@ function handleMouseMove(event) {
 		mat4.rotate(rotMatrix, rotX, [1, 0, 0]);
 		mat4.rotate(rotMatrix, rotY, [0, 0, 1]);
 	}
-	
+
+	updateCoordinates();
 	lastMouseX = newX
 	lastMouseY = newY;
 }
