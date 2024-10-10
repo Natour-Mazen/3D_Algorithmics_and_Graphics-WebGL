@@ -40,13 +40,12 @@ const dropdowns = [
     {
         title: 'Bounding Box',
         items: [
-            { type: 'checkbox', label: 'On/off', id: 'boundingBox_checkbox', checked: false },
+            { type: 'checkbox', label: 'BoundingBox', id: 'boundingBox_checkbox', checked: false },
             { type: 'switch', label1: 'WireFrame', label2: 'Opaque', id: 'boundingBox_switch' },
-            { type: 'select', label: 'Height Map Type', id: 'boundingBox_heightMap_texture_selector', options: ['None'] },
-            { type: 'select', label: 'Height Map Texture', id: 'boundingBox_heightMap_texture_selector', options: ['None'] },
-            { type: 'slider', label: 'Scale:', id: 'boundingBox_heightMap_scale_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBox_heightMap_scale_value' },
-            { type: 'slider', label: 'Flatten Factor:', id: 'boundingBox_heightMap_flatten_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBox_heightMap_flatten_value' }
-
+            { type: 'select', label: 'HM Type', id: 'boundingBox_heightMap_type_selector', options: ['None'] },
+            { type: 'select', label: 'HM Texture', id: 'boundingBox_heightMap_texture_selector', options: ['None'] },
+            { type: 'slider', label: 'HM Scale:', id: 'boundingBox_heightMap_scale_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBox_heightMap_scale_value' },
+            { type: 'slider', label: 'HM Flatten Factor:', id: 'boundingBox_heightMap_flatten_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBox_heightMap_flatten_value' }
         ]
     },
 ];
