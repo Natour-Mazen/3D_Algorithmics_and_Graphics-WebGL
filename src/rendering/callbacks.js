@@ -76,7 +76,7 @@ function handleMouseMove(event) {
 		rotX += degToRad(deltaY / 5);
 
 		// Limit the rotation around the x-axis to the range -PI/2 to PI/2
-		rotX = Math.max(-Math.PI / 2.3, Math.min(Math.PI / 2.3, rotX));
+		rotX = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, rotX));
 
 		mat4.identity(rotMatrix);
 		mat4.rotate(rotMatrix, rotX, [1, 0, 0]);
@@ -120,7 +120,7 @@ function updateCoordinates() {
 	doc.getElementById('coordinate__content__data__y').innerText = `Y: ${distCENTER[1].toFixed(2)}`;
 	doc.getElementById('coordinate__content__data__z').innerText = `Z: ${distCENTER[2].toFixed(2)}`;
 }
-let DEFAULT_DISTCENTER = [0, 0, -30];
+let DEFAULT_DISTCENTER = [0, -2, -40];
 
 function resetCoordinates() {
 	distCENTER = vec3.create(DEFAULT_DISTCENTER)
