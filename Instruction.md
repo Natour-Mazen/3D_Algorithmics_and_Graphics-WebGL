@@ -1,4 +1,4 @@
-# Jalon 1 
+# Jalon 12
 
 
 ## Config
@@ -9,22 +9,22 @@ about:config --> security.fileuri.strict_origin_policy --> true to false
 Open the .html file in firefox.  
 
 ## TODO (in French)
-- la visualisation interactive d'objets 3D (avec un choix parmi plusieurs objets)  
-- La visualisation d'un terrain calculer à partir d'une carte de hauteur  
-- Terrain texturé ou coloré en fonction de la hauteur (faire les deux options)  
-- Une rivière / océan texturé avec une bump map  
-- Une source de lumière positionnée en 0,0,0 (à la place de l'observateur, donc) une interface javascript permettant de jouer sur les paramètres  
-  - Choix du terrain  
-  - Choix des textures et bump map  
-  - et éventuellement la position de la source (avec la souris)
- 
+- Empêcher la camera d'aller "en dessous"
+- Construire la géométrie d'une boite englobante, mettre les options pour l'afficher (ou non, en opaque, fils de fer, etc.)
+- Lancer de rayon sur une carte de hauteur
+- Choisir différentes cartes de hauteur
+- Appliquer une seconde texture sur la carte de hauteur.
+- Utiliser une texture couleur pour faire la carte de hauteur. Dans ce cas, nous utiliserons la composante L de l'espace de couleur Lab.
+- Ajouter un slider pour gérer la hauteur de la texture
+- Optimiser le parcours pour le bon delta T
+
 ## TODO (in English)
 
-- Interactive visualization of 3D objects (with a selection of multiple objects)  
-- Visualization of terrain generated from a height map  
-- Terrain textured or colored based on height (implement both options) 
-- A river/ocean textured with a bump map  
-- A light source positioned at (0,0,0) (replacing the observer) with a JavaScript interface to adjust parameters:  
-  - Terrain selection  
-  - Texture and bump map selection  
-  - Optionally, the position of the light source (using the mouse)  
+- Prevent the camera from going "underneath"
+- Construct the geometry of a bounding box, set the options to display it (or not, opaque, wireframe, etc.)
+- Ray tracing on a height map
+- Choose different height maps
+- Apply a second texture to the height map.
+- Use a color texture to make the height map. In this case, we will use the L component of the Lab color space.
+- Add a slider to manage the height of the texture
+- Optimize the route for the correct delta T
