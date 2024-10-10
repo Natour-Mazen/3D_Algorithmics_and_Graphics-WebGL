@@ -3,8 +3,6 @@ class Light {
     constructor() {
         // The light position in the world (vec3).
         this.position = [0.0, 0.0, 10.0];
-        // The ambient light in the world (vec4).
-        this.ambient = [0.1, 0.1, 0.1, 0.1];
         // The light color in the world (vec4).
         this.color = [1.0, 1.0, 1.0, 1.0];
         // The light specular in the world (vec4).
@@ -18,10 +16,6 @@ class Light {
     // Getters
     getLightPosition() {
         return this.position;
-    }
-
-    getLightAmbient() {
-        return this.ambient;
     }
 
     getLightColor() {
@@ -43,10 +37,6 @@ class Light {
     // Setters
     setLightPosition(position) {
         this.position = position;
-    }
-
-    setLightAmbient(ambient) {
-        this.ambient = ambient;
     }
 
     setLightColor(color) {

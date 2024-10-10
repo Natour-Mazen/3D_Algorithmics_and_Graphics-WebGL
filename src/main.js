@@ -6,6 +6,7 @@ let rotMatrix = mat4.create();
 let distCENTER;
 let main_plane;
 let main_objectsToDraw = [];
+let main_light = new Light();
 
 
 const canvasID = 'WebGL-canvas';
@@ -65,6 +66,9 @@ function drawScene() {
     gl.clear(gl.COLOR_BUFFER_BIT);
     for (const obj of main_objectsToDraw) {
         if(obj !== null){
+            if(obj.getLight() === null){
+                obj.setLight(main_light);
+            }
             obj.draw();
             obj.setColor(obj.getColor());
         }

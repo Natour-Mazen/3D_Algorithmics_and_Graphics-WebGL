@@ -31,6 +31,7 @@ doc.addEventListener('DOMContentLoaded', () => {
         'src/view/objectsUIMenu.js',
         'src/view/bumpMapUIMenu.js',
         'src/view/heightMapUIMenu.js',
+        'src/view/lightUIMenu.js',
         // ============== MAIN ==============
         'src/main.js'
     ];

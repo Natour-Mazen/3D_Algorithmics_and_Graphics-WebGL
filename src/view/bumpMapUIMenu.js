@@ -10,7 +10,6 @@ const bumpMapElements = {
     lightIntensityValue: doc.getElementById('heightMap_lightIntensity_value'),
     lightBrightnessSlider: doc.getElementById('heightMap_lightBrightness_slider'),
     lightBrightnessValue: doc.getElementById('heightMap_lightBrightness_value'),
-    lightingColorPicker: doc.getElementById('bump_map_lightColor'),
 };
 
 /**
@@ -69,7 +68,6 @@ function handleBumpMapCreation() {
     } else {
         loadTextures();
         bindShader();
-        updateLightColor(bumpMapElements.lightingColorPicker.value);
         main_objectsToDraw.push(theBumpMap);
     }
 }
@@ -80,18 +78,6 @@ function handleBumpMapCreation() {
 function resetBumpMap() {
     main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof BumpMap));
     handleDisplayLightBrightnessSlider('none');
-}
-
-/**
- * Updates the light color.
- * @param {string} value - The hex value of the color.
- */
-function updateLightColor(value) {
-    const theBumpMapLight = new Light();
-    theBumpMapLight.setLightColor(Color.hextoRGB(value).toArray());
-    if(theBumpMap !== null) {
-        theBumpMap.setLight(theBumpMapLight);
-    }
 }
 
 /**
@@ -192,11 +178,6 @@ function initBumpMapUIComponents() {
         }
     });
 
-    initColorPicker(bumpMapElements.lightingColorPicker, function () {
-        if (theBumpMap !== null) {
-            updateLightColor(this.value);
-        }
-    });
 
     handleDisplayLightIntensitySlider('none');
     handleDisplayLightBrightnessSlider('none');

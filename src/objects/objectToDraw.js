@@ -20,8 +20,7 @@ class ObjectToDraw {
         this.shader = shader;
         this.objectColor = Color.WHITE;
         this.objectScale = 1;
-
-        this.objectLight = new Light(); // The ray object. a classic light model.
+        this.objectLight = null;
 
         // To display error just one time.
         this.seenErrors = new Set();
@@ -146,10 +145,6 @@ class ObjectToDraw {
         gl.uniform4fv(this.shader.uLightColor, this.objectLight.getLightColor());
         this.checkGlError();
 
-        // Set the ambient color
-        gl.uniform4fv(this.shader.uAmbientColor, this.objectLight.getLightAmbient() );
-        this.checkGlError();
-
         // Set the specular light color.
         gl.uniform4fv(this.shader.uLightSpecular, this.objectLight.getLightSpecular());
         this.checkGlError();
@@ -194,6 +189,14 @@ class ObjectToDraw {
      */
     setLight(light) {
         this.objectLight = light;
+    }
+
+    /**
+     * Returns the light object.
+     * @returns {Light}
+     */
+    getLight() {
+        return this.objectLight;
     }
 
     /**
