@@ -67,6 +67,13 @@
 1. Bien changé la configuration de Firefox avec : about:config --> security.fileuri.strict_origin_policy --> true to false
 2. Ouvrez `main.html` dans un navigateur Web.
 3. Utilisez les menus pour interagir avec les objets 3D et ajuster les paramètres de visualisation.
+4. Vous pourrez si vous le souhaitez, bouger avec la souris pour changer l'angle de vue ainsi que bouger dans l'espace avec les touches :
+    - Z : Avancer
+    - S : Reculer
+    - Q : Aller à gauche
+    - D : Aller à droite
+    - Espace : Monter
+    - Shift : Descendre
 
 ## Remarques
 - L'interface utilisateur est entièrement générée en JavaScript pour permettre une interaction dynamique.
