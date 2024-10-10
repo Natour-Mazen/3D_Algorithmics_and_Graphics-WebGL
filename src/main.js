@@ -5,6 +5,7 @@ let pMatrix = mat4.create();
 let rotMatrix = mat4.create();
 let distCENTER;
 let main_plane;
+let main_boundBox;
 let main_objectsToDraw = [];
 let main_light = new Light();
 
@@ -99,8 +100,9 @@ function webGLStart() {
     updateCoordinates();
 
     main_plane = new Plane();
+    main_boundBox = new BoundingBox();
 
-    main_objectsToDraw.push(main_plane);
+    main_objectsToDraw.push(main_plane, main_boundBox);
 
     updateTheDefaultLightIntensitySliderValue(main_light.getLightIntensity());
 
