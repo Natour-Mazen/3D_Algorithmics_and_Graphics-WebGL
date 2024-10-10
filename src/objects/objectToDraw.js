@@ -164,7 +164,7 @@ class ObjectToDraw {
         this.checkGlError();
 
         // Set the PI variable.
-        gl.uniform1f(this.shader.uPI, 3.1415926535897932384626433832795);
+        gl.uniform1f(this.shader.uPI, Math.PI);
         this.checkGlError();
     }
 

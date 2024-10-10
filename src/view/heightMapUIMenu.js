@@ -65,7 +65,6 @@ const DEFAULT_HEIGHTMAP_SCALE = 1;
 function handleCreateHeightMap() {
     main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof HeightMap));
     theHeightMap = new HeightMap();
-    setPlaneState(!heightMapElements.switch.checked)
 
     main_objectsToDraw.push(theHeightMap);
 }
