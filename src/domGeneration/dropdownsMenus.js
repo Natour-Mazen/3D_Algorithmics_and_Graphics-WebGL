@@ -34,7 +34,7 @@ const dropdowns = [
             { type: 'select', label: 'Shader', id: 'bump_map_shader_selector', options: ['None'] },
             { type: 'select', label: 'Type', id: 'bump_map_selector', options: ['None'] },
             { type: 'select', label: 'Texture', id: 'bump_map_texture_selector', options: ['None'] },
-            { type: 'slider', label: 'Light Brightness:', id: 'heightMap_lightBrightness_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'heightMap_lightBrightness_value' },
+            { type: 'slider', label: 'Light Shininess:', id: 'bump_map_lightShininess_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'bump_map_lightShininess_value' },
         ]
     },
 ];

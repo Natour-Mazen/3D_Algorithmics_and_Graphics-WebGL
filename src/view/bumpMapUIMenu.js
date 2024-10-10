@@ -6,8 +6,8 @@ const bumpMapElements = {
     selector: doc.getElementById('bump_map_selector'),
     shaderSelector: doc.getElementById('bump_map_shader_selector'),
     textureSelector: doc.getElementById('bump_map_texture_selector'),
-    lightBrightnessSlider: doc.getElementById('heightMap_lightBrightness_slider'),
-    lightBrightnessValue: doc.getElementById('heightMap_lightBrightness_value'),
+    lightShininessSlider: doc.getElementById('bump_map_lightShininess_slider'),
+    lightShininessValue: doc.getElementById('bump_map_lightShininess_value'),
 };
 
 /**
@@ -61,9 +61,9 @@ let selectedShader = "None";
  * Updates the default light brightness slider value.
  * @param value
  */
-function updateTheDefaultLightBrightnessSliderValue(value) {
-    bumpMapElements.lightBrightnessSlider.value = value;
-    bumpMapElements.lightBrightnessValue.textContent = value;
+function updateTheDefaultLightShininessSliderValue(value) {
+    bumpMapElements.lightShininessSlider.value = value;
+    bumpMapElements.lightShininessValue.textContent = value;
 }
 
 
@@ -86,7 +86,7 @@ function handleBumpMapCreation() {
  */
 function resetBumpMap() {
     main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof BumpMap));
-    handleDisplayLightBrightnessSlider('none');
+    handleDisplayLightShininessSlider('none');
 }
 
 /**
@@ -96,7 +96,7 @@ function resetBumpMapSettings() {
     bumpMapType = null;
     texture_ForBump = null;
     setPlaneState(true);
-    handleDisplayLightBrightnessSlider('none');
+    handleDisplayLightShininessSlider('none');
 }
 
 /**
@@ -119,13 +119,13 @@ function bindShader() {
     if (selectedShader === "Lambert") {
         theBumpMap = new BumpMap('glsl/lambertNormalMap');
         setPlaneState(false);
-        handleDisplayLightBrightnessSlider('none');
+        handleDisplayLightShininessSlider('none');
     } else if (selectedShader === "Blinn-Phong") {
         theBumpMap = new BumpMap('glsl/blinnPhongNormalMap');
         setPlaneState(false);
-        handleDisplayLightBrightnessSlider('block');
-        theBumpMap.setLightBrightness(bumpMapElements.lightBrightnessSlider.value);
-        updateTheDefaultLightBrightnessSliderValue(theBumpMap.getLightBrightness());
+        handleDisplayLightShininessSlider('block');
+        theBumpMap.setLightShininess(bumpMapElements.lightShininessSlider.value);
+        updateTheDefaultLightShininessSliderValue(theBumpMap.getLightShininess());
     } else {
         window.alert("Please select a shader");
     }
@@ -135,9 +135,9 @@ function bindShader() {
  * Handles the display of the light brightness slider.
  * @param {string} value - The display value (e.g., 'block', 'none').
  */
-function handleDisplayLightBrightnessSlider(value) {
-    const bumpMapElementsLightBrightnessSlide = bumpMapElements.lightBrightnessSlider.closest('.row');
-    bumpMapElementsLightBrightnessSlide.style.display = value;
+function handleDisplayLightShininessSlider(value) {
+    const bumpMapElementsLightShininessSlide = bumpMapElements.lightShininessSlider.closest('.row');
+    bumpMapElementsLightShininessSlide.style.display = value;
 }
 
 /**
@@ -161,14 +161,14 @@ function initBumpMapUIComponents() {
         handleBumpMapCreation();
     });
 
-    initSlider(bumpMapElements.lightBrightnessSlider, function () {
+    initSlider(bumpMapElements.lightShininessSlider, function () {
         if (theBumpMap !== null) {
-            theBumpMap.setLightBrightness(this.value);
-            bumpMapElements.lightBrightnessValue.textContent = this.value;
+            theBumpMap.setLightShininess(this.value);
+            bumpMapElements.lightShininessValue.textContent = this.value;
         }
     });
 
-    handleDisplayLightBrightnessSlider('none');
+    handleDisplayLightShininessSlider('none');
 }
 
 initBumpMapUIComponents();

@@ -104,6 +104,7 @@ class ObjectToDraw {
         this.shader.colorUniform = gl.getUniformLocation(this.shader, "uColor");
         this.shader.uLightPosition = gl.getUniformLocation(this.shader, "uLightPosition");
         this.shader.uLightColor = gl.getUniformLocation(this.shader, "uLightColor");
+        this.shader.uLightIntensity = gl.getUniformLocation(this.shader, "uLightIntensity");
         this.shader.uAmbientColor = gl.getUniformLocation(this.shader, "uAmbientColor");
         this.shader.uLightSpecular = gl.getUniformLocation(this.shader, "uLightSpecular");
         this.shader.uMaterialShininess = gl.getUniformLocation(this.shader, "uMaterialShininess");

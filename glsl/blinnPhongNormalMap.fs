@@ -10,7 +10,7 @@ uniform vec4 uLightSpecular;
 uniform float uMaterialShininess;
 uniform vec4 uMaterialSpecular;
 uniform bool uBumMap; // true if the bump map is activeted, false otherwise.
-uniform float uLightBrightness; // The light brighness effect, the more, the smaller is the light.
+uniform float uLightShininess; // The light shininess effect, the more, the smaller is the light.
 uniform float uPI;
 
 varying vec2 vTexCoords;
@@ -38,7 +38,7 @@ void main(void) {
     // Texture color.
     vec4 texColor = texture2D(uSampler, vTexCoords);
 
-    float n = 10. * uLightBrightness * uLightBrightness * 2.0;
+    float n = 10. * uLightShininess * uLightShininess * 2.0;
 
     vec3 bissectriceDir = lightDir + vec3(0, 0, 0)/* player position*/;
     float weightSpec = pow(max(dot(normal, bissectriceDir), 0.0), n);
