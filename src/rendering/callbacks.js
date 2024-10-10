@@ -69,7 +69,7 @@ function handleMouseMove(event) {
 	const deltaY = newY - lastMouseY;
 
 	if (event.shiftKey) {
-		distCENTER[2] += deltaY / 100.0;
+		distCENTER[2] += deltaY / 10.0;
 		distCENTER[2] =Math.min(distCENTER[2], DEFAULT_MAX_Z); // Ensure distCENTER[2] stays -2
 	}else {
 
