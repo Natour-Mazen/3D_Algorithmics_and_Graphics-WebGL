@@ -101,12 +101,6 @@ function handleKeyDown(event) {
 		case 'd': // Move right
 			distCENTER[0] -= moveSpeed;
 			break;
-		case ' ': // Move up (spacebar)
-			distCENTER[1] -= moveSpeed;
-			break;
-		case 'shift': // Move down (shift key)
-			distCENTER[1] += moveSpeed;
-			break;
 	}
 	updateCoordinates();
 }
