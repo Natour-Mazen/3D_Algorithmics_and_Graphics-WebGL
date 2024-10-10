@@ -124,8 +124,8 @@ function bindShader() {
         theBumpMap = new BumpMap('glsl/blinnPhongNormalMap');
         setPlaneState(false);
         handleDisplayLightShininessSlider('block');
-        theBumpMap.setLightShininess(bumpMapElements.lightShininessSlider.value);
         updateTheDefaultLightShininessSliderValue(theBumpMap.getLightShininess());
+        theBumpMap.setLightShininess(bumpMapElements.lightShininessSlider.value);
     } else {
         window.alert("Please select a shader");
     }
