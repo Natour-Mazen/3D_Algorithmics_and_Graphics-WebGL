@@ -3,11 +3,12 @@
 // =====================================================
 // Mouse management
 // =====================================================
-var mouseDown = false;
-var lastMouseX = null;
-var lastMouseY = null;
-var rotY = 0;
-var rotX = -1;
+let mouseDown = false;
+let lastMouseX = null;
+let lastMouseY = null;
+let rotY = 0;
+let rotX = -1;
+const DEFAULT_MAX_Z = -30;
 
 // =====================================================
 window.requestAnimFrame = (function()
@@ -39,7 +40,7 @@ function degToRad(degrees) {
 // =====================================================
 function handleMouseWheel(event) {
 	distCENTER[2] -= event.deltaY / 100.0;
-	distCENTER[2] = Math.min(distCENTER[2], -2); // Ensure distCENTER[2] stays between -30 and -2
+	distCENTER[2] = Math.min(distCENTER[2], DEFAULT_MAX_Z);
 	updateCoordinates();
 }
 
@@ -62,14 +63,14 @@ function handleMouseMove(event) {
 	
 	if (!mouseDown) return;
 
-	var newX = event.clientX;
-	var newY = event.clientY;	
-	var deltaX = newX - lastMouseX;
-	var deltaY = newY - lastMouseY;
+	const newX = event.clientX;
+	const newY = event.clientY;
+	const deltaX = newX - lastMouseX;
+	const deltaY = newY - lastMouseY;
 
 	if (event.shiftKey) {
 		distCENTER[2] += deltaY / 100.0;
-		distCENTER[2] =Math.min(distCENTER[2], -2); // Ensure distCENTER[2] stays -2
+		distCENTER[2] =Math.min(distCENTER[2], DEFAULT_MAX_Z); // Ensure distCENTER[2] stays -2
 	}else {
 
 		rotY += degToRad(deltaX / 5);
@@ -95,7 +96,7 @@ function handleKeyDown(event) {
 	switch (key) {
 		case 'z': // Move forward
 			distCENTER[2] += moveSpeed;
-			distCENTER[2] = Math.min(distCENTER[2], -2); // Ensure distCENTER[2] -2
+			distCENTER[2] = Math.min(distCENTER[2], DEFAULT_MAX_Z); // Ensure distCENTER[2] -2
 			break;
 		case 's': // Move backward
 			distCENTER[2] -= moveSpeed;
@@ -120,7 +121,7 @@ function updateCoordinates() {
 	doc.getElementById('coordinate__content__data__y').innerText = `Y: ${distCENTER[1].toFixed(2)}`;
 	doc.getElementById('coordinate__content__data__z').innerText = `Z: ${distCENTER[2].toFixed(2)}`;
 }
-let DEFAULT_DISTCENTER = [0, -2, -40];
+let DEFAULT_DISTCENTER = [0, -2, -35];
 
 function resetCoordinates() {
 	distCENTER = vec3.create(DEFAULT_DISTCENTER)
