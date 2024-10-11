@@ -70,7 +70,6 @@ function drawScene() {
                 obj.setLight(main_light);
             }
             obj.draw();
-            obj.setColor(obj.getColor());
         }
     }
 }
