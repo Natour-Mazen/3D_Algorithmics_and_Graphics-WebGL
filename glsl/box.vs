@@ -7,44 +7,11 @@ uniform mat4 uPMatrix;
 
 varying vec3 vVertexPosition;
 varying vec3 vVertexNormal;
-varying float vLambda;
-varying vec2 vTexturePosition;
-
-const int MAX_ITERATIONS = 100;
-
-vec3 loop(vec3 startingPoint, vec3 lightDirection);
-vec3 bigLoop(vec3 startingPoint, vec3 lightDirection);
 
 void main(void) {
     vec4 vertexPosition = uMVMatrix * vec4(aVertexPosition,1.0);
     vVertexPosition = vertexPosition.xyz;
     vVertexNormal = vec3(uRMatrix * vec4(aVertexNormal,1.0));
-
-    vec3 lightDirection = vVertexPosition.xyz;
-
-    float division = dot(lightDirection, vVertexNormal);
-    if(division == 0.){
-        vLambda -1.;
-    }
-    else
-    {
-        // vec3(0., 0., 0.) player position.
-        vLambda = dot(vVertexPosition, vVertexNormal) - dot(vec3(0., 0., 0.), vVertexNormal) / division;
-
-        vec3 point = vec3(0., 0., 0.) + lightDirection * vLambda;
-
-        vLambda = -1.;
-
-        for (int i = 0; i < MAX_ITERATIONS; i++)
-        {
-            point = vec3(0., 0., 0.) + lightDirection * 0.01;
-            if(point.x > -0.1 && point.x < 0.1 && point.y > -0.1 && point.y < 0.1 && point.z <= 0.)
-            {
-                vLambda = 1.;
-            }
-        }
-    }
-
 
     gl_Position = uPMatrix * vertexPosition;
 }
