@@ -22,38 +22,38 @@ class BoundingBox extends ObjectToDraw {
         ];
 
         const trianglesPink = [
-            1, 0, 4,
-            4, 5, 1
+            4, 0, 1,
+            1, 5, 4
         ];
 
         const trianglesYellow = [
-            2, 1, 5,
-            5, 6, 2
+            5, 1, 2,
+            2, 6, 5
         ];
 
         const trianglesBlue = [
-            3, 2, 6,
-            6, 7, 3
+            6, 2, 3,
+            3, 7, 6
         ];
 
         const trianglesGreen = [
-            0, 3, 7,
-            7, 4, 0
+            7, 3, 0,
+            0, 4, 7
         ];
 
         const trianglesRed = [
-            5, 4, 7,
-            7, 6, 5
+            7, 4, 5,
+            5, 6, 7
         ];
 
         const normalPink = [
-            0.0, 1.0, 0.0, // 0
-            0.0, 1.0, 0.0, // 1
-            0.0, 1.0, 0.0, // 2
-            0.0, 1.0, 0.0, // 3
-            0.0, 1.0, 0.0, // 4
-            0.0, 1.0, 0.0, // 5
-            0.0, 1.0, 0.0, // 6
+            0.0, -1.0, 0.0, // 0
+            0.0, -1.0, 0.0, // 1
+            0.0, -1.0, 0.0, // 2
+            0.0, -1.0, 0.0, // 3
+            0.0, -1.0, 0.0, // 4
+            0.0, -1.0, 0.0, // 5
+            0.0, -1.0, 0.0, // 6
         ];
 
         const normalYellow = [
@@ -84,13 +84,13 @@ class BoundingBox extends ObjectToDraw {
             -1.0, 0.0, 0.0, // 6
         ];
         const normalRed = [
-            0.0, 0.0, -1.0, // 0
-            0.0, 0.0, -1.0, // 1
-            0.0, 0.0, -1.0, // 2
-            0.0, 0.0, -1.0, // 3
-            0.0, 0.0, -1.0, // 4
-            0.0, 0.0, -1.0, // 5
-            0.0, 0.0, -1.0, // 6
+            0.0, 0.0, 1.0, // 0
+            0.0, 0.0, 1.0, // 1
+            0.0, 0.0, 1.0, // 2
+            0.0, 0.0, 1.0, // 3
+            0.0, 0.0, 1.0, // 4
+            0.0, 0.0, 1.0, // 5
+            0.0, 0.0, 1.0, // 6
         ];
 
 
@@ -190,7 +190,10 @@ class BoundingBox extends ObjectToDraw {
         this.drawTriangles(this.tRedBuffer, this.nRedBuffer);
     }
 
-    drawTriangles(tBuffer){
+    drawTriangles(tBuffer, nBuffer)
+    {
+        this.setShaderAttributes([{ attribName: "aVertexNormal", buffer: nBuffer, itemSize: nBuffer.itemSize }]);
+
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, tBuffer);
 
         if(isWireFrameActiveBoundingBox){
