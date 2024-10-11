@@ -10,43 +10,39 @@ uniform float uLightIntensity; // The light intensity.
 varying vec3 vVertexPosition;
 varying vec3 vVertexNormal;
 
-const int MAX_ITERATIONS = 1000;
+const int MAX_ITERATIONS = 100;
 
 void main(void)
 {
-    vec3 color = uColor.rgb;
+    // The void color.
+    vec3 color = vec3(0.7, 0.7, 0.7);
 
     vec3 lightDirection = vVertexPosition;
 
     float division = dot(lightDirection, vVertexNormal);
-    if(division == 0.){
-        color = vec3(0.7, 0.7, 0.7);
-    }
-    else
+    if(division != 0.)
     {
-        // vec3(0., 0., 0.) player position.
-        float lambda = dot(vVertexPosition, vVertexNormal) - dot(vec3(0., 0., 0.), vVertexNormal) / division;
+        vec3 cameraPos = vec3(0., 0., 0.);
+        float lambda = (dot(vVertexPosition, vVertexNormal) - dot(cameraPos, vVertexNormal)) / division;
 
-        vec3 point = vec3(0., 0., 0.) + lightDirection * lambda;
-
-        color = vec3(0.7, 0.7, 0.7);
-
+        vec3 point = cameraPos + lightDirection * lambda;
 
         for (int i = 0; i < MAX_ITERATIONS; i++)
         {
-            point += lightDirection * 0.01;
-            if(point.z <= 0.)
+            point += lightDirection * 0.1;
+            if (point.z <= 0.)
             {
-                if(point.x > -1. && point.x < 1. && point.y > -1. && point.y < 1.)
+                const float boxX = 10.;
+                const float boxY = 1.;
+                if (-boxX < point.x && point.x < boxX && -boxY < point.y && point.y < boxY)
+                //if(-box < point.x && point.x < box)
+                //if(-box < point.z && point.z < box)
+                //if(-box < point.y && point.y < box)
                 {
                     color = uColor.rgb;
                 }
-                else
-                {
-                    break;
-                }
+                break;
             }
-
         }
     }
 
