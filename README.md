@@ -103,5 +103,4 @@ et initialiser les composants UI pour les bump maps.
 
 ## Remarques
 - L'interface utilisateur est entièrement générée en JavaScript pour permettre une interaction dynamique.
-- L'application a été testée plusieurs fois et tout fonctionne correctement sans erreurs 
-(sauf erreur d’analyse XML qui ne sont pas produites par notre code).
+- L'application a été testée plusieurs fois et tout fonctionne correctement sans erreurs
