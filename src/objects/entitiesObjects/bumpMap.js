@@ -73,7 +73,6 @@ class BumpMap extends Plane {
         this.shader.uBumpSampler = gl.getUniformLocation(this.shader, "uBumpSampler");
         this.shader.uSampler = gl.getUniformLocation(this.shader, "uSampler");
         this.shader.uBumpMap = gl.getUniformLocation(this.shader, "uBumMap");
-        this.shader.uLightIntensity = gl.getUniformLocation(this.shader, "uLightIntensity");
         this.shader.ulightShininess = gl.getUniformLocation(this.shader, "uLightShininess");
     }
 
