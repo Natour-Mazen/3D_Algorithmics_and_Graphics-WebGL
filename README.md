@@ -100,8 +100,6 @@ et initialiser les composants UI pour les bump maps.
     - S : Reculer
     - Q : Aller à gauche
     - D : Aller à droite
-    - Espace : Monter
-    - Shift : Descendre
 
 ## Remarques
 - L'interface utilisateur est entièrement générée en JavaScript pour permettre une interaction dynamique.
