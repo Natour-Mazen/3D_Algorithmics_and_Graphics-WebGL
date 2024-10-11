@@ -50,6 +50,7 @@ class ObjMesh extends ObjectToDraw {
         }
 
         xhttp.open("GET", OBJ3D.objName, true);
+        xhttp.overrideMimeType("text/plain")
         xhttp.send();
     }
 

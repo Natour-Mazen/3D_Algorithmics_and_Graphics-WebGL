@@ -21,6 +21,7 @@ function loadShaderText(Obj3D, ext) {
 
     Obj3D.loaded = 0;
     xhttp.open("GET", Obj3D.shaderName + ext, true);
+    xhttp.overrideMimeType("text/plain")
     xhttp.send();
 }
 
