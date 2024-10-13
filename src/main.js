@@ -15,8 +15,10 @@ const canvasID = 'WebGL-canvas';
 function resizeCanvas() {
     const canvas = doc.getElementById(canvasID);
     const padding = 18;
-    canvas.width = window.innerWidth - padding;
-    canvas.height = window.innerHeight - padding;
+    //canvas.width = window.innerWidth - padding;
+    //canvas.height = window.innerHeight - padding;
+    canvas.width = 1280 - padding;
+    canvas.height = 720 - padding;
 
     gl.viewportWidth = canvas.width;
     gl.viewportHeight = canvas.height;
