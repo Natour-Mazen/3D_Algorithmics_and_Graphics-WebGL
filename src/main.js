@@ -24,6 +24,10 @@ function resizeCanvas() {
     gl.viewportHeight = canvas.height;
     gl.viewport(0, 0, canvas.width, canvas.height);
 
+    // a : fov
+    // b : aspect ratio
+    // c : zNear
+    // d : zFar
     mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
 }
 
