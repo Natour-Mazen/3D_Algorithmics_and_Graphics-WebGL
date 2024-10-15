@@ -10,39 +10,17 @@ varying vec3 vVertexNormal;
 varying mat4 vMVMatrix;
 varying mat4 vPMatrix;
 
-//varying vec3 sVertexPosition;
-//varying vec3 vPlanePointMin;
-//varying vec3 vPlanePointMax;
-//varying vec3 vDirectionRay;
+varying vec3 vPlanePointMax;
 
 void main(void) {
     vec4 vertexPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
     vVertexPosition = vertexPosition.xyz;
-    //sVertexPosition = (uMVMatrix * vec4(0., 0., 0., 1.)).xyz;
-    //sVertexPosition = vec3(0., 0., 0.);
     vVertexNormal = vec3(uRMatrix * vec4(aVertexNormal,1.0));
 
     vMVMatrix = uMVMatrix;
     vPMatrix = uPMatrix;
 
-//    vPlanePointMin = (uMVMatrix * vec4(-5., -5., 0., 1.)).xyz;
-//    vPlanePointMax = (uMVMatrix * vec4(5., 5., 0., 1.)).xyz;
-
-//    vPlanePointMin = (uMVMatrix * vec3(-5., -5., -5., 0.)).xyz;
-//    vPlanePointMax = (uMVMatrix * vec4(5., 5., 5., 0.)).xyz;
-
-//    vPlanePointMin = (uMVMatrix * vec4(-10.5, -10.5, 0., 1.)).xyz;
-//    vPlanePointMax = (uMVMatrix * vec4(10.5, 10.5, 0., 1.)).xyz;
-
-//    vec4 vertexProjection = uPMatrix * vertexPosition;
-//    float xProj = vertexProjection.x;
-//    float yProj = vertexProjection.y;
-//
-//    float x = (xProj - 1280. / 2.) / 1280.;
-//    float y = (yProj - 720. / 2.) / 1280.;
-//
-//
-//    vDirectionRay = vec3(x, y, -100.);
+    vPlanePointMax = (uMVMatrix * vec4(10.5, 10.5, 0., 1.)).xyz;
 
     gl_Position = uPMatrix * vertexPosition;
 }
