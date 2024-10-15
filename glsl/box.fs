@@ -45,6 +45,14 @@ void main(void) {
 
     float multiplier = 1.;
     vec3 point = rayOrigin + rayDir * multiplier;
+    if(point.x > 0.)
+    {
+        point.x = 1.;
+    }
+    if(point.y > 0.)
+    {
+        point.y = 1.;
+    }
     color = point;
 
     gl_FragColor = vec4(color, 1.0);
