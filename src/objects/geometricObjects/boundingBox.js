@@ -170,10 +170,24 @@ class BoundingBox extends ObjectToDraw {
             { attribName: "aVertexPosition", buffer: this.vBuffer, itemSize: this.vBuffer.itemSize },
             { attribName: "aVertexNormal", buffer: this.nRedBuffer, itemSize: this.nRedBuffer.itemSize },
         ]);
+
+        this.shader.invRMatrixUniform = gl.getUniformLocation(this.shader, "uinvRMatrix");
+        this.shader.invMvMatrixUniform = gl.getUniformLocation(this.shader, "uinvMVMatrix");
+        this.shader.invPMatrixUniform = gl.getUniformLocation(this.shader, "uinvPMatrix");
     }
 
     setUniforms() {
-        // we don't need to set any uniform for this object
+
+
+        gl.uniformMatrix4fv(this.shader.invRMatrixUniform, false, mat4.inverse(rotMatrix));
+        this.checkGlError();
+
+        gl.uniformMatrix4fv(this.shader.invMvMatrixUniform, false, mat4.inverse(mvMatrix));
+        this.checkGlError();
+
+        gl.uniformMatrix4fv(this.shader.invPMatrixUniform, false, mat4.inverse(pMatrix));
+        this.checkGlError();
+
     }
 
     // --------------------------------------------

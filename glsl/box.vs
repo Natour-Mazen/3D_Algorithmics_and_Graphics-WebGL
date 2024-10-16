@@ -10,7 +10,9 @@ varying vec3 vVertexNormal;
 varying mat4 vMVMatrix;
 varying mat4 vPMatrix;
 
+varying vec3 vPlanePointMin;
 varying vec3 vPlanePointMax;
+varying vec3 vCameraPosition;
 
 void main(void) {
     vec4 vertexPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
@@ -20,6 +22,9 @@ void main(void) {
     vMVMatrix = uMVMatrix;
     vPMatrix = uPMatrix;
 
+    vCameraPosition = (uMVMatrix * vec4(0., 0., 0., 1.)).xyz;
+    vPlanePointMin = (uMVMatrix * vec4(-5.5, -5.5, 0., 1.)).xyz;
+    vPlanePointMax = (uMVMatrix * vec4(5.5, 5.5, 0., 1.)).xyz;
     vPlanePointMax = (uMVMatrix * vec4(10.5, 10.5, 0., 1.)).xyz;
 
     gl_Position = uPMatrix * vertexPosition;
