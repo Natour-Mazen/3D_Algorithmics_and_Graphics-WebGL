@@ -37,3 +37,6 @@ void main(void) {
 // TODO : Dans le Frag, (si non on affiche rien, la couleur du fond), si oui on fait Bresenham pour avoir la ligne sur la height map.
 // TODO : Dnas le Frag, passer par tout les points de la ligne et voir si en avançant le point en même temps que la ligne
 // si on est à la même hauteur que la height map.
+
+
+

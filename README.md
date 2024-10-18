@@ -107,3 +107,52 @@ et initialiser les composants UI pour les bump maps.
 - L'interface utilisateur est entièrement générée en JavaScript pour permettre une interaction dynamique.
 - L'application a été testée plusieurs fois et tout fonctionne correctement sans erreurs 
 (sauf erreur d’analyse XML qui ne sont pas produites par notre code).
+
+
+  
+## Vertex
+pos3D
+posCam
+RiMatrix
+
+aVertexPosition
+
+RiMatrix = transpose(MVMatrix)
+
+vec4 posCam = PMatrix * MVMatrix * aVertexPosition;
+
+gl_Position = posCam
+posCam.z /= posCam.w >>> on enleve la projection
+
+## Fragment
+pos3D
+posCam
+RiMatrix
+
+vec2 pixel = posCam.xy / posCam.w;
+dirCam = vec3(pixel, -2,41);
+dirPixelObj = (RiMatrix * vec4(dirCam, 1.0)).xyz;
+
+t = - (pos3D.z / dirPixelObj.z) >>> la position en z = 0
+P = pos3D + t * dir 
+
+>>> ensuite si 'P' est dans la boite, on fait le raymarching (sachant que 'P' est dans l'espace)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
