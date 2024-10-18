@@ -33,7 +33,7 @@ vec3 computeRayDirection(vec2 fragCoord, vec2 resolution) {
 
     //rayDir = (vPMatrix * vec4(rayDir, 1.0)).xyz;
 
-    vec4 clipSpace = vec4(ndc, -1.0, 1.0); // Clip space position
+    vec4 clipSpace = vec4(ndc.x, ndc.y, 1.0, 1.0); // Clip space position
     vec4 viewSpace = uinvPMatrix * clipSpace; // Pass to view space
 
     viewSpace /= viewSpace.w; // Normalize the perspective division
@@ -88,14 +88,21 @@ void main(void) {
         multiplier += 0.1;
         point = rayOrigin + rayDir * multiplier;
     }
-    if(rayDir.x > 0.)
-    {
-        rayDir.x = 1.;
-    }
-    if(rayDir.y > 0.)
-    {
-        rayDir.y = 1.;
-    }
+//    if(rayDir.x > 0.)
+//    {
+//        rayDir.x = 1.;
+//    }
+//    if(rayDir.y > 0.)
+//    {
+//        rayDir.y = 1.;
+//    }
+//    if(rayDir.z > 0.)
+//    {
+//        rayDir.z = 1.;
+//    }
+    rayDir.x = 0.;
+    rayDir.y = 0.;
+    //rayDir.z = 0.;
     color = rayDir;
 
     gl_FragColor = vec4(color, 1.0);

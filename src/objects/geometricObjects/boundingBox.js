@@ -178,14 +178,22 @@ class BoundingBox extends ObjectToDraw {
 
     setUniforms() {
 
+        let invRotMatrix = [];
+        mat4.inverse(rotMatrix, invRotMatrix);
 
-        gl.uniformMatrix4fv(this.shader.invRMatrixUniform, false, mat4.inverse(rotMatrix));
+        let invMvMatrix = [];
+        mat4.inverse(mvMatrix, invMvMatrix);
+
+        let invPMatrix = [];
+        mat4.inverse(pMatrix, invPMatrix);
+
+        gl.uniformMatrix4fv(this.shader.invRMatrixUniform, false, mat4.inverse(invRotMatrix));
         this.checkGlError();
 
-        gl.uniformMatrix4fv(this.shader.invMvMatrixUniform, false, mat4.inverse(mvMatrix));
+        gl.uniformMatrix4fv(this.shader.invMvMatrixUniform, false, mat4.inverse(invMvMatrix));
         this.checkGlError();
 
-        gl.uniformMatrix4fv(this.shader.invPMatrixUniform, false, mat4.inverse(pMatrix));
+        gl.uniformMatrix4fv(this.shader.invPMatrixUniform, false, mat4.inverse(invPMatrix));
         this.checkGlError();
 
     }
