@@ -41,7 +41,7 @@ void main(void)
     vec3 dirCam = vec3(pixel, -2.41);
 
     // Transformation du rayon dans l'espace objet
-    vec3 dirPixelObj = (viMVMatrix * vec4(dirCam, 1.0)).xyz;
+    vec3 dirPixelObj = normalize((viMVMatrix * vec4(dirCam, 1.0)).xyz);
 
     //loat t = 0.005;
     float t = PAS;
@@ -53,7 +53,7 @@ void main(void)
 
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
-        if(heightMapL > position.z - 0.5 && heightMapL < position.z + 0.5)
+        if(abs(heightMapL - position.z) < 0.2)
         {
             vec4 texColor = texture2D(uHeightMapTextureSampler, ((position.xy / SCALE) + 1.) / 2.);
             color = texColor.xyz;
