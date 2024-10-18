@@ -8,6 +8,7 @@ const int MAX_ITERATIONS = 1000;  // Constante d'itérations maximum (si nécess
 
 varying vec3 vVertexPosition;        // Position 3D du vertex
 varying vec4 vVertexPositionSpace;   // Position projetée dans l'espace caméra
+varying mat4 viMVMatrix;
 
 void main(void) {
     // Couleur par défaut (gris clair)
@@ -20,7 +21,7 @@ void main(void) {
     vec3 dirCam = vec3(pixel, -2.41);
 
     // Transformation du rayon dans l'espace objet
-    vec3 dirPixelObj = (uinvMVMatrix * vec4(dirCam, 1.0)).xyz;
+    vec3 dirPixelObj = (viMVMatrix * vec4(dirCam, 1.0)).xyz;
 
     // Calcul de la valeur de `t` pour l'intersection avec le plan z = 0
     float t = -(vVertexPosition.z / dirPixelObj.z);
@@ -29,7 +30,8 @@ void main(void) {
     vec3 position = vVertexPosition + t * dirPixelObj;
 
     // Si le point est dans les bornes du plan (boîte englobante)
-    if(position.x >= 1.0 || position.x <= -1.0 || position.y >= 1.0 || position.y <= -1.0) {
+    if(position.x >= 10.0 || position.x <= -10.0 || position.y >= 10.0 || position.y <= -10.0)
+    {
         discard;
     }
     // On change la couleur du plan en rouge

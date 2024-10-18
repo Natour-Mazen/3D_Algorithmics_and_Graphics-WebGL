@@ -182,7 +182,7 @@ class BoundingBox extends ObjectToDraw {
         mat4.inverse(rotMatrix, invRotMatrix);
 
         let invMvMatrix = [];
-        mat4.inverse(mvMatrix, invMvMatrix);
+        mat4.transpose(mvMatrix, invMvMatrix);
 
         let invPMatrix = [];
         mat4.inverse(pMatrix, invPMatrix);
