@@ -51,7 +51,12 @@ let flattenFactorBoundingBoxHeightMap = 1;
 /**
  * @constant {string}
  */
-const DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE  = loadTexture(gl, 'res/textures/white.png') ;
+const DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE = 'res/textures/white.png';
+
+/**
+ * @constant {string}
+ */
+const DEFAULT_BOUNDINGBOX_HEIGHTMAP_TYPE = 'res/heightMaps/texture1.png';
 
 /**
  * @constant {number}
@@ -62,20 +67,22 @@ function handleBoundingBoxHeightMapSelection(selectedHeightMap, selectionType) {
     if (selectedHeightMap !== 'None') {
         if (selectionType === 'type') {
             const boundingBoxHeightMapPath = `res/heightMaps/${selectedHeightMap}`;
-            boundingBoxHeightMapType = loadTexture(gl, boundingBoxHeightMapPath);
+            boundingBoxHeightMapType = loadTextureAndExtractL(gl, boundingBoxHeightMapPath);
         } else if (selectionType === 'texture') {
             const boundingBoxHeightMapTexturePath = `res/textures/${selectedHeightMap}`;
-            boundingBoxHeightMapTexture = loadTexture(gl, boundingBoxHeightMapTexturePath);
+            boundingBoxHeightMapTexture = loadTextureAndExtractL(gl, boundingBoxHeightMapTexturePath);
         }
 
         if (boundingBoxHeightMapTexture === null) {
-            boundingBoxHeightMapTexture = DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE;
+            boundingBoxHeightMapTexture = loadTextureAndExtractL(gl, DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE);
         }
     } else {
         if (selectionType === 'type') {
-            boundingBoxHeightMapType = null;
+         //   boundingBoxHeightMapType = null;
+            boundingBoxHeightMapType = loadTextureAndExtractL(gl, DEFAULT_BOUNDINGBOX_HEIGHTMAP_TYPE);
         } else if (selectionType === 'texture') {
-            boundingBoxHeightMapTexture = DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE;
+            boundingBoxHeightMapTexture = loadTextureAndExtractL(gl, DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE);
+            //boundingBoxHeightMapTexture = DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE;
         }
     }
 }
