@@ -174,6 +174,9 @@ class BoundingBox extends ObjectToDraw {
         this.shader.invRMatrixUniform = gl.getUniformLocation(this.shader, "uinvRMatrix");
         this.shader.invMvMatrixUniform = gl.getUniformLocation(this.shader, "uinvMVMatrix");
         this.shader.invPMatrixUniform = gl.getUniformLocation(this.shader, "uinvPMatrix");
+
+        this.shader.uBumpSampler = gl.getUniformLocation(this.shader, "uBumpSampler");
+        this.shader.uSampler = gl.getUniformLocation(this.shader, "uSampler");
     }
 
     setUniforms() {
@@ -194,6 +197,18 @@ class BoundingBox extends ObjectToDraw {
         this.checkGlError();
 
         gl.uniformMatrix4fv(this.shader.invPMatrixUniform, false, mat4.inverse(invPMatrix));
+        this.checkGlError();
+
+        // Bind and set the bump map texture
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, boundingBoxHeightMapType);
+        gl.uniform1i(this.shader.uBumpSampler, 0); // Use texture unit 0 for bump map
+        this.checkGlError();
+
+        // Bind and set the main texture
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, boundingBoxHeightMapTexture);
+        gl.uniform1i(this.shader.uSampler, 1); // Use texture unit 1 for main texture
         this.checkGlError();
 
     }
