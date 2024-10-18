@@ -67,21 +67,21 @@ function handleBoundingBoxHeightMapSelection(selectedHeightMap, selectionType) {
     if (selectedHeightMap !== 'None') {
         if (selectionType === 'type') {
             const boundingBoxHeightMapPath = `res/heightMaps/${selectedHeightMap}`;
-            boundingBoxHeightMapType = loadTextureAndExtractL(gl, boundingBoxHeightMapPath);
+            boundingBoxHeightMapType = loadTexture(gl, boundingBoxHeightMapPath);
         } else if (selectionType === 'texture') {
             const boundingBoxHeightMapTexturePath = `res/textures/${selectedHeightMap}`;
-            boundingBoxHeightMapTexture = loadTextureAndExtractL(gl, boundingBoxHeightMapTexturePath);
+            boundingBoxHeightMapTexture = loadTexture(gl, boundingBoxHeightMapTexturePath);
         }
 
         if (boundingBoxHeightMapTexture === null) {
-            boundingBoxHeightMapTexture = loadTextureAndExtractL(gl, DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE);
+            boundingBoxHeightMapTexture = loadTexture(gl, DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE);
         }
     } else {
         if (selectionType === 'type') {
          //   boundingBoxHeightMapType = null;
-            boundingBoxHeightMapType = loadTextureAndExtractL(gl, DEFAULT_BOUNDINGBOX_HEIGHTMAP_TYPE);
+            boundingBoxHeightMapType = loadTexture(gl, DEFAULT_BOUNDINGBOX_HEIGHTMAP_TYPE);
         } else if (selectionType === 'texture') {
-            boundingBoxHeightMapTexture = loadTextureAndExtractL(gl, DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE);
+            boundingBoxHeightMapTexture = loadTexture(gl, DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE);
             //boundingBoxHeightMapTexture = DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE;
         }
     }
