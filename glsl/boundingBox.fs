@@ -56,13 +56,11 @@ void main(void) {
     // Weight of the color.
     float weight = max(dot(normal, lightDir), 0.0);
 
-    vec4 texColor = texture2D(uSampler, (position.xy + 1.) / 2.);
+    vec4 texColor = texture2D(uSampler, (pixel.xy + 1.) / 2.);
 
     // Course Formula.
     vec3 fragColor = uLightColor.rgb * texColor.rgb * (1.0 / uPI) * weight * uLightIntensity;
 
     // Sortie de la couleur du fragment
-    gl_FragColor = vec4(fragColor, 1.0);
-
-
+    gl_FragColor = vec4(texColor.rgb, 1.0);
 }
