@@ -51,7 +51,7 @@ let flattenFactorBoundingBoxHeightMap = 1;
 /**
  * @constant {string}
  */
-const DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE = 'res/textures/white.png';
+const DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE  = loadTexture(gl, 'res/textures/white.png') ;
 
 /**
  * @constant {number}
@@ -61,19 +61,21 @@ const DEFAULT_BOUNDINGBOX_HEIGHTMAP_SCALE = 1;
 function handleBoundingBoxHeightMapSelection(selectedHeightMap, selectionType) {
     if (selectedHeightMap !== 'None') {
         if (selectionType === 'type') {
-            boundingBoxHeightMapType = `res/heightMaps/${selectedHeightMap}`;
+            const boundingBoxHeightMapPath = `res/heightMaps/${selectedHeightMap}`;
+            boundingBoxHeightMapType = loadTexture(gl, boundingBoxHeightMapPath);
         } else if (selectionType === 'texture') {
-            boundingBoxHeightMapTexture = `res/textures/${selectedHeightMap}`;
+            const boundingBoxHeightMapTexturePath = `res/textures/${selectedHeightMap}`;
+            boundingBoxHeightMapTexture = loadTexture(gl, boundingBoxHeightMapTexturePath);
         }
 
         if (boundingBoxHeightMapTexture === null) {
-            boundingBoxHeightMapTexture = DEFAULT_HEIGHTMAP_TEXTURE;
+            boundingBoxHeightMapTexture = DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE;
         }
     } else {
         if (selectionType === 'type') {
             boundingBoxHeightMapType = null;
         } else if (selectionType === 'texture') {
-            boundingBoxHeightMapTexture = DEFAULT_HEIGHTMAP_TEXTURE;
+            boundingBoxHeightMapTexture = DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE;
         }
     }
 }
