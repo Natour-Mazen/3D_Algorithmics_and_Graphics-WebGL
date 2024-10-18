@@ -113,7 +113,7 @@ et initialiser les composants UI pour les bump maps.
 ## Vertex
 pos3D
 posCam
-RiMatrix
+RiMatrix >>> rotation inverse Matrix de la modele Vue
 
 aVertexPosition
 

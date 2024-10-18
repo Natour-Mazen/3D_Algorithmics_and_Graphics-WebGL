@@ -1,6 +1,6 @@
 class BoundingBox extends ObjectToDraw {
     // --------------------------------------------
-    constructor(shaderName = 'glsl/box') {
+    constructor(shaderName = 'glsl/bb') {
         super(shaderName, -1, null);
     }
 
