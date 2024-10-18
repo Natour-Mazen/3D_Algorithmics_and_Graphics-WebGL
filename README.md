@@ -137,6 +137,10 @@ t = - (pos3D.z / dirPixelObj.z) >>> la position en z = 0
 P = pos3D + t * dir 
 
 >>> ensuite si 'P' est dans la boite, on fait le raymarching (sachant que 'P' est dans l'espace)
+> 
+> 
+
+la diagonal de ma bb / racine_carre(hauteur^2 + largeur^2) * 2
 
 
 

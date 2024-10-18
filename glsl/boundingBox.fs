@@ -14,7 +14,12 @@ uniform mat4 uinvMVMatrix;  // Matrice inverse modèle-vue
 uniform mat4 uinvPMatrix;   // Matrice inverse de projection
 
 const int MAX_ITERATIONS = 1000;  // Constante d'itérations maximum (si nécessaire)
+const float SCALE = 10.5;
+const float BOUNDING_BOX_SIZE = 10.5;
+const float FLATTEN = 10.5;
 
+const float DIAGO = sqrt(sqrt(10.5 * 10.5 + 10.5 * 10.5) * sqrt(10.5 * 10.5 + 10.5 * 10.5) + 10.5 * 10.5);
+const float PAS = DIAGO / sqrt(512. * 512. + 512. * 512.) * 2.;
 
 varying vec3 vVertexPositionMV;
 varying vec3 vVertexPosition;        // Position 3D du vertex
@@ -38,32 +43,36 @@ void main(void)
     // Transformation du rayon dans l'espace objet
     vec3 dirPixelObj = (viMVMatrix * vec4(dirCam, 1.0)).xyz;
 
-    float t = 1.;
+    //loat t = 0.005;
+    float t = PAS;
     vec3 position = vVertexPosition + t * dirPixelObj;
 
-    vec4 texHeightMap = texture2D(uHeightMapTypeSampler, ((position.xy / 10.5) + 1.) / 2.);
+    vec4 texHeightMap = texture2D(uHeightMapTypeSampler, ((position.xy / SCALE) + 1.) / 2.);
     //float heightMapL = RGB2Lab(texHeightMap.xyz).x;
-    float heightMapL = texHeightMap.x * 10.5;
+    float heightMapL = texHeightMap.x * FLATTEN;
 
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
-        if(heightMapL > position.z || position.x >= 10.5 || position.x <= -10.5 || position.y >= 10.5 || position.y <= -10.5)
+        if(heightMapL > position.z - 0.5 && heightMapL < position.z + 0.5)
         {
-            break;
-        }
-        if(heightMapL > position.z - 0.9 && heightMapL < position.z + 0.9)
-        //if(heightMapL == position.z)
-        {
-            vec4 texColor = texture2D(uHeightMapTextureSampler, ((position.xy / 10.5) + 1.) / 2.);
+            vec4 texColor = texture2D(uHeightMapTextureSampler, ((position.xy / SCALE) + 1.) / 2.);
             color = texColor.xyz;
             //color = vec3(1., 0., 0.);
+            break;
+        }
+        if(heightMapL > position.z || position.x >= BOUNDING_BOX_SIZE || position.x <= -BOUNDING_BOX_SIZE
+        || position.y >= BOUNDING_BOX_SIZE || position.y <= -BOUNDING_BOX_SIZE)
+        {
+            discard;
+            break;
         }
 
-        t += 0.01;
+        //t += 0.005;
+        t += PAS;
         position = vVertexPosition + t * dirPixelObj;
-        texHeightMap = texture2D(uHeightMapTypeSampler, ((position.xy / 10.5) + 1.) / 2.);
+        texHeightMap = texture2D(uHeightMapTypeSampler, ((position.xy / SCALE) + 1.) / 2.);
         //heightMapL = RGB2Lab(texHeightMap.xyz).x;
-        heightMapL =  texHeightMap.x * 10.5;
+        heightMapL =  texHeightMap.x * FLATTEN;
     }
 
     /*
