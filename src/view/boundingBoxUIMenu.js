@@ -24,16 +24,6 @@ let theBoundingBox = null;
 let isWireFrameActiveBoundingBox = false;
 
 /**
- * @type {String}
- */
-let selectedHeightMapTypeBoundingBox = "None";
-
-/**
- * @type {String}
- */
-let selectedHeightMapTextureBoundingBox = "None";
-
-/**
  * @constant {string[]}
  */
 const boundingBoxHeightMapTypeLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png'];
@@ -68,6 +58,25 @@ const DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE = 'res/textures/white.png';
  */
 const DEFAULT_BOUNDINGBOX_HEIGHTMAP_SCALE = 1;
 
+function handleBoundingBoxHeightMapSelection(selectedHeightMap, selectionType) {
+    if (selectedHeightMap !== 'None') {
+        if (selectionType === 'type') {
+            boundingBoxHeightMapType = `res/heightMaps/${selectedHeightMap}`;
+        } else if (selectionType === 'texture') {
+            boundingBoxHeightMapTexture = `res/textures/${selectedHeightMap}`;
+        }
+
+        if (boundingBoxHeightMapTexture === null) {
+            boundingBoxHeightMapTexture = DEFAULT_HEIGHTMAP_TEXTURE;
+        }
+    } else {
+        if (selectionType === 'type') {
+            boundingBoxHeightMapType = null;
+        } else if (selectionType === 'texture') {
+            boundingBoxHeightMapTexture = DEFAULT_HEIGHTMAP_TEXTURE;
+        }
+    }
+}
 
 
 /**
@@ -76,13 +85,13 @@ const DEFAULT_BOUNDINGBOX_HEIGHTMAP_SCALE = 1;
 function initBoundingBoxUIComponents() {
 
     initSelector(boundingBoxElements.heightMapTypeSelector, boundingBoxHeightMapTypeLoader, function () {
-        selectedHeightMapTypeBoundingBox = this.value;
-        console.log("Selected height map type: " + selectedHeightMapTypeBoundingBox);
+        console.log("Selected height map type: " + this.value);
+        handleBoundingBoxHeightMapSelection(this.value, 'type');
     });
 
     initSelector(boundingBoxElements.heightMapTextureSelector, boundingBoxHeightMapTextureLoader, function () {
-        selectedHeightMapTextureBoundingBox = this.value;
-        console.log("Selected height map texture: " + selectedHeightMapTextureBoundingBox);
+        console.log("Selected height map texture: " + this.value);
+        handleBoundingBoxHeightMapSelection(this.value, 'texture');
     });
 
     initToggle(boundingBoxElements.toggle,false, function () {
