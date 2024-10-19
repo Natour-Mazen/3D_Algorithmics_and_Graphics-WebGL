@@ -2,6 +2,8 @@ class BoundingBox extends ObjectToDraw {
     // --------------------------------------------
     constructor(shaderName = 'glsl/boundingBox') {
         super(shaderName, -1, null);
+        this.boundingBoxHeightMapflattenFactor = 1;
+        this.boundingBoxHeightMapScale = 1;
     }
 
     // --------------------------------------------
@@ -240,4 +242,15 @@ class BoundingBox extends ObjectToDraw {
 
         }
     }
+
+    // --------------------------------------------
+    setScale(scale) {
+        this.boundingBoxHeightMapScale = scale;
+    }
+
+    setBoundingBoxHeightMapFlattenFactor(value) {
+        this.boundingBoxHeightMapflattenFactor = value;
+    }
+
+
 }

@@ -44,11 +44,6 @@ let boundingBoxHeightMapType = null;
 let boundingBoxHeightMapTexture = null;
 
 /**
- * @type {number}
- */
-let flattenFactorBoundingBoxHeightMap = 1;
-
-/**
  * @constant {string}
  */
 const DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE = 'res/textures/white.png';
@@ -79,11 +74,8 @@ function handleBoundingBoxHeightMapSelection(selectedHeightMap, selectionType) {
     } else {
         if (selectionType === 'type') {
             boundingBoxHeightMapType = null;
-           // boundingBoxHeightMapType = loadTexture(gl, DEFAULT_BOUNDINGBOX_HEIGHTMAP_TYPE);
         } else if (selectionType === 'texture') {
             boundingBoxHeightMapTexture = null;
-           // boundingBoxHeightMapTexture = loadTexture(gl, DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE);
-            //boundingBoxHeightMapTexture = DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE;
         }
 
     }
@@ -117,6 +109,20 @@ function initBoundingBoxUIComponents() {
 
     initSwitch(boundingBoxElements.switch, isWireFrameActiveBoundingBox = false, function () {
         isWireFrameActiveBoundingBox = this.checked;
+    });
+
+    initSlider(boundingBoxElements.heightMapScaleSlider, function () {
+        if(theBoundingBox !== null){
+            theBoundingBox.setScale(this.value);
+            boundingBoxElements.heightMapScaleValueDisplay.innerHTML = this.value;
+        }
+    });
+
+    initSlider(boundingBoxElements.heightMapFlattenSlider, function () {
+        if(theBoundingBox !== null){
+            theBoundingBox.setBoundingBoxHeightMapFlattenFactor(this.value);
+            boundingBoxElements.heightMapFlattenValueDisplay.innerHTML = this.value;
+        }
     });
 
 }
