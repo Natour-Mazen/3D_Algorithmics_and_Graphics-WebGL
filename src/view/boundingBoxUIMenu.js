@@ -78,12 +78,14 @@ function handleBoundingBoxHeightMapSelection(selectedHeightMap, selectionType) {
         }
     } else {
         if (selectionType === 'type') {
-         //   boundingBoxHeightMapType = null;
-            boundingBoxHeightMapType = loadTexture(gl, DEFAULT_BOUNDINGBOX_HEIGHTMAP_TYPE);
+            boundingBoxHeightMapType = null;
+           // boundingBoxHeightMapType = loadTexture(gl, DEFAULT_BOUNDINGBOX_HEIGHTMAP_TYPE);
         } else if (selectionType === 'texture') {
-            boundingBoxHeightMapTexture = loadTexture(gl, DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE);
+            boundingBoxHeightMapTexture = null;
+           // boundingBoxHeightMapTexture = loadTexture(gl, DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE);
             //boundingBoxHeightMapTexture = DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE;
         }
+
     }
 }
 
