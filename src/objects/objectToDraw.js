@@ -109,6 +109,8 @@ class ObjectToDraw {
         this.shader.uLightSpecular = gl.getUniformLocation(this.shader, "uLightSpecular");
         this.shader.uMaterialShininess = gl.getUniformLocation(this.shader, "uMaterialShininess");
         this.shader.uMaterialSpecular = gl.getUniformLocation(this.shader, "uMaterialSpecular");
+        this.shader.uLightShininess = gl.getUniformLocation(this.shader, "uLightShininess");
+        this.shader.uIsPhongShader = gl.getUniformLocation(this.shader, "uIsPhongShader");
         this.shader.uPI = gl.getUniformLocation(this.shader, "uPI");
     }
 
@@ -161,6 +163,14 @@ class ObjectToDraw {
 
         // Set the material shininess.
         gl.uniform1f(this.shader.uMaterialShininess, this.objectLight.getMaterialShininess());
+        this.checkGlError();
+
+        // Set the light shininess.
+        gl.uniform1f(this.shader.uLightShininess, this.objectLight.getLightShininess());
+        this.checkGlError();
+
+        // Set the shader type.
+        gl.uniform1i(this.shader.uIsPhongShader, this.objectLight.getIsPhongShader());
         this.checkGlError();
 
         // Set the PI variable.
