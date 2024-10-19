@@ -5,8 +5,11 @@ uniform vec4 uColor; // Color of the material.
 uniform vec4 uAmbientLight; // The ambiant light.
 uniform vec4 uLightColor; // The color light.
 uniform vec3 uLightPosition; // Position of the light.
-uniform float uPI;
 uniform float uLightIntensity; // The light intensity.
+uniform float uPI;
+uniform vec4 uLightSpecular;
+uniform float uLightShininess;
+uniform bool uIsPhongShader; // true if the shader is a phong shader, false otherwise.
 
 varying vec4 vVertexPosition;
 varying vec3 vVertexNormal;
@@ -23,7 +26,30 @@ void main(void)
 
 	// OLD formula.
 	//vec3 fragColor = uColor.rgb * (uAmbientLight.rgb + weight * uLightColor.rgb);
-	vec3 fragColor = uLightColor.rgb * uColor.rgb * (1.0 / uPI) * weight * uLightIntensity;
+
+	vec3 fragColor;
+	// Course Formula.
+	if(uIsPhongShader){
+		fragColor = phongLighting( // phongLighting function from glsl/common.glsl
+			uLightShininess, // shininess
+			lightDir, // lightDir
+			uLightSpecular, // lightSpecular
+			uLightColor, // lightColor
+			uColor, // texColor or the color of the material
+			uPI, // PI
+			weight, // weight
+			normal // normal
+		);
+	}else{
+		fragColor = lambertLighting( // lambertLighting function from glsl/common.glsl
+			uLightIntensity, // lightIntensity
+			uLightColor, // lightColor
+			uColor, // texColor the color of the material
+			weight, // weight
+			uPI // PI
+		);
+	}
+
 
 	gl_FragColor = vec4(fragColor, 1.0);
 }
