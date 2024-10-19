@@ -57,9 +57,9 @@ function loadCommonShader(Obj3D, callback) {
 
 function compileShaders(Obj3D) {
 
-    console.log("Compiling shaders for " + Obj3D.shaderName);
-    console.log(Obj3D.vsTxt);
-    console.log(Obj3D.fsTxt);
+    // console.log("Compiling shaders for " + Obj3D.shaderName);
+    // console.log(Obj3D.vsTxt);
+    // console.log(Obj3D.fsTxt);
 
 
     Obj3D.vshader = gl.createShader(gl.VERTEX_SHADER);

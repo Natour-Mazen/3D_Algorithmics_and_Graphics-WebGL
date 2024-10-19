@@ -13,6 +13,10 @@ class Light {
         this.materialShininess = 1000.0;
         // The light intensity
         this.intensity = 3.0;
+        // The light shininess
+        this.shininess = 4.0;
+        // The shader program.
+        this.isPhongShader = false ;
     }
 
     // Getters
@@ -40,6 +44,14 @@ class Light {
         return this.intensity;
     }
 
+    getLightShininess() {
+        return this.shininess;
+    }
+
+    getIsPhongShader() {
+        return this.isPhongShader;
+    }
+
     // Setters
     setLightPosition(position) {
         this.position = position;
@@ -63,6 +75,14 @@ class Light {
 
     setLightIntensity(intensity) {
         this.intensity = intensity;
+    }
+
+    setLightShininess(shininess) {
+        this.shininess = shininess;
+    }
+
+    setIsPhongShader(isPhongShader) {
+        this.isPhongShader = isPhongShader;
     }
 
 }
