@@ -4,17 +4,20 @@ uniform vec4 uColor; // Color of the material.
 uniform vec4 uAmbientLight; // The ambiant light.
 uniform vec4 uLightColor; // The color light.
 uniform float uLightIntensity; // The light intensity.
-uniform float uPI;
-uniform float uScale;
-uniform float uFlatten;
+uniform float uPI; // 3.14...
+uniform float uScale; // The scale factor.
+uniform float uFlatten; // The flattering factor.
+uniform float uImageWidth; // The image width.
+uniform float uImageHeight; // The image height.
+uniform bool uIsImageInColor; // If the image is in color (true) else (false).
 
-uniform sampler2D uHeightMapTypeSampler;
-uniform sampler2D uHeightMapTextureSampler;
+uniform sampler2D uHeightMapTypeSampler; // The height map.
+uniform sampler2D uHeightMapTextureSampler; // The texture.
 
-const int MAX_ITERATIONS = 1000;  // Constante d'itérations maximum (si nécessaire)
+const int MAX_ITERATIONS = 500; // For the ray marching.
 
 float DIAGO = sqrt(sqrt(uScale * uScale + uScale * uScale) * sqrt(uScale * uScale + uScale * uScale) + uScale * uScale);
-float PAS = DIAGO / sqrt(512. * 512. + 512. * 512.) * 2.;
+float PAS = DIAGO / sqrt(uImageWidth * uImageWidth + uImageHeight * uImageHeight) * 2.;
 
 
 varying vec3 vVertexPositionMV;
@@ -47,44 +50,40 @@ void main(void)
     // Transformation du rayon dans l'espace objet
     vec3 dirPixelObj = normalize((viMVMatrix * vec4(dirCam, 1.0)).xyz);
 
-
-
+    // The value that we increment during the ray marching.
     float t = PAS;
-    vec3 position = vVertexPosition + t * dirPixelObj;
-
-    vec4 texHeightMap = texture2D(uHeightMapTypeSampler, goodTexCoord(((position.xy / uScale) + 1.) / 2.));
-    //float heightMapL = RGB2Lab(texHeightMap.xyz).x;
-    float heightMapL = texHeightMap.x * uScale * uFlatten;
-
-    vec3 lastPosition = position;
+    // The value of the height of the height map.
+    float heightMapL = 0.;
+    // To know if the last position was above.
     bool above = false;
-    bool below = false;
-    bool lastAbove = false;
 
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
+        vec3 position = vVertexPosition + t * dirPixelObj;
+        vec4 texHeightMap = texture2D(uHeightMapTypeSampler, goodTexCoord(((position.xy / uScale) + 1.) / 2.));
+
+        if(uIsImageInColor) {
+            // We use the L of the LAB color metric.
+            heightMapL = RGB2Lab(texHeightMap.xyz).x * uFlatten * 0.1;
+        }
+        else {
+            // We use the R of the RGB color metric.
+            heightMapL =  texHeightMap.x * uScale * uFlatten;
+        }
+
+        t += PAS;
+
         // If the point is outside of the box.
         if(position.z < -0.1 || position.x >= uScale || position.x <= -uScale
         || position.y >= uScale || position.y <= -uScale)
         {
-//            if(below && lastAbove)
-//            {
-//                vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((lastPosition.xy / uScale) + 1.) / 2.));
-//                color = texColor.xyz;
-//                break;
-//            }
             discard;
             break;
-        }
-        if(above)
-        {
-            lastAbove = true;
         }
         // The pixel is above.
         if(heightMapL < position.z)
         {
             above = true;
-            below = false;
         }
         // The pixel is bolow.
         else if(heightMapL >= position.z)
@@ -92,21 +91,12 @@ void main(void)
             // If it was above before.
             if(above)
             {
-                vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((lastPosition.xy / uScale) + 1.) / 2.));
+                vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((position.xy / uScale) + 1.) / 2.));
                 color = texColor.xyz;
                 break;
             }
-            below = true;
             above = false;
         }
-
-        //t += 0.005;
-        t += PAS;
-        lastPosition = position;
-        position = vVertexPosition + t * dirPixelObj;
-        texHeightMap = texture2D(uHeightMapTypeSampler, goodTexCoord(((position.xy / uScale) + 1.) / 2.));
-        //heightMapL = RGB2Lab(texHeightMap.xyz).x;
-        heightMapL =  texHeightMap.x * uScale * uFlatten;
     }
 
 

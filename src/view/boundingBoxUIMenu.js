@@ -26,7 +26,7 @@ let isWireFrameActiveBoundingBox = false;
 /**
  * @constant {string[]}
  */
-const boundingBoxHeightMapTypeLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png'];
+const boundingBoxHeightMapTypeLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png', "texture2Colored.png"];
 
 /**
  * @type {string[]}

@@ -177,14 +177,33 @@ class BoundingBox extends ObjectToDraw {
         this.shader.uHeightMapTextureSampler = gl.getUniformLocation(this.shader, "uHeightMapTextureSampler");
         this.shader.uScale = gl.getUniformLocation(this.shader, "uScale");
         this.shader.uFlatten = gl.getUniformLocation(this.shader, "uFlatten");
+        this.shader.uImageWidth = gl.getUniformLocation(this.shader, "uImageWidth");
+        this.shader.uImageHeight = gl.getUniformLocation(this.shader, "uImageHeight");
+        this.shader.uIsImageInColor = gl.getUniformLocation(this.shader, "uIsImageInColor");
     }
 
     setUniforms() {
 
+        // We send the scale factor.
         gl.uniform1f(this.shader.uScale, /*this.boundingBoxHeightMapScale*/ this.scale);
         this.checkGlError();
 
+        // We send the flattering factor (between 0.1 and 1.).
         gl.uniform1f(this.shader.uFlatten, 1.1 - parseFloat(this.boundingBoxHeightMapflattenFactor) * 0.1);
+        this.checkGlError();
+
+        // We send the image width.
+        gl.uniform1f(this.shader.uImageWidth, 512.);
+        this.checkGlError();
+
+        // We send the image height.
+        gl.uniform1f(this.shader.uImageHeight, 512.);
+        this.checkGlError();
+
+        // We tell if the image is in color (1) or not (0).
+        // If (1) -> we use the L in the LAB color metric.
+        // If (0) -> we use the R in the RGB color metric.
+        gl.uniform1i(this.shader.uIsImageInColor, 0);
         this.checkGlError();
 
 
