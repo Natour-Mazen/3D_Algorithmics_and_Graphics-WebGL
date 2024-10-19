@@ -188,7 +188,7 @@ class BoundingBox extends ObjectToDraw {
         this.checkGlError();
 
         // We send the flattering factor (between 0.1 and 1.).
-        gl.uniform1f(this.shader.uFlatten, 1.1 - parseFloat(this.boundingBoxHeightMapflattenFactor) * 0.1);
+        gl.uniform1f(this.shader.uFlatten, 1.1 - this.boundingBoxHeightMapflattenFactor * 0.1);
         this.checkGlError();
 
         // We send the image width.
