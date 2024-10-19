@@ -4,8 +4,6 @@ function loadShaders(Obj3D) {
         loadShaderText(Obj3D, '.vs');
         loadShaderText(Obj3D, '.fs');
     });
-    // loadShaderText(Obj3D, '.vs');
-    // loadShaderText(Obj3D, '.fs');
 }
 
 function loadShaderText(Obj3D, ext) {
@@ -18,6 +16,7 @@ function loadShaderText(Obj3D, ext) {
             if (Obj3D.loaded === 2) {
                 Obj3D.loaded++;
                 const commonCode = Obj3D.commonTxt;
+                // Uncomment the following line to inject common code into the vertex shader
                 //Obj3D.vsTxt = injectCommonCode(Obj3D.vsTxt, commonCode);
                 Obj3D.fsTxt = injectCommonCode(Obj3D.fsTxt, commonCode);
                 compileShaders(Obj3D);
@@ -57,10 +56,10 @@ function loadCommonShader(Obj3D, callback) {
 
 function compileShaders(Obj3D) {
 
+    // For debugging purposes
     // console.log("Compiling shaders for " + Obj3D.shaderName);
     // console.log(Obj3D.vsTxt);
     // console.log(Obj3D.fsTxt);
-
 
     Obj3D.vshader = gl.createShader(gl.VERTEX_SHADER);
     gl.shaderSource(Obj3D.vshader, Obj3D.vsTxt);
