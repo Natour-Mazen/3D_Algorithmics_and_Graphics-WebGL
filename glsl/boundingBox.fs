@@ -43,63 +43,75 @@ void main(void)
     // Transformation du rayon dans l'espace objet
     vec3 dirPixelObj = normalize((viMVMatrix * vec4(dirCam, 1.0)).xyz);
 
-    //loat t = 0.005;
+
+    //float t = 0.1;
     float t = PAS;
+    //vec3 position = vVertexPosition + t * dirPixelObj;
     vec3 position = vVertexPosition + t * dirPixelObj;
 
     vec4 texHeightMap = texture2D(uHeightMapTypeSampler, ((position.xy / SCALE) + 1.) / 2.);
     //float heightMapL = RGB2Lab(texHeightMap.xyz).x;
     float heightMapL = texHeightMap.x * FLATTEN;
 
+    vec3 lastPosition = position;
+    bool above = false;
+    bool below = false;
+    bool lastAbove = false;
+
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
-        if(abs(heightMapL - position.z) < 0.2)
+        // If the point is outside of the box.
+        if(position.z < -0.5 || position.x > BOUNDING_BOX_SIZE || position.x < -BOUNDING_BOX_SIZE
+        || position.y > BOUNDING_BOX_SIZE || position.y < -BOUNDING_BOX_SIZE)
         {
-            vec4 texColor = texture2D(uHeightMapTextureSampler, ((position.xy / SCALE) + 1.) / 2.);
-            color = texColor.xyz;
-            //color = vec3(1., 0., 0.);
-            break;
-        }
-        if(heightMapL > position.z || position.x >= BOUNDING_BOX_SIZE || position.x <= -BOUNDING_BOX_SIZE
-        || position.y >= BOUNDING_BOX_SIZE || position.y <= -BOUNDING_BOX_SIZE)
-        {
+//            if(below && lastAbove)
+//            {
+//                vec4 texColor = texture2D(uHeightMapTextureSampler, ((lastPosition.xy / SCALE) + 1.) / 2.);
+//                color = texColor.xyz;
+//                break;
+//            }
             discard;
             break;
+        }
+//        // We hit a pixel that is above.
+//        if(heightMapL - position.z < 0.0001 && heightMapL - position.z > -0.0001)
+//        {
+//            vec4 texColor = texture2D(uHeightMapTextureSampler, ((position.xy / SCALE) + 1.) / 2.);
+//            color = texColor.xyz;
+//            break;
+//        }
+        if(above)
+        {
+            lastAbove = true;
+        }
+        // The pixel is above.
+        if(heightMapL < position.z)
+        {
+            above = true;
+            below = false;
+        }
+        // The pixel is bolow and was above before.
+        else if(heightMapL >= position.z)
+        {
+            if(above)
+            {
+                vec4 texColor = texture2D(uHeightMapTextureSampler, ((position.xy / SCALE) + 1.) / 2.);
+                color = texColor.xyz;
+                break;
+            }
+            below = true;
+            above = false;
         }
 
         //t += 0.005;
         t += PAS;
+        lastPosition = position;
         position = vVertexPosition + t * dirPixelObj;
         texHeightMap = texture2D(uHeightMapTypeSampler, ((position.xy / SCALE) + 1.) / 2.);
         //heightMapL = RGB2Lab(texHeightMap.xyz).x;
         heightMapL =  texHeightMap.x * FLATTEN;
     }
 
-    /*
-    // Calcul de la valeur de `t` pour l'intersection avec le plan z = 0
-    float t = -(vVertexPosition.z / dirPixelObj.z);
-
-    // Calcul de la position du point d'intersection
-    vec3 position = vVertexPosition + t * dirPixelObj;
-
-    // Si le point est dans les bornes du plan (boîte englobante)
-    if(position.x >= 10.0 || position.x <= -10.0 || position.y >= 10.0 || position.y <= -10.0)
-    {
-        discard;
-    }
-    // On change la couleur du plan en rouge
-    color = vec3(1.0, 0.0, 0.0);
-
-    vec3 normal = vVertexNormal;
-
-    // Light direction
-    vec3 lightDir = normalize(vec3(0., 0., 0.) - vVertexPositionMV);
-    // Weight of the color.
-    float weight = max(dot(normal, lightDir), 0.0);
-    */
-
-    // Course Formula.
-    //vec3 fragColor = uLightColor.rgb * color * (1.0 / uPI) * weight * uLightIntensity;
 
     // Sortie de la couleur du fragment
     gl_FragColor = vec4(color, 1.0);

@@ -142,6 +142,9 @@ P = pos3D + t * dir
 
 la diagonal de ma bb / racine_carre(hauteur^2 + largeur^2) * 2
 
+théorème de Shannon
+L'algorithme de Bresenham
+
 
 
 

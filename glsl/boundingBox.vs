@@ -29,6 +29,8 @@ void main(void)
 
     // Assigner la position finale du vertex pour l'affichage
     gl_Position = vVertexPositionSpace;
+
+    vVertexPositionSpace.z / vVertexPositionSpace.w;
 }
 
 mat4 transpose(mat4 m) {
