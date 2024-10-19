@@ -106,6 +106,7 @@ function webGLStart() {
     main_objectsToDraw.push(main_plane);
 
     updateTheDefaultLightIntensitySliderValue(main_light.getLightIntensity());
+    updateTheDefaultLightShininessSliderValue(main_light.getLightShininess());
 
     tick();
 }
