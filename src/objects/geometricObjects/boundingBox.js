@@ -1,15 +1,14 @@
 class BoundingBox extends ObjectToDraw {
     // --------------------------------------------
-    constructor(shaderName = 'glsl/boundingBox') {
-        super(shaderName, -1, null);
+    constructor() {
+        super('glsl/boundingBox', -1, null);
         this.boundingBoxHeightMapflattenFactor = 1;
-        this.boundingBoxHeightMapScale = 1;
-        this.scale = 10.;
+        this.boundingBoxHeightMapSize = 1;
     }
 
     // --------------------------------------------
     async initAll() {
-        const size = 10.; // TODO : Mettre le scale ici, quand je met this.scale ça marche pas :/
+        const size = this.boundingBoxHeightMapSize ? this.boundingBoxHeightMapSize : 1;
         const vertices = [
             // 4 sommets sur le plan z=0
             -size, -size, 0.0, // 0
@@ -175,7 +174,7 @@ class BoundingBox extends ObjectToDraw {
 
         this.shader.uHeightMapTypeSampler = gl.getUniformLocation(this.shader, "uHeightMapTypeSampler");
         this.shader.uHeightMapTextureSampler = gl.getUniformLocation(this.shader, "uHeightMapTextureSampler");
-        this.shader.uScale = gl.getUniformLocation(this.shader, "uScale");
+        this.shader.uBBSize = gl.getUniformLocation(this.shader, "uBBSize");
         this.shader.uFlatten = gl.getUniformLocation(this.shader, "uFlatten");
         this.shader.uImageWidth = gl.getUniformLocation(this.shader, "uImageWidth");
         this.shader.uImageHeight = gl.getUniformLocation(this.shader, "uImageHeight");
@@ -184,8 +183,8 @@ class BoundingBox extends ObjectToDraw {
 
     setUniforms() {
 
-        // We send the scale factor.
-        gl.uniform1f(this.shader.uScale, /*this.boundingBoxHeightMapScale*/ this.scale);
+        // We send the Bounding Box Size factor.
+        gl.uniform1f(this.shader.uBBSize, this.boundingBoxHeightMapSize);
         this.checkGlError();
 
         // We send the flattering factor (between 0.1 and 1.).
@@ -241,21 +240,20 @@ class BoundingBox extends ObjectToDraw {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, tBuffer);
 
         if(isWireFrameActiveBoundingBox){
-            gl.drawElements(gl.TRIANGLES, tBuffer.numItems, gl.UNSIGNED_INT, 0);
-        }else{
             gl.drawElements(gl.LINE_STRIP, tBuffer.numItems, gl.UNSIGNED_INT, 0);
-
+        }else{
+            gl.drawElements(gl.TRIANGLES, tBuffer.numItems, gl.UNSIGNED_INT, 0);
         }
     }
 
     // --------------------------------------------
-    setScale(scale) {
-        this.boundingBoxHeightMapScale = scale;
+
+    setBoundingBoxHeightSize(value) {
+        this.boundingBoxHeightMapSize = value;
     }
 
     setBoundingBoxHeightMapFlattenFactor(value) {
         this.boundingBoxHeightMapflattenFactor = value;
     }
-
 
 }

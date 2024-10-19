@@ -5,7 +5,7 @@ uniform vec4 uAmbientLight; // The ambiant light.
 uniform vec4 uLightColor; // The color light.
 uniform float uLightIntensity; // The light intensity.
 uniform float uPI; // 3.14...
-uniform float uScale; // The scale factor.
+uniform float uBBSize; // The bounding box size factor.
 uniform float uFlatten; // The flattering factor.
 uniform float uImageWidth; // The image width.
 uniform float uImageHeight; // The image height.
@@ -16,7 +16,7 @@ uniform sampler2D uHeightMapTextureSampler; // The texture.
 
 const int MAX_ITERATIONS = 500; // For the ray marching.
 
-float DIAGO = sqrt(sqrt(uScale * uScale + uScale * uScale) * sqrt(uScale * uScale + uScale * uScale) + uScale * uScale);
+float DIAGO = sqrt(sqrt(uBBSize * uBBSize + uBBSize * uBBSize) * sqrt(uBBSize * uBBSize + uBBSize * uBBSize) + uBBSize * uBBSize);
 float PAS = DIAGO / sqrt(uImageWidth * uImageWidth + uImageHeight * uImageHeight) * 2.;
 
 
@@ -60,7 +60,7 @@ void main(void)
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
         vec3 position = vVertexPosition + t * dirPixelObj;
-        vec4 texHeightMap = texture2D(uHeightMapTypeSampler, goodTexCoord(((position.xy / uScale) + 1.) / 2.));
+        vec4 texHeightMap = texture2D(uHeightMapTypeSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.));
 
         if(uIsImageInColor) {
             // We use the L of the LAB color metric.
@@ -68,14 +68,14 @@ void main(void)
         }
         else {
             // We use the R of the RGB color metric.
-            heightMapL =  texHeightMap.x * uScale * uFlatten;
+            heightMapL =  texHeightMap.x * uBBSize * uFlatten;
         }
 
         t += PAS;
 
         // If the point is outside of the box.
-        if(position.z < -0.1 || position.x >= uScale || position.x <= -uScale
-        || position.y >= uScale || position.y <= -uScale)
+        if(position.z < -0.1 || position.x >= uBBSize || position.x <= -uBBSize
+        || position.y >= uBBSize || position.y <= -uBBSize)
         {
             discard;
             break;
@@ -91,7 +91,7 @@ void main(void)
             // If it was above before.
             if(above)
             {
-                vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((position.xy / uScale) + 1.) / 2.));
+                vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.));
                 color = texColor.xyz;
                 break;
             }
