@@ -4,12 +4,12 @@ class BoundingBox extends ObjectToDraw {
         super(shaderName, -1, null);
         this.boundingBoxHeightMapflattenFactor = 1;
         this.boundingBoxHeightMapScale = 1;
+        this.scale = 10.;
     }
 
     // --------------------------------------------
     async initAll() {
-        const size = 10.5;
-        const height = 0.018;
+        const size = 10.; // TODO : Mettre le scale ici, quand je met this.scale ça marche pas :/
         const vertices = [
             // 4 sommets sur le plan z=0
             -size, -size, 0.0, // 0
@@ -173,33 +173,20 @@ class BoundingBox extends ObjectToDraw {
             { attribName: "aVertexNormal", buffer: this.nRedBuffer, itemSize: this.nRedBuffer.itemSize },
         ]);
 
-        this.shader.invRMatrixUniform = gl.getUniformLocation(this.shader, "uinvRMatrix");
-        this.shader.invMvMatrixUniform = gl.getUniformLocation(this.shader, "uinvMVMatrix");
-        this.shader.invPMatrixUniform = gl.getUniformLocation(this.shader, "uinvPMatrix");
-
         this.shader.uHeightMapTypeSampler = gl.getUniformLocation(this.shader, "uHeightMapTypeSampler");
         this.shader.uHeightMapTextureSampler = gl.getUniformLocation(this.shader, "uHeightMapTextureSampler");
+        this.shader.uScale = gl.getUniformLocation(this.shader, "uScale");
+        this.shader.uFlatten = gl.getUniformLocation(this.shader, "uFlatten");
     }
 
     setUniforms() {
 
-        let invRotMatrix = [];
-        mat4.inverse(rotMatrix, invRotMatrix);
-
-        let invMvMatrix = [];
-        mat4.transpose(mvMatrix, invMvMatrix);
-
-        let invPMatrix = [];
-        mat4.inverse(pMatrix, invPMatrix);
-
-        gl.uniformMatrix4fv(this.shader.invRMatrixUniform, false, mat4.inverse(invRotMatrix));
+        gl.uniform1f(this.shader.uScale, /*this.boundingBoxHeightMapScale*/ this.scale);
         this.checkGlError();
 
-        gl.uniformMatrix4fv(this.shader.invMvMatrixUniform, false, mat4.inverse(invMvMatrix));
+        gl.uniform1f(this.shader.uFlatten, 1.1 - parseFloat(this.boundingBoxHeightMapflattenFactor) * 0.1);
         this.checkGlError();
 
-        gl.uniformMatrix4fv(this.shader.invPMatrixUniform, false, mat4.inverse(invPMatrix));
-        this.checkGlError();
 
         // Bind and set the bump map texture
         gl.activeTexture(gl.TEXTURE0);
@@ -212,7 +199,6 @@ class BoundingBox extends ObjectToDraw {
         gl.bindTexture(gl.TEXTURE_2D, boundingBoxHeightMapTexture);
         gl.uniform1i(this.shader.uHeightMapTextureSampler, 1); // Use texture unit 1 for main texture
         this.checkGlError();
-
     }
 
     // --------------------------------------------

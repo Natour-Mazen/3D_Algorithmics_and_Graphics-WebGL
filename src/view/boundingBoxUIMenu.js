@@ -31,7 +31,7 @@ const boundingBoxHeightMapTypeLoader = ['texture1.png', 'texture2.png', 'texture
 /**
  * @type {string[]}
  */
-const boundingBoxHeightMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg"];
+const boundingBoxHeightMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg", "texture2Colored.png"];
 
 /**
  * @type {string|null}

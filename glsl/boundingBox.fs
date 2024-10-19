@@ -5,21 +5,17 @@ uniform vec4 uAmbientLight; // The ambiant light.
 uniform vec4 uLightColor; // The color light.
 uniform float uLightIntensity; // The light intensity.
 uniform float uPI;
+uniform float uScale;
+uniform float uFlatten;
 
 uniform sampler2D uHeightMapTypeSampler;
 uniform sampler2D uHeightMapTextureSampler;
 
-uniform mat4 uinvRMatrix;   // Matrice inverse de rotation
-uniform mat4 uinvMVMatrix;  // Matrice inverse modèle-vue
-uniform mat4 uinvPMatrix;   // Matrice inverse de projection
-
 const int MAX_ITERATIONS = 1000;  // Constante d'itérations maximum (si nécessaire)
-const float SCALE = 10.5;
-const float BOUNDING_BOX_SIZE = 10.5;
-const float FLATTEN = 10.5;
 
-const float DIAGO = sqrt(sqrt(10.5 * 10.5 + 10.5 * 10.5) * sqrt(10.5 * 10.5 + 10.5 * 10.5) + 10.5 * 10.5);
-const float PAS = DIAGO / sqrt(512. * 512. + 512. * 512.) * 2.;
+float DIAGO = sqrt(sqrt(uScale * uScale + uScale * uScale) * sqrt(uScale * uScale + uScale * uScale) + uScale * uScale);
+float PAS = DIAGO / sqrt(512. * 512. + 512. * 512.) * 2.;
+
 
 varying vec3 vVertexPositionMV;
 varying vec3 vVertexPosition;        // Position 3D du vertex
@@ -28,6 +24,14 @@ varying mat4 viMVMatrix;
 varying vec3 vVertexNormal;
 
 vec3 RGB2Lab(vec3 rgb);
+
+vec2 goodTexCoord(vec2 tex)
+{
+    tex.x = max(0., min(tex.x, 1.));
+    // To have the ray marching height map in the same direction as the classic height map.
+    tex.y = 1. - max(0., min(tex.y, 1.));
+    return tex;
+}
 
 void main(void)
 {
@@ -44,14 +48,13 @@ void main(void)
     vec3 dirPixelObj = normalize((viMVMatrix * vec4(dirCam, 1.0)).xyz);
 
 
-    //float t = 0.1;
+
     float t = PAS;
-    //vec3 position = vVertexPosition + t * dirPixelObj;
     vec3 position = vVertexPosition + t * dirPixelObj;
 
-    vec4 texHeightMap = texture2D(uHeightMapTypeSampler, ((position.xy / SCALE) + 1.) / 2.);
+    vec4 texHeightMap = texture2D(uHeightMapTypeSampler, goodTexCoord(((position.xy / uScale) + 1.) / 2.));
     //float heightMapL = RGB2Lab(texHeightMap.xyz).x;
-    float heightMapL = texHeightMap.x * FLATTEN;
+    float heightMapL = texHeightMap.x * uScale * uFlatten;
 
     vec3 lastPosition = position;
     bool above = false;
@@ -61,25 +64,18 @@ void main(void)
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
         // If the point is outside of the box.
-        if(position.z < -0.5 || position.x > BOUNDING_BOX_SIZE || position.x < -BOUNDING_BOX_SIZE
-        || position.y > BOUNDING_BOX_SIZE || position.y < -BOUNDING_BOX_SIZE)
+        if(position.z < -0.1 || position.x >= uScale || position.x <= -uScale
+        || position.y >= uScale || position.y <= -uScale)
         {
 //            if(below && lastAbove)
 //            {
-//                vec4 texColor = texture2D(uHeightMapTextureSampler, ((lastPosition.xy / SCALE) + 1.) / 2.);
+//                vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((lastPosition.xy / uScale) + 1.) / 2.));
 //                color = texColor.xyz;
 //                break;
 //            }
             discard;
             break;
         }
-//        // We hit a pixel that is above.
-//        if(heightMapL - position.z < 0.0001 && heightMapL - position.z > -0.0001)
-//        {
-//            vec4 texColor = texture2D(uHeightMapTextureSampler, ((position.xy / SCALE) + 1.) / 2.);
-//            color = texColor.xyz;
-//            break;
-//        }
         if(above)
         {
             lastAbove = true;
@@ -90,12 +86,13 @@ void main(void)
             above = true;
             below = false;
         }
-        // The pixel is bolow and was above before.
+        // The pixel is bolow.
         else if(heightMapL >= position.z)
         {
+            // If it was above before.
             if(above)
             {
-                vec4 texColor = texture2D(uHeightMapTextureSampler, ((position.xy / SCALE) + 1.) / 2.);
+                vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((lastPosition.xy / uScale) + 1.) / 2.));
                 color = texColor.xyz;
                 break;
             }
@@ -107,9 +104,9 @@ void main(void)
         t += PAS;
         lastPosition = position;
         position = vVertexPosition + t * dirPixelObj;
-        texHeightMap = texture2D(uHeightMapTypeSampler, ((position.xy / SCALE) + 1.) / 2.);
+        texHeightMap = texture2D(uHeightMapTypeSampler, goodTexCoord(((position.xy / uScale) + 1.) / 2.));
         //heightMapL = RGB2Lab(texHeightMap.xyz).x;
-        heightMapL =  texHeightMap.x * FLATTEN;
+        heightMapL =  texHeightMap.x * uScale * uFlatten;
     }
 
 
