@@ -3,9 +3,10 @@ const dropdowns = [
         title: 'Light',
         items:
         [
+            { type: 'select', label: 'Shader', id: 'light_shaderType_selector', options: [] },
             { type: 'color', label: 'Color:', id: 'light_color', value: '#ffffff' },
             { type: 'slider', label: 'Light Intensity:', id: 'lightIntensity_slider', min: 1, max: 6, step: 1, value: 1, displayId: 'lightIntensity_value' },
-
+            { type: 'slider', label: 'Light Shininess:', id: 'lightShininess_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'lightShininess_value' },
         ]
     },
     {
@@ -31,10 +32,9 @@ const dropdowns = [
     {
         title: 'Bump Map',
         items: [
-            { type: 'select', label: 'Shader', id: 'bump_map_shader_selector', options: ['None'] },
+
             { type: 'select', label: 'Type', id: 'bump_map_selector', options: ['None'] },
             { type: 'select', label: 'Texture', id: 'bump_map_texture_selector', options: ['None'] },
-            { type: 'slider', label: 'Light Shininess:', id: 'bump_map_lightShininess_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'bump_map_lightShininess_value' },
         ]
     },
     {
