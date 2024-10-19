@@ -5,10 +5,10 @@
 const boundingBoxElements = {
     toggle: doc.getElementById('boundingBox_checkbox'),
     switch: doc.getElementById('boundingBox_switch'),
+    sizeSlider: doc.getElementById('boundingBox_size_slider'),
+    sizeValueDisplay: doc.getElementById('boundingBox_size_value'),
     heightMapTypeSelector: doc.getElementById('boundingBox_heightMap_type_selector'),
     heightMapTextureSelector: doc.getElementById('boundingBox_heightMap_texture_selector'),
-    heightMapScaleSlider: doc.getElementById('boundingBox_heightMap_scale_slider'),
-    heightMapScaleValueDisplay: doc.getElementById('boundingBox_heightMap_scale_value'),
     heightMapFlattenSlider: doc.getElementById('boundingBox_heightMap_flatten_slider'),
     heightMapFlattenValueDisplay: doc.getElementById('boundingBox_heightMap_flatten_value'),
 };
@@ -44,40 +44,61 @@ let boundingBoxHeightMapType = null;
 let boundingBoxHeightMapTexture = null;
 
 /**
- * @constant {string}
+ *
+ * @type {string}
  */
-const DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE = 'res/textures/white.png';
+let lastSelectedBoundingBoxHeightMapTexturePath = "";
+
 
 /**
- * @constant {string}
+ * Handles the bounding box height map selection.
+ * @param {string} selectedHeightMap - The selected height map.
+ * @param {string} selectionType - The selection type ('type' or 'texture').
  */
-const DEFAULT_BOUNDINGBOX_HEIGHTMAP_TYPE = 'res/heightMaps/texture1.png';
-
-/**
- * @constant {number}
- */
-const DEFAULT_BOUNDINGBOX_HEIGHTMAP_SCALE = 1;
-
 function handleBoundingBoxHeightMapSelection(selectedHeightMap, selectionType) {
-    if (selectedHeightMap !== 'None') {
-        if (selectionType === 'type') {
-            const boundingBoxHeightMapPath = `res/heightMaps/${selectedHeightMap}`;
-            boundingBoxHeightMapType = loadTexture(gl, boundingBoxHeightMapPath);
-        } else if (selectionType === 'texture') {
-            const boundingBoxHeightMapTexturePath = `res/textures/${selectedHeightMap}`;
-            boundingBoxHeightMapTexture = loadTexture(gl, boundingBoxHeightMapTexturePath);
-        }
+    if (selectedHeightMap === 'None') {
+        resetBoundingBoxHeightMapSelection(selectionType);
+        return;
+    }
 
-        if (boundingBoxHeightMapTexture === null) {
-            boundingBoxHeightMapTexture = loadTexture(gl, DEFAULT_BOUNDINGBOX_HEIGHTMAP_TEXTURE);
-        }
+    const path = selectionType === 'type' ? `res/heightMaps/${selectedHeightMap}` : `res/textures/${selectedHeightMap}`;
+    const texture = loadTexture(gl, path);
+
+    if (selectionType === 'type') {
+        boundingBoxHeightMapType = texture;
+        boundingBoxHeightMapTexture = lastSelectedBoundingBoxHeightMapTexturePath ? loadTexture(gl, lastSelectedBoundingBoxHeightMapTexturePath) : texture;
     } else {
-        if (selectionType === 'type') {
-            boundingBoxHeightMapType = null;
-        } else if (selectionType === 'texture') {
+        lastSelectedBoundingBoxHeightMapTexturePath = path;
+        boundingBoxHeightMapTexture = texture;
+    }
+}
+
+/**
+ * Resets the bounding box height map selection.
+ * @param {string} selectionType - The selection type ('type' or 'texture').
+ */
+function resetBoundingBoxHeightMapSelection(selectionType) {
+    if (selectionType === 'type') {
+        boundingBoxHeightMapType = null;
+        if(lastSelectedBoundingBoxHeightMapTexturePath === ""){
             boundingBoxHeightMapTexture = null;
         }
 
+    } else {
+        lastSelectedBoundingBoxHeightMapTexturePath = "";
+        boundingBoxHeightMapTexture = boundingBoxHeightMapType ? loadTexture(gl, `res/heightMaps/${boundingBoxElements.heightMapTypeSelector.value}`) : null;
+    }
+}
+
+/**
+ * Updates the bounding box size.
+ * @param {number} value - The new size value.
+ * @returns {Promise} {Promise<void>} - A promise that resolves when the bounding box has been updated.
+ */
+async function handleUpdateBoundingBoxSize(value) {
+    if (theBoundingBox !== null) {
+        theBoundingBox.setBoundingBoxHeightSize(value);
+        await theBoundingBox.initAll();
     }
 }
 
@@ -88,20 +109,20 @@ function handleBoundingBoxHeightMapSelection(selectedHeightMap, selectionType) {
 function initBoundingBoxUIComponents() {
 
     initSelector(boundingBoxElements.heightMapTypeSelector, boundingBoxHeightMapTypeLoader, function () {
-        console.log("Selected height map type: " + this.value);
         handleBoundingBoxHeightMapSelection(this.value, 'type');
     });
 
     initSelector(boundingBoxElements.heightMapTextureSelector, boundingBoxHeightMapTextureLoader, function () {
-        console.log("Selected height map texture: " + this.value);
         handleBoundingBoxHeightMapSelection(this.value, 'texture');
     });
 
-    initToggle(boundingBoxElements.toggle,false, function () {
-        if(this.checked){
+    initToggle(boundingBoxElements.toggle,false, async function () {
+        if (this.checked) {
             theBoundingBox = new BoundingBox();
+            await handleUpdateBoundingBoxSize(boundingBoxElements.sizeSlider.value);
+            theBoundingBox.setBoundingBoxHeightMapFlattenFactor(boundingBoxElements.heightMapFlattenSlider.value);
             main_objectsToDraw.push(theBoundingBox);
-        }else {
+        } else {
             main_objectsToDraw = main_objectsToDraw.filter(obj => obj !== theBoundingBox);
             theBoundingBox = null;
         }
@@ -111,11 +132,9 @@ function initBoundingBoxUIComponents() {
         isWireFrameActiveBoundingBox = this.checked;
     });
 
-    initSlider(boundingBoxElements.heightMapScaleSlider, function () {
-        if(theBoundingBox !== null){
-            theBoundingBox.setScale(this.value);
-            boundingBoxElements.heightMapScaleValueDisplay.innerHTML = this.value;
-        }
+    initSlider(boundingBoxElements.sizeSlider, async function () {
+        await handleUpdateBoundingBoxSize(this.value);
+        boundingBoxElements.sizeValueDisplay.innerHTML = this.value;
     });
 
     initSlider(boundingBoxElements.heightMapFlattenSlider, function () {
@@ -125,6 +144,11 @@ function initBoundingBoxUIComponents() {
         }
     });
 
+    // Set the Parent Style for this specific element switch
+    const switchElementParent = boundingBoxElements.switch.parentElement;
+    if (switchElementParent) {
+        switchElementParent.style.margin = '0 62px';
+    }
 }
 
 initBoundingBoxUIComponents();
