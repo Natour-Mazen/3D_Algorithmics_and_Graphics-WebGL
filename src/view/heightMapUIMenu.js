@@ -49,14 +49,10 @@ let isWireFrameActiveHeightMap = false;
 let flattenFactorHeightMap = 1;
 
 /**
- * @constant {string}
+ *
+ * @type {string}
  */
-const DEFAULT_HEIGHTMAP_TEXTURE = 'res/textures/white.png';
-
-/**
- * @constant {number}
- */
-const DEFAULT_HEIGHTMAP_SCALE = 1;
+let lastSelectedHeightMapTexturePath = "";
 
 
 /**
@@ -76,32 +72,43 @@ function handleCreateHeightMap() {
  * @param {string} selectionType - The type of selection ('type' or 'texture').
  */
 function handleHeightMapSelection(selectedHeightMap, selectionType) {
-    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof HeightMap));
-    if (selectedHeightMap !== 'None') {
-        if (selectionType === 'type') {
-            heightMapType = `res/heightMaps/${selectedHeightMap}`;
-        } else if (selectionType === 'texture') {
-            heightMap_texturePathMap = `res/textures/${selectedHeightMap}`;
-        }
+    if (selectedHeightMap === 'None') {
+        resetHeightMapSelection(selectionType);
+        return;
+    }
 
-        if (heightMap_texturePathMap === null) {
-            heightMap_texturePathMap = DEFAULT_HEIGHTMAP_TEXTURE;
-        }
+    const path = selectionType === 'type' ? `res/heightMaps/${selectedHeightMap}` : `res/textures/${selectedHeightMap}`;
+
+    if (selectionType === 'type') {
+        heightMapType = path;
+        heightMap_texturePathMap = lastSelectedHeightMapTexturePath ? lastSelectedHeightMapTexturePath : path;
     } else {
-        if (selectionType === 'type') {
-            heightMapType = null;
-        } else if (selectionType === 'texture') {
-            heightMap_texturePathMap = DEFAULT_HEIGHTMAP_TEXTURE;
-        }
+        lastSelectedHeightMapTexturePath = path;
+        heightMap_texturePathMap = path;
     }
 
     if (heightMapType !== null) {
         handleCreateHeightMap();
         let scaleSliderValue = heightMapElements.scaleSlider.value;
-        if (scaleSliderValue === '0') {
-            updateScaleHeightMap(DEFAULT_HEIGHTMAP_SCALE);
-        } else {
-            updateScaleHeightMap(parseInt(scaleSliderValue));
+        updateScaleHeightMap(scaleSliderValue);
+    }
+}
+
+/**
+ * Resets the height map selection.
+ * @param {string} selectionType - The type of selection ('type' or 'texture').
+ */
+function resetHeightMapSelection(selectionType) {
+    if (selectionType === 'type') {
+        main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof HeightMap));
+        heightMapType = null;
+    } else {
+        lastSelectedHeightMapTexturePath = "";
+        heightMap_texturePathMap = heightMapType ?`res/heightMaps/${heightMapElements.selector.value}` : null;
+        if(heightMapType !== null) {
+            handleCreateHeightMap();
+            let scaleSliderValue = heightMapElements.scaleSlider.value;
+            updateScaleHeightMap(scaleSliderValue);
         }
     }
 }
@@ -126,13 +133,13 @@ function handleHeightMapSwitch() {
 
     if (heightMapElements.switch.checked) {
         heightMapTextureSelectorItem.style.display = 'none';
-        heightMapElements.textureSelector.value = 'None';
     } else {
         heightMapTextureSelectorItem.style.display = 'block';
     }
 
     if (heightMapType !== null) {
-        heightMap_texturePathMap = DEFAULT_HEIGHTMAP_TEXTURE;
+        heightMap_texturePathMap = lastSelectedHeightMapTexturePath === "" ?
+            `res/heightMaps/${heightMapElements.selector.value}` : lastSelectedHeightMapTexturePath;
         handleCreateHeightMap();
         updateScaleHeightMap(heightMapElements.scaleSlider.value);
     }
