@@ -68,15 +68,17 @@ function initLightUIComponents(){
     });
 
     initSelector(lightElements.shaderSelector, shaderTypeLoader, function () {
-        if(this.value === "Blinn-Phong") {
-            handleDisplayLightShininessSlider('block');
-            handleDisplayLightIntensitySlider('none');
-            main_light.setIsPhongShader(true);
-        }
-        else {
-            handleDisplayLightShininessSlider('none');
-            handleDisplayLightIntensitySlider('block');
-            main_light.setIsPhongShader(false);
+        if(main_light !== null){
+            if(this.value === "Blinn-Phong") {
+                handleDisplayLightShininessSlider('block');
+                handleDisplayLightIntensitySlider('none');
+                main_light.setIsPhongShader(true);
+            }
+            else {
+                handleDisplayLightShininessSlider('none');
+                handleDisplayLightIntensitySlider('block');
+                main_light.setIsPhongShader(false);
+            }
         }
     });
 
