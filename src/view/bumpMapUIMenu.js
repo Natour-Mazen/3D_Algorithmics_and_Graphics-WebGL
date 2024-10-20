@@ -40,17 +40,17 @@ let selectedBumpMap = "None";
 /**
  * @type {string}
  */
-let selectedTexture = "None";
+let selectedBumpMapTexture = "None";
 
 /**
  * Handles the creation of the bump map.
  */
 function handleBumpMapCreation() {
     resetBumpMap();
-    if (selectedBumpMap === "None" || selectedTexture === "None") {
+    if (selectedBumpMapTexture === "None") {
         resetBumpMapSettings();
     } else {
-        loadTextures();
+        loadBumpMapTextures();
         bindShader();
         main_objectsToDraw.push(theBumpMap);
     }
@@ -75,8 +75,8 @@ function resetBumpMapSettings() {
 /**
  * Loads the textures for the bump map.
  */
-function loadTextures() {
-    const texturePath = `res/textures/${selectedTexture}`;
+function loadBumpMapTextures() {
+    const texturePath = `res/textures/${selectedBumpMapTexture}`;
     texture_ForBump = loadTexture(gl, texturePath);
 
     if (selectedBumpMap !== "None") {
@@ -89,7 +89,9 @@ function loadTextures() {
  * Binds the shader for the bump map.
  */
 function bindShader() {
-    setPlaneState(!isTherePlane)
+    if(isTherePlane){
+        setPlaneState(false)
+    }
     theBumpMap = new BumpMap();
 }
 
@@ -100,13 +102,13 @@ function bindShader() {
 function initBumpMapUIComponents() {
     initSelector(bumpMapElements.selector, bumpMapLoader, function () {
         selectedBumpMap = this.value;
-        if (selectedTexture !== "None") {
+        if (selectedBumpMapTexture !== "None") {
             handleBumpMapCreation();
         }
     });
 
     initSelector(bumpMapElements.textureSelector, bumpMapTextureLoader, function () {
-        selectedTexture = this.value;
+        selectedBumpMapTexture = this.value;
         handleBumpMapCreation();
     });
 }
