@@ -14,10 +14,10 @@ uniform bool uIsImageInColor; // If the image is in color (true) else (false).
 uniform sampler2D uHeightMapTypeSampler; // The height map.
 uniform sampler2D uHeightMapTextureSampler; // The texture.
 
-const int MAX_ITERATIONS = 500; // For the ray marching.
+const int MAX_ITERATIONS = 10000; // For the ray marching.
 
 float DIAGO = sqrt(sqrt(uBBSize * uBBSize + uBBSize * uBBSize) * sqrt(uBBSize * uBBSize + uBBSize * uBBSize) + uBBSize * uBBSize);
-float PAS = DIAGO / sqrt(uImageWidth * uImageWidth + uImageHeight * uImageHeight) * 2.;
+float PAS = DIAGO / sqrt(uImageWidth * uImageWidth + uImageHeight * uImageHeight) /* * 2  remove it because it make less noise on the texture*/;
 
 
 varying vec3 vVertexPositionMV;
@@ -74,10 +74,33 @@ void main(void)
         t += PAS;
 
         // If the point is outside of the box.
-        if(position.z < -0.1 || position.x >= uBBSize || position.x <= -uBBSize
-        || position.y >= uBBSize || position.y <= -uBBSize)
+        if(position.z < -0.1 || position.x > uBBSize || position.x < -uBBSize
+        || position.y > uBBSize || position.y < -uBBSize)
         {
-            discard;
+            if(position.z >= uBBSize)
+            {
+            color = vec3(1., 1., 0.);
+            }
+            else if(position.x > uBBSize)
+            {
+                color = vec3(1., 0., 0.);
+            }
+            else if( position.x < -uBBSize)
+            {
+                color = vec3(0., 1., 0.);
+            }
+            else if(position.y > uBBSize)
+            {
+                color = vec3(0., 0., 1.);
+            }
+            else if(position.y < -uBBSize)
+            {
+                color = vec3(1., 0., 1.);
+            }
+            else
+            {
+                discard;
+            }
             break;
         }
         // The pixel is above.
