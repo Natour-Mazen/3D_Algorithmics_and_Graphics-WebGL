@@ -10,14 +10,16 @@ uniform float uFlatten; // The flattering factor.
 uniform float uImageWidth; // The image width.
 uniform float uImageHeight; // The image height.
 uniform bool uIsImageInColor; // If the image is in color (true) else (false).
+uniform bool uIsWireFrame; // If the wireframe is displayed.
 
 uniform sampler2D uHeightMapTypeSampler; // The height map.
 uniform sampler2D uHeightMapTextureSampler; // The texture.
 
-const int MAX_ITERATIONS = 10000; // For the ray marching.
+const int MAX_ITERATIONS = 700; // For the ray marching.
+const float BORDER_SIZE = 0.05;
 
 float DIAGO = sqrt(sqrt(uBBSize * uBBSize + uBBSize * uBBSize) * sqrt(uBBSize * uBBSize + uBBSize * uBBSize) + uBBSize * uBBSize);
-float PAS = DIAGO / sqrt(uImageWidth * uImageWidth + uImageHeight * uImageHeight) /* * 2  remove it because it make less noise on the texture*/;
+float PAS = DIAGO / sqrt(uImageWidth * uImageWidth + uImageHeight * uImageHeight) * 2.;
 
 
 varying vec3 vVertexPositionMV;
@@ -79,22 +81,51 @@ void main(void)
         {
             if(position.z >= uBBSize)
             {
-            color = vec3(1., 1., 0.);
+                if(uIsWireFrame && position.z >= uBBSize + BORDER_SIZE)
+                {
+                    discard;
+                    break;
+                }
+                color = vec3(1., 1., 0.);
             }
             else if(position.x > uBBSize)
             {
+                if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
+                !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE))
+                {
+                    discard;
+                    break;
+                }
                 color = vec3(1., 0., 0.);
             }
             else if( position.x < -uBBSize)
             {
+                if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
+                !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE))
+                {
+                    discard;
+                    break;
+                }
                 color = vec3(0., 1., 0.);
             }
             else if(position.y > uBBSize)
             {
+                if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
+                !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE))
+                {
+                    discard;
+                    break;
+                }
                 color = vec3(0., 0., 1.);
             }
             else if(position.y < -uBBSize)
             {
+                if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
+                !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE))
+                {
+                    discard;
+                    break;
+                }
                 color = vec3(1., 0., 1.);
             }
             else

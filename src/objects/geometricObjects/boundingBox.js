@@ -179,6 +179,7 @@ class BoundingBox extends ObjectToDraw {
         this.shader.uImageWidth = gl.getUniformLocation(this.shader, "uImageWidth");
         this.shader.uImageHeight = gl.getUniformLocation(this.shader, "uImageHeight");
         this.shader.uIsImageInColor = gl.getUniformLocation(this.shader, "uIsImageInColor");
+        this.shader.uIsWireFrame = gl.getUniformLocation(this.shader, "uIsWireFrame");
     }
 
     setUniforms() {
@@ -203,6 +204,9 @@ class BoundingBox extends ObjectToDraw {
         // If (1) -> we use the L in the LAB color metric.
         // If (0) -> we use the R in the RGB color metric.
         gl.uniform1i(this.shader.uIsImageInColor, 0);
+        this.checkGlError();
+
+        gl.uniform1i(this.shader.uIsWireFrame, isWireFrameActiveBoundingBox);
         this.checkGlError();
 
 
@@ -239,11 +243,7 @@ class BoundingBox extends ObjectToDraw {
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, tBuffer);
 
-        if(isWireFrameActiveBoundingBox){
-            gl.drawElements(gl.LINE_STRIP, tBuffer.numItems, gl.UNSIGNED_INT, 0);
-        }else{
-            gl.drawElements(gl.TRIANGLES, tBuffer.numItems, gl.UNSIGNED_INT, 0);
-        }
+        gl.drawElements(gl.TRIANGLES, tBuffer.numItems, gl.UNSIGNED_INT, 0);
     }
 
     // --------------------------------------------
