@@ -75,6 +75,31 @@ function initSelector(selector, options, onChange) {
 }
 
 /**
+ * Initialize a selector with options of type object and an event listener.
+ * @param {HTMLElement} selector - The selector element.
+ * @param {Array} options - The options to populate the selector with.
+ * @param {Function} onChange - The event listener for the change event.
+ * @param {string} valueProp - The property name to use for the option value.
+ * @param {string} textProp - The property name to use for the option text content.
+ * @param {Object} [dataProps] - An object mapping data attribute names to property names.
+ */
+function initGenericObjectSelector(selector, options, onChange, valueProp, textProp, dataProps = {}) {
+    options.forEach(function (optionObj) {
+        const option = document.createElement('option');
+        option.value = optionObj[valueProp];
+        option.textContent = optionObj[textProp].split('.')[0];
+
+        // Store additional data attributes
+        for (const [dataAttr, prop] of Object.entries(dataProps)) {
+            option.dataset[dataAttr] = optionObj[prop];
+        }
+
+        selector.appendChild(option);
+    });
+    selector.addEventListener('change', onChange);
+}
+
+/**
  * Initialize a color picker with an event listener.
  * @param {HTMLElement} colorPicker - The color picker element.
  * @param {Function} onInput - The event listener for the input event.
