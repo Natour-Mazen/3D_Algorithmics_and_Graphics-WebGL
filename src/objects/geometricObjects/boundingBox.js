@@ -180,6 +180,7 @@ class BoundingBox extends ObjectToDraw {
         this.shader.uImageHeight = gl.getUniformLocation(this.shader, "uImageHeight");
         this.shader.uIsImageInColor = gl.getUniformLocation(this.shader, "uIsImageInColor");
         this.shader.uIsWireFrame = gl.getUniformLocation(this.shader, "uIsWireFrame");
+        this.shader.uIsOpaque = gl.getUniformLocation(this.shader, "uIsOpaque");
     }
 
     setUniforms() {
@@ -207,6 +208,9 @@ class BoundingBox extends ObjectToDraw {
         this.checkGlError();
 
         gl.uniform1i(this.shader.uIsWireFrame, isWireFrameActiveBoundingBox);
+        this.checkGlError();
+
+        gl.uniform1i(this.shader.uIsOpaque, isOpaqueActiveBoundigBox);
         this.checkGlError();
 
 

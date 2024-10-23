@@ -4,7 +4,7 @@
  */
 const boundingBoxElements = {
     toggle: doc.getElementById('boundingBox_checkbox'),
-    switch: doc.getElementById('boundingBox_switch'),
+    borderSelector: doc.getElementById('borderBoundingBox_selector'),
     sizeSlider: doc.getElementById('boundingBox_size_slider'),
     sizeValueDisplay: doc.getElementById('boundingBox_size_value'),
     heightMapTypeSelector: doc.getElementById('boundingBox_heightMap_type_selector'),
@@ -24,6 +24,11 @@ let theBoundingBox = null;
 let isWireFrameActiveBoundingBox = false;
 
 /**
+ * @type {Boolean}
+ */
+let isOpaqueActiveBoundigBox = false;
+
+/**
  * @constant {string[]}
  */
 const boundingBoxHeightMapTypeLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png', "texture2Colored.png"];
@@ -32,6 +37,11 @@ const boundingBoxHeightMapTypeLoader = ['texture1.png', 'texture2.png', 'texture
  * @type {string[]}
  */
 const boundingBoxHeightMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg", "texture2Colored.png"];
+
+/**
+ * @type {string[]}
+ */
+const boundingBoxBorderLoader = ['WireFrame', 'Opaque'];
 
 /**
  * @type {string|null}
@@ -108,6 +118,19 @@ async function handleUpdateBoundingBoxSize(value) {
  */
 function initBoundingBoxUIComponents() {
 
+    initSelector(boundingBoxElements.borderSelector, boundingBoxBorderLoader, function () {
+        if(this.value === 'WireFrame'){
+            isWireFrameActiveBoundingBox = true;
+            isOpaqueActiveBoundigBox = false;
+        } else if (this.value === 'Opaque'){
+            isWireFrameActiveBoundingBox = false;
+            isOpaqueActiveBoundigBox = true;
+        } else {
+            isWireFrameActiveBoundingBox = false;
+            isOpaqueActiveBoundigBox = false;
+        }
+    });
+
     initSelector(boundingBoxElements.heightMapTypeSelector, boundingBoxHeightMapTypeLoader, function () {
         handleBoundingBoxHeightMapSelection(this.value, 'type');
     });
@@ -128,10 +151,6 @@ function initBoundingBoxUIComponents() {
         }
     });
 
-    initSwitch(boundingBoxElements.switch, isWireFrameActiveBoundingBox = false, function () {
-        isWireFrameActiveBoundingBox = this.checked;
-    });
-
     initSlider(boundingBoxElements.sizeSlider, async function () {
         await handleUpdateBoundingBoxSize(this.value);
         boundingBoxElements.sizeValueDisplay.innerHTML = this.value;
@@ -143,12 +162,6 @@ function initBoundingBoxUIComponents() {
             boundingBoxElements.heightMapFlattenValueDisplay.innerHTML = this.value;
         }
     });
-
-    // Set the Parent Style for this specific element switch
-    const switchElementParent = boundingBoxElements.switch.parentElement;
-    if (switchElementParent) {
-        switchElementParent.style.margin = '0 62px';
-    }
 }
 
 initBoundingBoxUIComponents();

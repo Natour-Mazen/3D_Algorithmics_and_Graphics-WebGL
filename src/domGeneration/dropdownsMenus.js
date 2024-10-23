@@ -41,7 +41,7 @@ const dropdowns = [
         title: 'Bounding Box',
         items: [
             { type: 'checkbox', label: 'BoundingBox', id: 'boundingBox_checkbox', checked: false },
-            { type: 'switch', label1: 'Opaque', label2: 'WireFrame', id: 'boundingBox_switch' },
+            { type: 'select', label: 'Border', id: 'borderBoundingBox_selector', options: ['None'] },
             { type: 'slider', label: 'Size:', id: 'boundingBox_size_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBox_size_value' },
             { type: 'select', label: 'Type', id: 'boundingBox_heightMap_type_selector', options: ['None'] },
             { type: 'select', label: 'Texture', id: 'boundingBox_heightMap_texture_selector', options: ['None'] },

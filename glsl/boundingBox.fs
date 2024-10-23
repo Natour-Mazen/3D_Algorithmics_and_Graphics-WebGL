@@ -11,6 +11,7 @@ uniform float uImageWidth; // The image width.
 uniform float uImageHeight; // The image height.
 uniform bool uIsImageInColor; // If the image is in color (true) else (false).
 uniform bool uIsWireFrame; // If the wireframe is displayed.
+uniform bool uIsOpaque; // If the object is opaque.
 
 uniform sampler2D uHeightMapTypeSampler; // The height map.
 uniform sampler2D uHeightMapTextureSampler; // The texture.
