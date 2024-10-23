@@ -20,7 +20,7 @@ const int MAX_ITERATIONS = 700; // For the ray marching.
 const float BORDER_SIZE = 0.05;
 
 float DIAGO = sqrt(sqrt(uBBSize * uBBSize + uBBSize * uBBSize) * sqrt(uBBSize * uBBSize + uBBSize * uBBSize) + uBBSize * uBBSize);
-float PAS = DIAGO / sqrt(uImageWidth * uImageWidth + uImageHeight * uImageHeight) * 2.;
+float PAS = DIAGO / sqrt(uImageWidth * uImageWidth + uImageHeight * uImageHeight) * 2. + 0.1;
 
 
 varying vec3 vVertexPositionMV;
@@ -39,10 +39,19 @@ vec2 goodTexCoord(vec2 tex)
     return tex;
 }
 
+vec3 borderColor(vec3 position);
+
 void main(void)
 {
     // Couleur par défaut (gris clair)
     vec3 color = vec3(0.7, 0.7, 0.7);
+
+    vec3 borderColor = borderColor(vVertexPosition);
+    if(borderColor.x != -1.)
+    {
+        gl_FragColor = vec4(borderColor, 1.0);
+        return;
+    }
 
     // Conversion des coordonnées du vertex dans l'espace écran (normé)
     vec2 pixel = vVertexPositionSpace.xy / vVertexPositionSpace.w;
@@ -80,70 +89,67 @@ void main(void)
         if(position.z < -0.1 || position.x > uBBSize || position.x < -uBBSize
         || position.y > uBBSize || position.y < -uBBSize)
         {
-            if(position.z >= uBBSize)
-            {
-                if(uIsWireFrame && position.z >= uBBSize + BORDER_SIZE)
-                {
-                    discard;
-                    break;
+            // If is opaque or in wire frame mode, the draw a color.
+            if(uIsOpaque || uIsWireFrame) {
+                if(position.z >= uBBSize) {
+                    if(uIsWireFrame && position.z >= uBBSize + BORDER_SIZE) {
+                        discard;
+                    }
+                    else{
+                        color = vec3(1., 1., 0.);
+                    }
                 }
-                color = vec3(1., 1., 0.);
-            }
-            else if(position.x > uBBSize)
-            {
-                if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
-                !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE))
-                {
-                    discard;
-                    break;
+                else if(position.x > uBBSize) {
+                    if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
+                    !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
+                        discard;
+                    }
+                    else{
+                        color = vec3(1., 0., 0.);
+                    }
                 }
-                color = vec3(1., 0., 0.);
-            }
-            else if( position.x < -uBBSize)
-            {
-                if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
-                !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE))
-                {
-                    discard;
-                    break;
+                else if( position.x < -uBBSize) {
+                    if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
+                    !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
+                        discard;
+                    }
+                    else {
+                        color = vec3(0., 1., 0.);
+                    }
                 }
-                color = vec3(0., 1., 0.);
-            }
-            else if(position.y > uBBSize)
-            {
-                if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
-                !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE))
-                {
-                    discard;
-                    break;
+                else if(position.y > uBBSize) {
+                    if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
+                    !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
+                        discard;
+                    }
+                    else{
+                        color = vec3(0., 0., 1.);
+                    }
                 }
-                color = vec3(0., 0., 1.);
-            }
-            else if(position.y < -uBBSize)
-            {
-                if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
-                !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE))
-                {
-                    discard;
-                    break;
+                else if(position.y < -uBBSize) {
+                    if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
+                    !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
+                        discard;
+                    }
+                    else {
+                        color = vec3(1., 0., 1.);
+                    }
                 }
-                color = vec3(1., 0., 1.);
-            }
-            else
-            {
-                discard;
+                else {
+                    discard;
+                }
             }
             break;
         }
-        // The pixel is above.
+        // The ray is above the map.
         if(heightMapL < position.z)
         {
             above = true;
         }
-        // The pixel is bolow.
+        // The ray is bolow the map.
         else if(heightMapL >= position.z)
         {
-            // If it was above before.
+            // If it was above the map before.
             if(above)
             {
                 vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.));
@@ -157,6 +163,50 @@ void main(void)
 
     // Sortie de la couleur du fragment
     gl_FragColor = vec4(color, 1.0);
+}
+
+vec3 borderColor(vec3 position)
+{
+    vec3 color = vec3(-1.0, -1.0, -1.0);
+    if(uIsWireFrame)
+    {
+        // Top Yellow
+        if(position.z == uBBSize) {
+            if(position.x >= uBBSize - BORDER_SIZE || position.x <= -uBBSize + BORDER_SIZE
+            || position.y >= uBBSize - BORDER_SIZE || position.y <= -uBBSize + BORDER_SIZE) {
+                color = vec3(1., 1., 0.);
+            }
+        }
+        // Right Red
+        else if(position.x == uBBSize) {
+            if(position.y >= uBBSize - BORDER_SIZE || position.y <= -uBBSize + BORDER_SIZE
+            || position.z >= uBBSize - BORDER_SIZE || position.z <= -uBBSize + BORDER_SIZE) {
+                color = vec3(1., 0., 0.);
+            }
+        }
+        // Left Green
+        else if( position.x == -uBBSize) {
+            if(position.y >= uBBSize - BORDER_SIZE || position.y <= -uBBSize + BORDER_SIZE
+            || position.z >= uBBSize - BORDER_SIZE || position.z <= -uBBSize + BORDER_SIZE) {
+                color = vec3(0., 1., 0.);
+            }
+        }
+        // Front Blue
+        else if(position.y == uBBSize) {
+            if(position.x >= uBBSize - BORDER_SIZE || position.x <= -uBBSize + BORDER_SIZE
+            || position.z >= uBBSize - BORDER_SIZE || position.z <= -uBBSize + BORDER_SIZE) {
+                color = vec3(0., 0., 1.);
+            }
+        }
+        // Back pink
+        else if(position.y == -uBBSize) {
+            if(position.x >= uBBSize - BORDER_SIZE || position.x <= -uBBSize + BORDER_SIZE
+            || position.z >= uBBSize - BORDER_SIZE || position.z <= -uBBSize + BORDER_SIZE) {
+                color = vec3(1., 0., 1.);
+            }
+        }
+    }
+    return color;
 }
 
 vec3 RGB2Lab(vec3 rgb)
@@ -193,4 +243,78 @@ vec3 RGB2Lab(vec3 rgb)
     float b = 200.0 * ( fY - fZ );
 
     return vec3(L,a,b);
+}
+
+void Bresenham3D(vec3 p1, vec3 p2){
+
+    int i, dx, dy, dz, l, m, n, x_inc, y_inc, z_inc, err_1, err_2, dx2, dy2, dz2;
+    vec3 p = p1;
+    vec3 d = vec3(p2.x -p1.x, p2.y -p1.y, p2.z -p1.z);
+
+    x_inc = (d.x < 0) ? -1 : 1;
+    l = abs(d.x);
+    y_inc = (d.y < 0) ? -1 : 1;
+    m = abs(d.y);
+    z_inc = (d.z < 0) ? -1 : 1;
+    n = abs(d.z);
+    vec3 d2 = vec3(l * 2., m * 2., n * 2.);
+
+    if ((l >= m) && (l >= n)) {
+        err_1 = d2.y - l;
+        err_2 = d2.z - l;
+        for (int i = 0; i < MAX_ITERATIONS; i++){
+            if(i < l) {
+                break;
+            }
+            if (err_1 > 0) {
+                p.y += y_inc;
+                err_1 -= d2.x;
+            }
+            if (err_2 > 0) {
+                p.z += z_inc;
+                err_2 -= d2.x;
+            }
+            err_1 += d2.y;
+            err_2 += d2.z;
+            p.x += x_inc;
+        }
+    } else if ((m >= l) && (m >= n)) {
+        err_1 = d2.x - m;
+        err_2 = d2.z - m;
+        for (int i = 0; i < MAX_ITERATIONS; i++){
+            if(i < m) {
+                break;
+            }
+            if (err_1 > 0) {
+                p.x += x_inc;
+                err_1 -= d2.y;
+            }
+            if (err_2 > 0) {
+                p.z += z_inc;
+                err_2 -= d2.y;
+            }
+            err_1 += d2.x;
+            err_2 += d2.z;
+            p.y += y_inc;
+        }
+    } else {
+        err_1 = d2.y - n;
+        err_2 = d2.x - n;
+        for (int i = 0; i < MAX_ITERATIONS; i++){
+            if(i < n) {
+                break;
+            }
+            if (err_1 > 0) {
+                p.y += y_inc;
+                err_1 -= d2.z;
+            }
+            if (err_2 > 0) {
+                p.x += x_inc;
+                err_2 -= d2.z;
+            }
+            err_1 += d2.y;
+            err_2 += d2.x;
+            p.z += z_inc;
+        }
+    }
 }
