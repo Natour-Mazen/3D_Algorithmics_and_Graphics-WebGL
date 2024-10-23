@@ -29,9 +29,20 @@ let isWireFrameActiveBoundingBox = false;
 let isOpaqueActiveBoundigBox = false;
 
 /**
- * @constant {string[]}
+ * @type {Boolean}
  */
-const boundingBoxHeightMapTypeLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png', "texture2Colored.png"];
+let isColoredBoundingBoxHeightMapType = false;
+
+/**
+ * @constant {Object[]}
+ */
+const boundingBoxHeightMapTypeLoader = [
+    { name: 'texture1.png', isColor: false },
+    { name: 'texture2.png', isColor: false },
+    { name: 'texture3.png', isColor: false },
+    { name: 'texture4.png', isColor: false },
+    { name: 'texture2Colored.png', isColor: true }
+];
 
 /**
  * @type {string[]}
@@ -112,11 +123,37 @@ async function handleUpdateBoundingBoxSize(value) {
     }
 }
 
+/**
+ * Handles the display of the height map texture selector.
+ * @param {string} value - The display value ('block' or 'none').
+ */
+function handleDisplayBoundingBoxHeightMapTextureSelector(value) {
+    const element = boundingBoxElements.heightMapTextureSelector.closest('.row');
+    element.style.display = value;
+}
 
 /**
  * Initializes the UI components for the height map.
  */
 function initBoundingBoxUIComponents() {
+
+    initToggle(boundingBoxElements.toggle,false, async function () {
+        if (this.checked) {
+            theBoundingBox = new BoundingBox();
+            await handleUpdateBoundingBoxSize(boundingBoxElements.sizeSlider.value);
+            theBoundingBox.setBoundingBoxHeightMapFlattenFactor(boundingBoxElements.heightMapFlattenSlider.value);
+            main_objectsToDraw.push(theBoundingBox);
+            if(isTherePlane){
+                setPlaneState(false);
+            }
+        } else {
+            main_objectsToDraw = main_objectsToDraw.filter(obj => obj !== theBoundingBox);
+            theBoundingBox = null;
+            if(!isTherePlane){
+                setPlaneState(true);
+            }
+        }
+    });
 
     initSelector(boundingBoxElements.borderSelector, boundingBoxBorderLoader, function () {
         if(this.value === 'WireFrame'){
@@ -131,29 +168,34 @@ function initBoundingBoxUIComponents() {
         }
     });
 
-    initSelector(boundingBoxElements.heightMapTypeSelector, boundingBoxHeightMapTypeLoader, function () {
-        handleBoundingBoxHeightMapSelection(this.value, 'type');
-    });
-
-    initSelector(boundingBoxElements.heightMapTextureSelector, boundingBoxHeightMapTextureLoader, function () {
-        handleBoundingBoxHeightMapSelection(this.value, 'texture');
-    });
-
-    initToggle(boundingBoxElements.toggle,false, async function () {
-        if (this.checked) {
-            theBoundingBox = new BoundingBox();
-            await handleUpdateBoundingBoxSize(boundingBoxElements.sizeSlider.value);
-            theBoundingBox.setBoundingBoxHeightMapFlattenFactor(boundingBoxElements.heightMapFlattenSlider.value);
-            main_objectsToDraw.push(theBoundingBox);
-        } else {
-            main_objectsToDraw = main_objectsToDraw.filter(obj => obj !== theBoundingBox);
-            theBoundingBox = null;
-        }
-    });
-
     initSlider(boundingBoxElements.sizeSlider, async function () {
         await handleUpdateBoundingBoxSize(this.value);
         boundingBoxElements.sizeValueDisplay.innerHTML = this.value;
+    });
+
+    initGenericObjectSelector(
+        boundingBoxElements.heightMapTypeSelector,
+        boundingBoxHeightMapTypeLoader,
+        function () {
+            const selectedOption = this.options[this.selectedIndex];
+            const isColor = selectedOption.dataset.isColor === 'true'; // Convert to boolean
+            isColoredBoundingBoxHeightMapType = isColor;
+            if (isColor || this.value === 'None') {
+                lastSelectedBoundingBoxHeightMapTexturePath = "";
+                boundingBoxElements.heightMapTextureSelector.value = 'None';
+                handleDisplayBoundingBoxHeightMapTextureSelector('none');
+            } else {
+                handleDisplayBoundingBoxHeightMapTextureSelector('block');
+            }
+            handleBoundingBoxHeightMapSelection(this.value, 'type');
+        },
+        'name', // Property to use for option value
+        'name', // Property to use for option text content
+        { isColor: 'isColor' } // Additional data attributes
+    );
+
+    initSelector(boundingBoxElements.heightMapTextureSelector, boundingBoxHeightMapTextureLoader, function () {
+        handleBoundingBoxHeightMapSelection(this.value, 'texture');
     });
 
     initSlider(boundingBoxElements.heightMapFlattenSlider, function () {
@@ -162,6 +204,8 @@ function initBoundingBoxUIComponents() {
             boundingBoxElements.heightMapFlattenValueDisplay.innerHTML = this.value;
         }
     });
+
+    handleDisplayBoundingBoxHeightMapTextureSelector('none');
 }
 
 initBoundingBoxUIComponents();
