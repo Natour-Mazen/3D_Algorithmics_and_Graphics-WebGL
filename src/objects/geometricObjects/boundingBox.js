@@ -204,7 +204,7 @@ class BoundingBox extends ObjectToDraw {
         // We tell if the image is in color (1) or not (0).
         // If (1) -> we use the L in the LAB color metric.
         // If (0) -> we use the R in the RGB color metric.
-        gl.uniform1i(this.shader.uIsImageInColor, 0);
+        gl.uniform1i(this.shader.uIsImageInColor, isColoredBoundingBoxHeightMapType);
         this.checkGlError();
 
         gl.uniform1i(this.shader.uIsWireFrame, isWireFrameActiveBoundingBox);
