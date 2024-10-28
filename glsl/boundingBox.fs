@@ -29,23 +29,15 @@ varying vec4 vVertexPositionSpace;   // Position projetée dans l'espace caméra
 varying mat4 viMVMatrix;
 varying vec3 vVertexNormal;
 
-vec3 RGB2Lab(vec3 rgb);
 
-vec2 goodTexCoord(vec2 tex)
-{
-    tex.x = max(0., min(tex.x, 1.));
-    // To have the ray marching height map in the same direction as the classic height map.
-    tex.y = 1. - max(0., min(tex.y, 1.));
-    return tex;
-}
-
+vec2 goodTexCoord(vec2 tex);
 vec3 borderColor(vec3 position);
-
 vec3 intersectionBetweenLines(vec3 A1, vec3 B1, vec3 A2, vec3 B2);
+vec3 RGB2Lab(vec3 rgb);
 
 void main(void)
 {
-    // Couleur par défaut (gris clair)
+    // Default color.
     vec3 color = vec3(0.7, 0.7, 0.7);
 
     vec3 borderColor = borderColor(vVertexPosition);
@@ -182,6 +174,19 @@ void main(void)
     gl_FragColor = vec4(color, 1.0);
 }
 
+
+// ======================================================//
+//                      Functions                        //
+// ===================================================== //
+
+vec2 goodTexCoord(vec2 tex)
+{
+    tex.x = max(0., min(tex.x, 1.));
+    // To have the ray marching height map in the same direction as the classic height map.
+    tex.y = 1. - max(0., min(tex.y, 1.));
+    return tex;
+}
+
 vec3 borderColor(vec3 position)
 {
     vec3 color = vec3(-1.0, -1.0, -1.0);
@@ -288,77 +293,3 @@ vec3 RGB2Lab(vec3 rgb)
 
     return vec3(L,a,b);
 }
-
-//void Bresenham3D(vec3 p1, vec3 p2){
-//
-//    int i, dx, dy, dz, l, m, n, x_inc, y_inc, z_inc, err_1, err_2, dx2, dy2, dz2;
-//    vec3 p = p1;
-//    vec3 d = vec3(p2.x -p1.x, p2.y -p1.y, p2.z -p1.z);
-//
-//    x_inc = (d.x < 0) ? -1 : 1;
-//    l = abs(d.x);
-//    y_inc = (d.y < 0) ? -1 : 1;
-//    m = abs(d.y);
-//    z_inc = (d.z < 0) ? -1 : 1;
-//    n = abs(d.z);
-//    vec3 d2 = vec3(l * 2., m * 2., n * 2.);
-//
-//    if ((l >= m) && (l >= n)) {
-//        err_1 = d2.y - l;
-//        err_2 = d2.z - l;
-//        for (int i = 0; i < MAX_ITERATIONS; i++){
-//            if(i < l) {
-//                break;
-//            }
-//            if (err_1 > 0) {
-//                p.y += y_inc;
-//                err_1 -= d2.x;
-//            }
-//            if (err_2 > 0) {
-//                p.z += z_inc;
-//                err_2 -= d2.x;
-//            }
-//            err_1 += d2.y;
-//            err_2 += d2.z;
-//            p.x += x_inc;
-//        }
-//    } else if ((m >= l) && (m >= n)) {
-//        err_1 = d2.x - m;
-//        err_2 = d2.z - m;
-//        for (int i = 0; i < MAX_ITERATIONS; i++){
-//            if(i < m) {
-//                break;
-//            }
-//            if (err_1 > 0) {
-//                p.x += x_inc;
-//                err_1 -= d2.y;
-//            }
-//            if (err_2 > 0) {
-//                p.z += z_inc;
-//                err_2 -= d2.y;
-//            }
-//            err_1 += d2.x;
-//            err_2 += d2.z;
-//            p.y += y_inc;
-//        }
-//    } else {
-//        err_1 = d2.y - n;
-//        err_2 = d2.x - n;
-//        for (int i = 0; i < MAX_ITERATIONS; i++){
-//            if(i < n) {
-//                break;
-//            }
-//            if (err_1 > 0) {
-//                p.y += y_inc;
-//                err_1 -= d2.z;
-//            }
-//            if (err_2 > 0) {
-//                p.x += x_inc;
-//                err_2 -= d2.z;
-//            }
-//            err_1 += d2.y;
-//            err_2 += d2.x;
-//            p.z += z_inc;
-//        }
-//    }
-//}
