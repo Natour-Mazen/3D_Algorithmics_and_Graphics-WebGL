@@ -41,6 +41,30 @@ vec2 goodTexCoord(vec2 tex)
 
 vec3 borderColor(vec3 position);
 
+vec3 intersectionBetweenLines(vec3 O1, vec3 d1, vec3 A, vec3 B) {
+    vec3 d2 = normalize(B - A);  // Direction de la deuxième droite
+
+    // Calcul de paramètres nécessaires
+    vec3 w0 = O1 - A;
+    float a = dot(d1, d1);  // d1·d1
+    float b = dot(d1, d2);  // d1·d2
+    float c = dot(d2, d2);  // d2·d2
+    float d = dot(d1, w0);  // d1·w0
+    float e = dot(d2, w0);  // d2·w0
+
+    // Calcul des paramètres t et s
+    float denominator = a * c - b * b;
+    if (abs(denominator) < 0.000000001) {
+        //return vec3(0.0); // Les droites sont presque parallèles, pas d'intersection
+    }
+
+    float t = (b * e - c * d) / denominator;
+    float s = (a * e - b * d) / denominator;
+
+    // Calcul du point d'intersection sur D1
+    return O1 + t * d1;
+}
+
 void main(void)
 {
     // Couleur par défaut (gris clair)
@@ -68,6 +92,9 @@ void main(void)
     float heightMapL = 0.;
     // To know if the last position was above.
     bool above = false;
+    // The last position computed.
+    vec3 lastPosition = vVertexPosition + t * dirPixelObj;
+    float lastZ = 0.;
 
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
@@ -138,8 +165,12 @@ void main(void)
                 else {
                     discard;
                 }
+                break;
             }
-            break;
+            else {
+                discard;
+                break;
+            }
         }
         // The ray is above the map.
         if(heightMapL < position.z)
@@ -152,14 +183,21 @@ void main(void)
             // If it was above the map before.
             if(above)
             {
-                vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.));
+                vec3 positionZ = position;
+                positionZ.z = texHeightMap.z;
+                vec3 lastPositionZ = lastPosition;
+                lastPositionZ.z = lastZ;
+                vec3 pointOnTheLine = intersectionBetweenLines(lastPosition, position, lastPositionZ, positionZ);
+
+                vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((pointOnTheLine.xy / uBBSize) + 1.) / 2.));
                 color = texColor.xyz;
                 break;
             }
             above = false;
         }
+        lastPosition = position;
+        lastZ = texHeightMap.z;
     }
-
 
     // Sortie de la couleur du fragment
     gl_FragColor = vec4(color, 1.0);
