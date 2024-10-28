@@ -41,30 +41,7 @@ vec2 goodTexCoord(vec2 tex)
 
 vec3 borderColor(vec3 position);
 
-vec3 intersectionBetweenLines(vec3 O1, vec3 da, vec3 A, vec3 B) {
-    vec3 d1 = normalize(O1 - da);
-    vec3 d2 = normalize(B - A);  // Direction de la deuxième droite
-
-    // Calcul de paramètres nécessaires
-    vec3 w0 = O1 - A;
-    float a = dot(d1, d1);  // d1·d1
-    float b = dot(d1, d2);  // d1·d2
-    float c = dot(d2, d2);  // d2·d2
-    float d = dot(d1, w0);  // d1·w0
-    float e = dot(d2, w0);  // d2·w0
-
-    // Calcul des paramètres t et s
-    float denominator = a * c - b * b;
-    if (abs(denominator) < 0.000000001) {
-        return vec3(0.0); // Les droites sont presque parallèles, pas d'intersection
-    }
-
-    float t = (b * e - c * d) / denominator;
-    float s = (a * e - b * d) / denominator;
-
-    // Calcul du point d'intersection sur D1
-    return O1 + t * d1;
-}
+vec3 intersectionBetweenLines(vec3 A1, vec3 B1, vec3 A2, vec3 B2);
 
 void main(void)
 {
@@ -247,6 +224,33 @@ vec3 borderColor(vec3 position)
         }
     }
     return color;
+}
+
+vec3 intersectionBetweenLines(vec3 A1, vec3 B1, vec3 A2, vec3 B2)
+{
+    // Lines directions.
+    vec3 d1 = normalize(A1 - B1);
+    vec3 d2 = normalize(B2 - A2);
+
+    vec3 w0 = A1 - A2;
+    float a = dot(d1, d1);  // d1·d1
+    float b = dot(d1, d2);  // d1·d2
+    float c = dot(d2, d2);  // d2·d2
+    float d = dot(d1, w0);  // d1·w0
+    float e = dot(d2, w0);  // d2·w0
+
+    float denominator = a * c - b * b;
+
+    // Lines are parallel, no intersection.
+    if (abs(denominator) < 0.000001)
+    {
+        return vec3(0.0);
+    }
+
+    float t = (b * e - c * d) / denominator;
+
+    // Point of intersection.
+    return A1 + t * d1;
 }
 
 vec3 RGB2Lab(vec3 rgb)
