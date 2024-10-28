@@ -184,7 +184,7 @@ void main(void)
             if(above)
             {
                 vec3 positionZ = position;
-                positionZ.z = texHeightMap.z;
+                positionZ.z = heightMapL;
                 vec3 lastPositionZ = lastPosition;
                 lastPositionZ.z = lastZ;
                 vec3 pointOnTheLine = intersectionBetweenLines(lastPosition, position, lastPositionZ, positionZ);
@@ -196,7 +196,7 @@ void main(void)
             above = false;
         }
         lastPosition = position;
-        lastZ = texHeightMap.z;
+        lastZ = heightMapL;
     }
 
     // Sortie de la couleur du fragment
