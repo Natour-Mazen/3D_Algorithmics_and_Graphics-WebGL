@@ -20,7 +20,7 @@ const int MAX_ITERATIONS = 700; // For the ray marching.
 const float BORDER_SIZE = 0.05;
 
 float DIAGO = sqrt(sqrt(uBBSize * uBBSize + uBBSize * uBBSize) * sqrt(uBBSize * uBBSize + uBBSize * uBBSize) + uBBSize * uBBSize);
-float PAS = DIAGO / sqrt(uImageWidth * uImageWidth + uImageHeight * uImageHeight) * 2. ;
+float PAS = DIAGO / sqrt(uImageWidth * uImageWidth + uImageHeight * uImageHeight) * 2.;
 
 
 varying vec3 vVertexPositionMV;
@@ -41,7 +41,8 @@ vec2 goodTexCoord(vec2 tex)
 
 vec3 borderColor(vec3 position);
 
-vec3 intersectionBetweenLines(vec3 O1, vec3 d1, vec3 A, vec3 B) {
+vec3 intersectionBetweenLines(vec3 O1, vec3 da, vec3 A, vec3 B) {
+    vec3 d1 = normalize(O1 - da);
     vec3 d2 = normalize(B - A);  // Direction de la deuxième droite
 
     // Calcul de paramètres nécessaires
@@ -55,7 +56,7 @@ vec3 intersectionBetweenLines(vec3 O1, vec3 d1, vec3 A, vec3 B) {
     // Calcul des paramètres t et s
     float denominator = a * c - b * b;
     if (abs(denominator) < 0.000000001) {
-        //return vec3(0.0); // Les droites sont presque parallèles, pas d'intersection
+        return vec3(0.0); // Les droites sont presque parallèles, pas d'intersection
     }
 
     float t = (b * e - c * d) / denominator;
@@ -187,6 +188,7 @@ void main(void)
                 positionZ.z = heightMapL;
                 vec3 lastPositionZ = lastPosition;
                 lastPositionZ.z = lastZ;
+
                 vec3 pointOnTheLine = intersectionBetweenLines(lastPosition, position, lastPositionZ, positionZ);
 
                 vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((pointOnTheLine.xy / uBBSize) + 1.) / 2.));
