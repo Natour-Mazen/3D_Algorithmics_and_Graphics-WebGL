@@ -308,7 +308,7 @@ vec3 RGB2Lab(vec3 rgb)
 // (bien sur il faut transferer les pixels en int vers le rayon qui est en float)
 // Une fois qu'on a les deux points sur le rayon, on applique la même méthode que pour le calcul de base (avec l'intersection du rayon et de la droite que forme les pixels de la map).
 
-
+/*
 void draw_line(ivec2 p1, ivec2 p2) {
     int dx, dy, i, e;
     int incx, incy, inc1, inc2;
@@ -357,3 +357,4 @@ void draw_line(ivec2 p1, ivec2 p2) {
         }
     }
 }
+*/
