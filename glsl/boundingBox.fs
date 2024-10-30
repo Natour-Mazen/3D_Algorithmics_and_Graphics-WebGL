@@ -295,6 +295,19 @@ vec3 RGB2Lab(vec3 rgb)
     return vec3(L,a,b);
 }
 
+// TODO : Bresenham
+// Prendre la position de depard en x,y (float), les mettres en int.
+// Trouver quand on sort de la boite, prendre la position d'arrivé.
+// Appliquer bresenham pour la position de depart jusqu'à l'arrivé.
+// Pour chaque nouveau pixel decouvert avec Bresenham on regarde si :
+// Si on commence avec un pixel (en z) sur la map en bas de notre rayon, on continue jusqu'à trouver un pixel (en z) superieur sur la map.
+// Si on commence avec un pixel (en z) sur la map en haut de notre rayon, on continue jusqu'à trouver un pixel (en z) inferieur sur la map.
+
+// Pour les deux cas on recupère le pixel de fin et le precedant (pour pouvoir ensuite trouver le bon pixel ou le 'z' de la map correspond avec le 'z' de notre rayon).
+// (bien sur il faut transferer les pixels en int vers le rayon qui est en float)
+// Une fois qu'on a les deux points sur le rayon, on applique la même méthode que pour le calcul de base (avec l'intersection du rayon et de la droite que forme les pixels de la map).
+
+
 void draw_line(ivec2 p1, ivec2 p2) {
     int dx, dy, i, e;
     int incx, incy, inc1, inc2;
