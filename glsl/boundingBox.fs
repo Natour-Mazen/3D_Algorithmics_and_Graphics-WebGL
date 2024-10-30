@@ -294,3 +294,52 @@ vec3 RGB2Lab(vec3 rgb)
 
     return vec3(L,a,b);
 }
+
+void draw_line(ivec2 p1, ivec2 p2) {
+    int dx, dy, i, e;
+    int incx, incy, inc1, inc2;
+    int x,y;
+
+    dx = p2.x - p1.x;
+    dy = p2.y - p1.y;
+
+    if (dx < 0) dx = -dx;
+    if (dy < 0) dy = -dy;
+    incx = 1;
+    if (p2.x < p1.x) incx = -1;
+    incy = 1;
+    if (p2.y < p1.y) incy = -1;
+    x = p1.x; y = p1.y;
+    if (dx > dy) {
+        //draw_pixel(x, y);
+        e = 2 * dy-dx;
+        inc1 = 2*(dy-dx);
+        inc2 = 2*dy;
+        for (i=0; i<dx; i++) {
+            if (e >= 0) {
+                y += incy;
+                e += inc1;
+            }
+            else
+            e += inc2;
+            x += incx;
+            //draw_pixel(x, y);
+        }
+
+    } else {
+        //draw_pixel(x, y);
+        e = 2*dx-dy;
+        inc1 = 2*(dx-dy);
+        inc2 = 2*dx;
+        for (i=0; i<dy; i++) {
+            if (e >= 0) {
+                x += incx;
+                e += inc1;
+            }
+            else
+            e += inc2;
+            y += incy;
+            //draw_pixel(x, y);
+        }
+    }
+}
