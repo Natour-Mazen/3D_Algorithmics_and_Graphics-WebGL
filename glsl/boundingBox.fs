@@ -17,8 +17,8 @@ uniform sampler2D uHeightMapTypeSampler; // The height map.
 uniform sampler2D uHeightMapTextureSampler; // The texture.
 
 const int MAX_ITERATIONS = 700; // For the ray marching.
-const int MAX_ITERATIONS_FOR = 5000; // For all "while".
-const float BORDER_SIZE = 0.05;
+const int MAX_ITERATIONS_FOR = 10; // For all "while".
+float BORDER_SIZE = 0.005 * uBBSize;
 
 float DIAGO = sqrt(sqrt(uBBSize * uBBSize + uBBSize * uBBSize) * sqrt(uBBSize * uBBSize + uBBSize * uBBSize) + uBBSize * uBBSize);
 float PAS = DIAGO / sqrt(uImageWidth * uImageWidth + uImageHeight * uImageHeight) * 2.;
@@ -35,6 +35,7 @@ vec2 goodTexCoord(vec2 tex);
 vec3 borderColor(vec3 position);
 vec3 intersectionBetweenLines(vec3 A1, vec3 B1, vec3 A2, vec3 B2);
 vec3 RGB2Lab(vec3 rgb);
+void draw_line(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, out vec3 fBeforeFinalPoint, out vec3 fFinalPoint);
 
 void main(void)
 {
@@ -74,7 +75,7 @@ void main(void)
 
         if(uIsImageInColor) {
             // We use the L of the LAB color metric.
-           // heightMapL = (RGB2Lab(texHeightMap.xyz).x / 5.) * uFlatten * 0.1;
+            // heightMapL = (RGB2Lab(texHeightMap.xyz).x / 5.) * uFlatten * 0.1;
             heightMapL = RGB2Lab(texHeightMap.xyz).x  * uFlatten * 0.1;
         }
         else {
@@ -83,6 +84,8 @@ void main(void)
         }
 
         t += PAS;
+        // TODO : Mettre le bon fEndPoint car sinon ça peut pas marcher.
+        //draw_line(vVertexPosition, vVertexPosition, dirPixelObj, lastPosition, position);
 
         // If the point is outside of the box.
         if(position.z < -0.1 || position.x > uBBSize || position.x < -uBBSize
@@ -309,25 +312,50 @@ vec3 RGB2Lab(vec3 rgb)
 // (bien sur il faut transferer les pixels en int vers le rayon qui est en float)
 // Une fois qu'on a les deux points sur le rayon, on applique la même méthode que pour le calcul de base (avec l'intersection du rayon et de la droite que forme les pixels de la map).
 
-
-void draw_line(ivec2 p1, ivec2 p2, ivec2 beforeFinalPoint, ivec2 finalPoint)
+vec3 closestPointOnLine(vec3 linePoint, vec3 lineDirection, vec2 point2D)
 {
+    vec3 point = vec3(point2D.x, point2D.y, 0.0);
+
+    // Vector between linePoint and point.
+    vec3 w = point - linePoint;
+
+    float t = dot(w, lineDirection) / dot(lineDirection, lineDirection);
+
+    // The closest point to the line.
+    return linePoint + t * lineDirection;
+}
+
+void draw_line(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, out vec3 fBeforeFinalPoint, out vec3 fFinalPoint)
+{
+    ivec2 startPoint = ivec2(int(linePoint.x), int(linePoint.y));
+    ivec2 endPoint = ivec2(int(fEndPoint.x), int(fEndPoint.y));
+    ivec2 beforeFinalPoint;
+    ivec2 finalPoint;
+
+
     int dx, dy, e;
     int incx, incy, inc1, inc2;
     int x,y;
+    vec2 firstTexPosition = vec2(float(startPoint.x), float(startPoint.y));
+    float lastZ = texture2D(uHeightMapTypeSampler, goodTexCoord(((firstTexPosition.xy / uBBSize) + 1.) / 2.)).z;
+    float actualZ = lastZ;
 
-    dx = p2.x - p1.x;
-    dy = p2.y - p1.y;
+    dx = endPoint.x - startPoint.x;
+    dy = endPoint.y - startPoint.y;
 
-    if (dx < 0) dx = -dx;
-    if (dy < 0) dy = -dy;
+    if (dx < 0)
+        dx = -dx;
+    if (dy < 0)
+        dy = -dy;
     incx = 1;
-    if (p2.x < p1.x) incx = -1;
+    if (endPoint.x < startPoint.x)
+        incx = -1;
     incy = 1;
-    if (p2.y < p1.y) incy = -1;
-    x = p1.x; y = p1.y;
+    if (endPoint.y < startPoint.y)
+        incy = -1;
+    x = startPoint.x;
+    y = startPoint.y;
     if (dx > dy) {
-        //draw_pixel(x, y);
         finalPoint = ivec2(x, y);
         beforeFinalPoint = finalPoint;
         e = 2 * dy-dx;
@@ -344,15 +372,25 @@ void draw_line(ivec2 p1, ivec2 p2, ivec2 beforeFinalPoint, ivec2 finalPoint)
             else
             e += inc2;
             x += incx;
-            //draw_pixel(x, y);
             beforeFinalPoint = finalPoint;
             finalPoint = ivec2(x, y);
+            vec2 texPosition = vec2(float(finalPoint.x), float(finalPoint.y));
+            lastZ = actualZ;
+            actualZ = texture2D(uHeightMapTypeSampler, goodTexCoord(((texPosition.xy / uBBSize) + 1.) / 2.)).z;
+            gl_FragColor = texture2D(uHeightMapTypeSampler, goodTexCoord(((texPosition.xy / uBBSize) + 1.) / 2.));
+            return;
+            float onLineZ = closestPointOnLine(linePoint, lineDirection, texPosition).z;
+            if(lastZ <= onLineZ && onLineZ <= actualZ){
+                break;
+            }
+            if(lastZ >= onLineZ && onLineZ >= actualZ){
+                break;
+            }
         }
 
     } else {
         finalPoint = ivec2(x, y);
         beforeFinalPoint = finalPoint;
-        //draw_pixel(x, y);
         e = 2*dx-dy;
         inc1 = 2*(dx-dy);
         inc2 = 2*dx;
@@ -367,9 +405,22 @@ void draw_line(ivec2 p1, ivec2 p2, ivec2 beforeFinalPoint, ivec2 finalPoint)
             else
             e += inc2;
             y += incy;
-            //draw_pixel(x, y);
             beforeFinalPoint = finalPoint;
             finalPoint = ivec2(x, y);
+            vec2 texPosition = vec2(float(finalPoint.x), float(finalPoint.y));
+            lastZ = actualZ;
+            actualZ = texture2D(uHeightMapTypeSampler, goodTexCoord(((texPosition.xy / uBBSize) + 1.) / 2.)).z;
+            gl_FragColor = texture2D(uHeightMapTypeSampler, goodTexCoord(((texPosition.xy / uBBSize) + 1.) / 2.));
+            return;
+            float onLineZ = closestPointOnLine(linePoint, lineDirection, texPosition).z;
+            fBeforeFinalPoint = closestPointOnLine(linePoint, lineDirection, vec2(float(beforeFinalPoint.x), float(beforeFinalPoint.y)));
+            fFinalPoint = closestPointOnLine(linePoint, lineDirection, vec2(float(finalPoint.x), float(finalPoint.y)));
+            if(lastZ <= onLineZ && onLineZ <= actualZ){
+                break;
+            }
+            if(lastZ >= onLineZ && onLineZ >= actualZ){
+                break;
+            }
         }
     }
 }
