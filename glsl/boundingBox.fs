@@ -328,7 +328,7 @@ void draw_line(ivec2 p1, ivec2 p2, ivec2 beforeFinalPoint, ivec2 finalPoint)
     x = p1.x; y = p1.y;
     if (dx > dy) {
         //draw_pixel(x, y);
-        finalPoint = vec2(x, y);
+        finalPoint = ivec2(x, y);
         beforeFinalPoint = finalPoint;
         e = 2 * dy-dx;
         inc1 = 2*(dy-dx);
@@ -346,11 +346,11 @@ void draw_line(ivec2 p1, ivec2 p2, ivec2 beforeFinalPoint, ivec2 finalPoint)
             x += incx;
             //draw_pixel(x, y);
             beforeFinalPoint = finalPoint;
-            finalPoint = vec2(x, y);
+            finalPoint = ivec2(x, y);
         }
 
     } else {
-        finalPoint = vec2(x, y);
+        finalPoint = ivec2(x, y);
         beforeFinalPoint = finalPoint;
         //draw_pixel(x, y);
         e = 2*dx-dy;
@@ -369,7 +369,7 @@ void draw_line(ivec2 p1, ivec2 p2, ivec2 beforeFinalPoint, ivec2 finalPoint)
             y += incy;
             //draw_pixel(x, y);
             beforeFinalPoint = finalPoint;
-            finalPoint = vec2(x, y);
+            finalPoint = ivec2(x, y);
         }
     }
 }
