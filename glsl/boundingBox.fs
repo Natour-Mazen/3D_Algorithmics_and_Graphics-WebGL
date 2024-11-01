@@ -17,6 +17,7 @@ uniform sampler2D uHeightMapTypeSampler; // The height map.
 uniform sampler2D uHeightMapTextureSampler; // The texture.
 
 const int MAX_ITERATIONS = 700; // For the ray marching.
+const int MAX_ITERATIONS_FOR = 5000; // For all "while".
 const float BORDER_SIZE = 0.05;
 
 float DIAGO = sqrt(sqrt(uBBSize * uBBSize + uBBSize * uBBSize) * sqrt(uBBSize * uBBSize + uBBSize * uBBSize) + uBBSize * uBBSize);
@@ -308,9 +309,10 @@ vec3 RGB2Lab(vec3 rgb)
 // (bien sur il faut transferer les pixels en int vers le rayon qui est en float)
 // Une fois qu'on a les deux points sur le rayon, on applique la même méthode que pour le calcul de base (avec l'intersection du rayon et de la droite que forme les pixels de la map).
 
-/*
-void draw_line(ivec2 p1, ivec2 p2) {
-    int dx, dy, i, e;
+
+void draw_line(ivec2 p1, ivec2 p2, ivec2 beforeFinalPoint, ivec2 finalPoint)
+{
+    int dx, dy, e;
     int incx, incy, inc1, inc2;
     int x,y;
 
@@ -326,10 +328,15 @@ void draw_line(ivec2 p1, ivec2 p2) {
     x = p1.x; y = p1.y;
     if (dx > dy) {
         //draw_pixel(x, y);
+        finalPoint = vec2(x, y);
+        beforeFinalPoint = finalPoint;
         e = 2 * dy-dx;
         inc1 = 2*(dy-dx);
         inc2 = 2*dy;
-        for (i=0; i<dx; i++) {
+        for (int i=0; i<MAX_ITERATIONS_FOR; i++) {
+            if(i < dx){
+                break;
+            }
             if (e >= 0) {
                 y += incy;
                 e += inc1;
@@ -338,14 +345,21 @@ void draw_line(ivec2 p1, ivec2 p2) {
             e += inc2;
             x += incx;
             //draw_pixel(x, y);
+            beforeFinalPoint = finalPoint;
+            finalPoint = vec2(x, y);
         }
 
     } else {
+        finalPoint = vec2(x, y);
+        beforeFinalPoint = finalPoint;
         //draw_pixel(x, y);
         e = 2*dx-dy;
         inc1 = 2*(dx-dy);
         inc2 = 2*dx;
-        for (i=0; i<dy; i++) {
+        for (int i=0; i<MAX_ITERATIONS_FOR; i++) {
+            if(i < dy){
+                break;
+            }
             if (e >= 0) {
                 x += incx;
                 e += inc1;
@@ -354,7 +368,8 @@ void draw_line(ivec2 p1, ivec2 p2) {
             e += inc2;
             y += incy;
             //draw_pixel(x, y);
+            beforeFinalPoint = finalPoint;
+            finalPoint = vec2(x, y);
         }
     }
 }
-*/
