@@ -458,10 +458,10 @@ int abs(int x) {
 
 void bresenhamLine(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec3 fBeforeFinalPoint, inout vec3 fFinalPoint)
 {
-    fEndPoint *= uImageWidth / uBBSize;
-    linePoint *= uImageWidth / uBBSize;
+    fEndPoint *= uImageWidth;
+    linePoint *= uImageWidth;
     ivec2 startPoint = ivec2(int(linePoint.x), int(linePoint.y));
-    ivec2 endPoint = ivec2(int(fEndPoint.x), int(fEndPoint.y)) * int(uImageWidth) / int(uBBSize);
+    ivec2 endPoint = ivec2(int(fEndPoint.x), int(fEndPoint.y));
     ivec2 beforeFinalPoint;
     ivec2 finalPoint;
 
