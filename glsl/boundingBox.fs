@@ -96,6 +96,7 @@ void main(void)
         t += PAS;
 
         bool bNotFound = false;
+        // We use the bresenham algorithm just one time. 
         if(useBresenham)
         {
             bresenhamLine(pointHitTheGround, position, dirPixelObj, position, bNotFound, t);
