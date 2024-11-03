@@ -370,8 +370,8 @@ void bresenhamLine(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec
     ivec2 finalPoint;
 
     vec2 firstTexPosition = vec2(float(startPoint.x), float(startPoint.y));
-    float texZ = texture2D(uHeightMapTypeSampler, goodTexCoord(((firstTexPosition.xy / imageRatio) + 1.) / 2.)).z;
-    float lastZ =  texZ * uFlatten * imageLength;
+    float texZ = texture2D(uHeightMapTypeSampler, goodTexCoord(((firstTexPosition.xy / imageRatio / uBBSize) + 1.) / 2.)).z;
+    float lastZ =  texZ * uFlatten * uBBSize;
     float actualZ = lastZ;
 
 
@@ -403,18 +403,18 @@ void bresenhamLine(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec
         vec2 texPosition = vec2(float(finalPoint.x), float(finalPoint.y));
 
         lastZ = actualZ;
-        texZ = texture2D(uHeightMapTypeSampler, goodTexCoord(((texPosition.xy / imageRatio) + 1.) / 2.)).z;
-        actualZ = texZ * uFlatten * imageLength;
+        texZ = texture2D(uHeightMapTypeSampler, goodTexCoord(((texPosition.xy / imageRatio/ uBBSize) + 1.) / 2.)).z;
+        actualZ = texZ * uFlatten * uBBSize;
 
         //fBeforeFinalPoint = vec3(float(beforeFinalPoint.x) / imageRatio, float(beforeFinalPoint.y) / imageRatio, lastZ);
         //fBeforeFinalPoint = closestPointOnLine(linePoint, lineDirection, vec2(float(beforeFinalPoint.x), float(beforeFinalPoint.y))) / imageRatio * uBBSize;
-        fBeforeFinalPoint = closestPointOnLine(linePoint, lineDirection, vec3(float(beforeFinalPoint.x), float(beforeFinalPoint.y), lastZ)) / imageRatio;
+        fBeforeFinalPoint = closestPointOnLine(linePoint, lineDirection, vec3(float(beforeFinalPoint.x), float(beforeFinalPoint.y), lastZ * imageRatio)) / imageRatio;
 
         //fFinalPoint = vec3(texPosition / imageRatio, actualZ);
         //fFinalPoint = closestPointOnLine(linePoint, lineDirection, vec2(texPosition)) / imageRatio * uBBSize;
-        fFinalPoint = closestPointOnLine(linePoint, lineDirection, vec3(texPosition, actualZ)) / imageRatio;
+        fFinalPoint = closestPointOnLine(linePoint, lineDirection, vec3(texPosition, actualZ * imageRatio)) / imageRatio;
 
-        float onLineZ = fFinalPoint.z * imageRatio;
+        float onLineZ = fFinalPoint.z;
 
 
         if(lastZ <= onLineZ && onLineZ <= actualZ){
