@@ -35,10 +35,8 @@ vec2 goodTexCoord(vec2 tex);
 vec3 borderColor(vec3 position);
 vec3 intersectionBetweenLines(vec3 A1, vec3 B1, vec3 A2, vec3 B2);
 vec3 RGB2Lab(vec3 rgb);
-void draw_line(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec3 fBeforeFinalPoint, inout vec3 fFinalPoint);
-void bresenhamLine(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec3 fBeforeFinalPoint, inout vec3 fFinalPoint, inout bool notFound, inout float t);
-
-bool red = false;
+void draw_line(vec3 vec3EndPoint, vec3 linePoint, vec3 lineDirection, inout vec3 fBeforeFinalPoint, inout vec3 fFinalPoint);
+void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection, inout vec3 vec3FinalPoint, inout bool bNotFound, inout float t);
 
 void main(void)
 {
@@ -76,9 +74,9 @@ void main(void)
     bool above = false;
     // The last position computed.
     vec3 lastPosition = vVertexPosition + t * dirPixelObj;
-    float lastZ = 0.;
+    float fLastZ = 0.;
 
-    bool useBresenham = false;
+    bool useBresenham = true;
 
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
@@ -97,16 +95,17 @@ void main(void)
 
         t += PAS;
 
-        bool notFound = false;
+        bool bNotFound = false;
         if(useBresenham)
         {
-            bresenhamLine(pointHitTheGround, position, dirPixelObj, lastPosition, lastPosition, notFound, t);
+            bresenhamLine(pointHitTheGround, position, dirPixelObj, position, bNotFound, t);
+            useBresenham = false;
         }
 
 
         // If the point is outside of the box.
         if(position.z < -0.1 || position.x > uBBSize || position.x < -uBBSize
-        || position.y > uBBSize || position.y < -uBBSize || notFound)
+        || position.y > uBBSize || position.y < -uBBSize || bNotFound)
         {
             // If is opaque or in wire frame mode, the draw a color.
             if(uIsOpaque || uIsWireFrame) {
@@ -170,26 +169,6 @@ void main(void)
             }
         }
 
-        if(useBresenham && false)
-        {
-            vec3 positionZ = position;
-            positionZ.z = texture2D(uHeightMapTypeSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.)).z;
-            vec3 lastPositionZ = lastPosition;
-            lastPositionZ.z = texture2D(uHeightMapTypeSampler, goodTexCoord(((lastPositionZ.xy / uBBSize) + 1.) / 2.)).z;
-
-            vec3 pointOnTheLine = intersectionBetweenLines(lastPosition, position, lastPositionZ, positionZ);
-
-            vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.));
-            color = texColor.xyz;
-
-            // Use to debug
-            if(red){
-                color = vec3(1., 0., 0.);
-            }
-        }
-
-
-
         // The ray is above the map.
         if(heightMapL < position.z)
         {
@@ -204,7 +183,7 @@ void main(void)
                 vec3 positionZ = position;
                 positionZ.z = heightMapL;
                 vec3 lastPositionZ = lastPosition;
-                lastPositionZ.z = lastZ;
+                lastPositionZ.z = fLastZ;
 
                 vec3 pointOnTheLine = intersectionBetweenLines(lastPosition, position, lastPositionZ, positionZ);
 
@@ -215,7 +194,7 @@ void main(void)
             above = false;
         }
         lastPosition = position;
-        lastZ = heightMapL;
+        fLastZ = heightMapL;
     }
 
     // Sortie de la couleur du fragment
@@ -279,6 +258,14 @@ vec3 borderColor(vec3 position)
     return color;
 }
 
+/**
+* @brief Get the intersection of two lines (one line is represented by two points).
+* @param A1 The first point of the first line.
+* @param B1 The second point of the first line.
+* @param A2 The first point of the second line.
+* @param B2 The second point of the second line.
+* @return The intersection between the two lines.
+*/
 vec3 intersectionBetweenLines(vec3 A1, vec3 B1, vec3 A2, vec3 B2)
 {
     // Lines directions.
@@ -306,6 +293,11 @@ vec3 intersectionBetweenLines(vec3 A1, vec3 B1, vec3 A2, vec3 B2)
     return A1 + t * d1;
 }
 
+/**
+* @brief Transform a RGB vec3 into a LAB vec3.
+* @param rgb The color that we want to convert.
+* @return The result of the convertion.
+*/
 vec3 RGB2Lab(vec3 rgb)
 {
     float R = rgb.x;
@@ -342,20 +334,15 @@ vec3 RGB2Lab(vec3 rgb)
     return vec3(L,a,b);
 }
 
-// TODO : Bresenham
-// Prendre la position de depart en x,y (float), les mettres en int.
-// Trouver quand on sort de la boite, prendre la position d'arrivé (mettre aussi en int).
-// Appliquer Bresenham pour la position de depart jusqu'à l'arrivé.
-// Pour chaque nouveau pixel decouvert avec Bresenham on regarde si :
-// On commence avec un pixel (en z sur la map) en bas de notre rayon, on cherche jusqu'à trouver un pixel (en z) superieur sur la map.
-// On commence avec un pixel (en z sur la map) en haut de notre rayon, on cherche jusqu'à trouver un pixel (en z) inferieur sur la map.
-// Si on reste en dessous ou au dessus de la map, alors on discard.
 
-// Pour les deux cas on recupère le pixel de fin et le precedant (pour pouvoir ensuite trouver le bon pixel ou le 'z' de la map correspond avec le 'z' de notre rayon).
-// (bien sur il faut transferer les pixels en int vers le rayon qui est en float)
-// Une fois qu'on a les deux points sur le rayon, on applique la même méthode que pour le calcul de base (avec l'intersection du rayon et de la droite que forme les pixels de la map).
-
-
+/**
+* @brief Get the closest point on the line (= linePoint + t * lineDirection) from 'point'.
+* @param linePoint Where the line start.
+* @param lineDirection The direction of the line.
+* @param point The point that we want to have on the line.
+* @param t (inout) The factor to get the point we search.
+* @return The point we search that is on the line.
+*/
 vec3 closestPointOnLine(vec3 linePoint, vec3 lineDirection, vec3 point, inout float t)
 {
     // Vector between linePoint and point.
@@ -367,104 +354,137 @@ vec3 closestPointOnLine(vec3 linePoint, vec3 lineDirection, vec3 point, inout fl
     return linePoint + t * lineDirection;
 }
 
+/**
+* @brief Give the absolute value of a integer.
+* @param x Where the line start.
+* @return The absolute value of x.
+*/
 int abs(int x) {
     return (x < 0) ? -x : x;
 }
 
-void bresenhamLine(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec3 fBeforeFinalPoint, inout vec3 fFinalPoint, inout bool notFound, inout float t)
+/**
+* @brief Use the Bresenham algorithm to found the point just before we hit the height map.
+* @param vec3EndPoint The final point for the algorithm.
+* @param vec3LinePoint Where the line start.
+* @param vec3LineDirection The direction of the line.
+* @param vec3FinalPoint (inout) The final point before we hit the height map.
+* @param bNotFound (inout) Tell if the point returned is usable or not.
+* @param t (inout) The factor to get the final point with the line formula.
+*/
+void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection, inout vec3 vec3FinalPoint, inout bool bNotFound, inout float t)
 {
-    float imageLength = uImageWidth / 2.;
-    float imageRatio = imageLength / uBBSize;
-    // point arrived : (* uBBSize) -> need to be (* imagePixelLength / 2 / uBBSize (because we are in -1 to 1 -> need to be at the size of the image))
-    fEndPoint *= imageRatio;
-    linePoint *= imageRatio;
-    ivec2 startPoint = ivec2(int(linePoint.x), int(linePoint.y));
-    ivec2 endPoint = ivec2(int(fEndPoint.x), int(fEndPoint.y));
-    ivec2 beforeFinalPoint;
-    ivec2 finalPoint;
+    // The size of the image (divided by 2 because we are in -1 to 1 range).
+    float fImageLength = uImageWidth / 2.;
+    // The ratio to have a point in the -(uImageWidth/2) to (uImageWidth/2) range.
+    float fImageRatio = fImageLength / uBBSize;
 
-    vec2 firstTexPosition = vec2(float(startPoint.x), float(startPoint.y));
-    float texZ = texture2D(uHeightMapTypeSampler, goodTexCoord(((firstTexPosition.xy / imageRatio / uBBSize) + 1.) / 2.)).z;
-    float lastZ =  texZ * uFlatten * uBBSize;
-    float reelLastZ = 0.;
-    float actualZ = lastZ;
+    // Apply the ratio the incoming points. 
+    vec3LinePoint *= fImageRatio;
+    vec3EndPoint *= fImageRatio;
+    ivec2 ivec2StartPoint = ivec2(int(vec3LinePoint.x), int(vec3LinePoint.y));
+    ivec2 ivec2EndPoint = ivec2(int(vec3EndPoint.x), int(vec3EndPoint.y));
 
+    // We get the first 'z' with the starting point.
+    vec2 vec2TexPosition = vec2(float(ivec2StartPoint.x), float(ivec2StartPoint.y));
+    float fTexZ = texture2D(uHeightMapTypeSampler, goodTexCoord(((vec2TexPosition.xy / fImageRatio / uBBSize) + 1.) / 2.)).z;
+    float fLastZ =  fTexZ * uFlatten * uBBSize;
+    float actualZ = fLastZ;
+
+    // Tell if we are over the map (true) or under (false), init in the first loop.
     bool overTheMap = true;
+    // The previous 't' used to calculate the point on the line.
     float lastT = 0.;
 
+    // The previous point calculated.
+    vec3 fBeforeFinalPoint;
+    // The point just calculated.
+    vec3 fFinalPoint;
+
     // Init Bresenham algorithm variables.
-    int dx = abs(endPoint.x - startPoint.x);
-    int dy = abs(endPoint.y - startPoint.y);
-    int sx = (startPoint.x < endPoint.x) ? 1 : -1;
-    int sy = (startPoint.y < endPoint.y) ? 1 : -1;
+    int dx = abs(ivec2EndPoint.x - ivec2StartPoint.x);
+    int dy = abs(ivec2EndPoint.y - ivec2StartPoint.y);
+    int sx = (ivec2StartPoint.x < ivec2EndPoint.x) ? 1 : -1;
+    int sy = (ivec2StartPoint.y < ivec2EndPoint.y) ? 1 : -1;
 
     int err = dx - dy;
 
+    // We start the Bresenham algorithm.
     for (int i=0; i<MAX_ITERATIONS_FOR; i++)
     {
-        if (startPoint.x == endPoint.x && startPoint.y == endPoint.y) {
+        // If we have the same point as the point that we search for.
+        if (ivec2StartPoint.x == ivec2EndPoint.x && ivec2StartPoint.y == ivec2EndPoint.y) {
+            // If we are under the map, it indicate that the point is on the floor, so we don't print it.
             if(!overTheMap){
-                notFound = true;
+                bNotFound = true;
             }
             break;
         }
 
         int e2 = 2 * err;
 
-        // Ajuste l'erreur et déplace le point en conséquence
+        // Adjust the error and move the point to the next one.
         if (e2 > -dy) {
             err -= dy;
-            startPoint.x += sx;
+            ivec2StartPoint.x += sx;
         }
         if (e2 < dx) {
             err += dx;
-            startPoint.y += sy;
+            ivec2StartPoint.y += sy;
         }
-        beforeFinalPoint = finalPoint;
-        finalPoint = ivec2(startPoint.x, startPoint.y);
-        vec2 texPosition = vec2(float(finalPoint.x), float(finalPoint.y));
+        
+        // We convert our point from int to float.
+        vec2TexPosition = vec2(float(ivec2StartPoint.x), float(ivec2StartPoint.y));
+        
+        // We get the height of the point that we found.
+        fLastZ = actualZ;
+        fTexZ = texture2D(uHeightMapTypeSampler, goodTexCoord(((vec2TexPosition.xy / fImageRatio/ uBBSize) + 1.) / 2.)).z;
+        // We transform the 0 to 1 value at the size of the box (with uBBSize).
+        actualZ = fTexZ * uFlatten * uBBSize;
 
-        lastZ = actualZ;
-        texZ = texture2D(uHeightMapTypeSampler, goodTexCoord(((texPosition.xy / imageRatio/ uBBSize) + 1.) / 2.)).z;
-        actualZ = texZ * uFlatten * uBBSize;
+        // We store the found 't' for later.
+        float fTemT = t;
 
+        // We get the point the closest on the line from the point that we found.
         fBeforeFinalPoint = fFinalPoint;
-        fFinalPoint = closestPointOnLine(linePoint, lineDirection, vec3(texPosition, actualZ * imageRatio), t) / imageRatio;
+        fFinalPoint = closestPointOnLine(vec3LinePoint, vec3LineDirection, vec3(vec2TexPosition, actualZ * fImageRatio), fTemT) / fImageRatio;
 
-        float onLineZ = fFinalPoint.z;
-        float temT = t;
+        // We past the point that we found before, for if we go out of the loop.
+        vec3FinalPoint = fBeforeFinalPoint;
+
+        // The z of the found point.
+        float fOnLineZ = fFinalPoint.z;
 
         // If the ray is under the map.
-        if(lastZ > onLineZ && actualZ > onLineZ){
+        if(fLastZ > fOnLineZ && actualZ > fOnLineZ){
             // The line was over the map and now it under.
             if(overTheMap && i != 0){
-                t = lastT;
                 break;
             }
             overTheMap = false;
         }
         // If the ray is over the map.
-        else if(lastZ < onLineZ && actualZ < onLineZ){
+        else if(fLastZ < fOnLineZ && actualZ < fOnLineZ){
             // The line was under the map and now it over.
             if(!overTheMap && i != 0){
-                t = lastT;
                 break;
             }
             overTheMap = true;
         }
         // If the ray is between the two calculated points.
         else{
-            t = lastT;
             break;
         }
 
-        float lambda = 0.;
-        if(startPoint.x > int(imageLength + lambda) || startPoint.x < int(-imageLength - lambda)
-        || startPoint.y > int(imageLength + lambda) || startPoint.y < int(-imageLength - lambda))
+        // If the point is outside of the box.
+        if(ivec2StartPoint.x > int(fImageLength) || ivec2StartPoint.x < int(-fImageLength)
+        || ivec2StartPoint.y > int(fImageLength) || ivec2StartPoint.y < int(-fImageLength))
         {
-            notFound = true;
+            // To indicate that the point doesn't exist.
+            bNotFound = true;
             break;
         }
-        lastT = temT;
+        // We set the previous 't'.
+        t = fTemT;
     }
 }
