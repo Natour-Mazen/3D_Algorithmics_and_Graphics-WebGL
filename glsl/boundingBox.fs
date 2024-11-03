@@ -160,7 +160,7 @@ void main(void)
 
         vec3 pointOnTheLine = intersectionBetweenLines(lastPosition, position, lastPositionZ, positionZ);
 
-        vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((lastPosition.xy / uBBSize) + 1.) / 2.));
+        vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.));
         color = texColor.xyz;
         break;
 
@@ -359,7 +359,6 @@ int abs(int x) {
 
 void bresenhamLine(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec3 fBeforeFinalPoint, inout vec3 fFinalPoint)
 {
-    float zBefore = linePoint.z;
     float imageLength = uImageWidth / 2.;
     float imageRatio = imageLength / uBBSize;
     // point arrived : (* uBBSize) -> need to be (* imagePixelLength / 2 (because we are in -1 to 1 -> need to be at the size of the image))
@@ -372,7 +371,7 @@ void bresenhamLine(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec
 
     vec2 firstTexPosition = vec2(float(startPoint.x), float(startPoint.y));
     float texZ = texture2D(uHeightMapTypeSampler, goodTexCoord(((firstTexPosition.xy / imageRatio) + 1.) / 2.)).z;
-    float lastZ =  texZ * uFlatten * uBBSize;
+    float lastZ =  texZ * uFlatten * imageLength;
     float actualZ = lastZ;
 
 
@@ -405,19 +404,19 @@ void bresenhamLine(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec
 
         lastZ = actualZ;
         texZ = texture2D(uHeightMapTypeSampler, goodTexCoord(((texPosition.xy / imageRatio) + 1.) / 2.)).z;
-        actualZ = texZ * uFlatten * uBBSize;
+        actualZ = texZ * uFlatten * imageLength;
 
-        fBeforeFinalPoint = vec3(float(beforeFinalPoint.x) / imageRatio, float(beforeFinalPoint.y) / imageRatio, lastZ);
+        //fBeforeFinalPoint = vec3(float(beforeFinalPoint.x) / imageRatio, float(beforeFinalPoint.y) / imageRatio, lastZ);
         //fBeforeFinalPoint = closestPointOnLine(linePoint, lineDirection, vec2(float(beforeFinalPoint.x), float(beforeFinalPoint.y))) / imageRatio * uBBSize;
-        //fBeforeFinalPoint = closestPointOnLine(linePoint, lineDirection, vec3(float(beforeFinalPoint.x), float(beforeFinalPoint.y), lastZ)) / imageRatio;
+        fBeforeFinalPoint = closestPointOnLine(linePoint, lineDirection, vec3(float(beforeFinalPoint.x), float(beforeFinalPoint.y), lastZ)) / imageRatio;
 
-        fFinalPoint = vec3(texPosition / imageRatio, actualZ);
+        //fFinalPoint = vec3(texPosition / imageRatio, actualZ);
         //fFinalPoint = closestPointOnLine(linePoint, lineDirection, vec2(texPosition)) / imageRatio * uBBSize;
-        //fFinalPoint = closestPointOnLine(linePoint, lineDirection, vec3(texPosition, actualZ)) / imageRatio;
+        fFinalPoint = closestPointOnLine(linePoint, lineDirection, vec3(texPosition, actualZ)) / imageRatio;
 
-        float onLineZ = fFinalPoint.z;
+        float onLineZ = fFinalPoint.z * imageRatio;
 
-        /*
+
         if(lastZ <= onLineZ && onLineZ <= actualZ){
             break;
         }
@@ -425,8 +424,10 @@ void bresenhamLine(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec
             break;
         }
 
-        if(startPoint.x > int(imageRatio + 10.) || startPoint.x < int(-imageRatio - 10.)
-        || startPoint.y > int(imageRatio + 10.) || startPoint.y < int(-imageRatio - 10.))
+        /*
+        if(actualZ <= -0.1
+        || startPoint.x > int(imageLength) || startPoint.x < int(-imageLength)
+        || startPoint.y > int(imageLength) || startPoint.y < int(-imageLength))
         {
             break;
         }
