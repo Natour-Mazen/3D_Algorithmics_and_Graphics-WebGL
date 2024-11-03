@@ -36,7 +36,7 @@ vec3 borderColor(vec3 position);
 vec3 intersectionBetweenLines(vec3 A1, vec3 B1, vec3 A2, vec3 B2);
 vec3 RGB2Lab(vec3 rgb);
 void draw_line(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec3 fBeforeFinalPoint, inout vec3 fFinalPoint);
-void bresenhamLine(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec3 fBeforeFinalPoint, inout vec3 fFinalPoint, inout bool notFound);
+void bresenhamLine(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec3 fBeforeFinalPoint, inout vec3 fFinalPoint, inout bool notFound, inout float t);
 
 bool red = false;
 
@@ -69,7 +69,7 @@ void main(void)
     vec3 pointHitTheGround = vVertexPosition + tWhereZEgal0 * dirPixelObj;
 
     // The value that we increment during the ray marching.
-    float t = PAS;
+    float t = 0.1;
     // The value of the height of the height map.
     float heightMapL = 0.;
     // To know if the last position was above.
@@ -77,6 +77,8 @@ void main(void)
     // The last position computed.
     vec3 lastPosition = vVertexPosition + t * dirPixelObj;
     float lastZ = 0.;
+
+    bool useBresenham = false;
 
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
@@ -96,7 +98,10 @@ void main(void)
         t += PAS;
 
         bool notFound = false;
-        bresenhamLine(pointHitTheGround, vVertexPosition, dirPixelObj, lastPosition, position, notFound);
+        if(useBresenham)
+        {
+            bresenhamLine(pointHitTheGround, position, dirPixelObj, lastPosition, lastPosition, notFound, t);
+        }
 
 
         // If the point is outside of the box.
@@ -105,15 +110,17 @@ void main(void)
         {
             // If is opaque or in wire frame mode, the draw a color.
             if(uIsOpaque || uIsWireFrame) {
+                // Yellow roof or wire.
                 if(position.z >= uBBSize) {
                     if(uIsWireFrame && position.z >= uBBSize + BORDER_SIZE) {
-                        discard;
+                        //discard;
                     }
                     else{
                         color = vec3(1., 1., 0.);
                     }
                 }
-                else if(position.x > uBBSize) {
+                // Red wall or wire.
+                else if(position.x > uBBSize && position.y <= uBBSize && position.y >= -uBBSize) {
                     if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
                     !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
                         discard;
@@ -122,7 +129,8 @@ void main(void)
                         color = vec3(1., 0., 0.);
                     }
                 }
-                else if( position.x < -uBBSize) {
+                // Green wall or wire.
+                else if( position.x < -uBBSize && position.y <= uBBSize && position.y >= -uBBSize) {
                     if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
                     !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
                         discard;
@@ -131,7 +139,8 @@ void main(void)
                         color = vec3(0., 1., 0.);
                     }
                 }
-                else if(position.y > uBBSize) {
+                // Blue wall or wire.
+                else if(position.y > uBBSize && position.x <= uBBSize && position.x >= -uBBSize) {
                     if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
                     !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
                         discard;
@@ -140,7 +149,8 @@ void main(void)
                         color = vec3(0., 0., 1.);
                     }
                 }
-                else if(position.y < -uBBSize) {
+                // Pink wall or wire.
+                else if(position.y < -uBBSize && position.x <= uBBSize && position.x >= -uBBSize) {
                     if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
                     !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
                         discard;
@@ -160,21 +170,24 @@ void main(void)
             }
         }
 
+        if(useBresenham && false)
+        {
+            vec3 positionZ = position;
+            positionZ.z = texture2D(uHeightMapTypeSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.)).z;
+            vec3 lastPositionZ = lastPosition;
+            lastPositionZ.z = texture2D(uHeightMapTypeSampler, goodTexCoord(((lastPositionZ.xy / uBBSize) + 1.) / 2.)).z;
 
-        vec3 positionZ = position;
-        positionZ.z = texture2D(uHeightMapTypeSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.)).z;
-        vec3 lastPositionZ = lastPosition;
-        lastPositionZ.z = texture2D(uHeightMapTypeSampler, goodTexCoord(((lastPositionZ.xy / uBBSize) + 1.) / 2.)).z;
+            vec3 pointOnTheLine = intersectionBetweenLines(lastPosition, position, lastPositionZ, positionZ);
 
-        vec3 pointOnTheLine = intersectionBetweenLines(lastPosition, position, lastPositionZ, positionZ);
+            vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.));
+            color = texColor.xyz;
 
-        vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.));
-        color = texColor.xyz;
-
-        if(red){
-            color = vec3(1., 0., 0.);
+            // Use to debug
+            if(red){
+                color = vec3(1., 0., 0.);
+            }
         }
-        break;
+
 
 
         // The ray is above the map.
@@ -342,25 +355,13 @@ vec3 RGB2Lab(vec3 rgb)
 // (bien sur il faut transferer les pixels en int vers le rayon qui est en float)
 // Une fois qu'on a les deux points sur le rayon, on applique la même méthode que pour le calcul de base (avec l'intersection du rayon et de la droite que forme les pixels de la map).
 
-vec3 closestPointOnLine(vec3 linePoint, vec3 lineDirection, vec2 point2D)
-{
-    vec3 point = vec3(point2D.x, point2D.y, 0.0);
 
-    // Vector between linePoint and point.
-    vec3 w = point - linePoint;
-
-    float t = dot(w, lineDirection) / dot(lineDirection, lineDirection);
-
-    // The closest point to the line.
-    return linePoint + t * lineDirection;
-}
-
-vec3 closestPointOnLine(vec3 linePoint, vec3 lineDirection, vec3 point)
+vec3 closestPointOnLine(vec3 linePoint, vec3 lineDirection, vec3 point, inout float t)
 {
     // Vector between linePoint and point.
     vec3 w = point - linePoint;
 
-    float t = dot(w, lineDirection) / dot(lineDirection, lineDirection);
+    t = dot(w, lineDirection) / dot(lineDirection, lineDirection);
 
     // The closest point to the line.
     return linePoint + t * lineDirection;
@@ -370,11 +371,11 @@ int abs(int x) {
     return (x < 0) ? -x : x;
 }
 
-void bresenhamLine(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec3 fBeforeFinalPoint, inout vec3 fFinalPoint, inout bool notFound)
+void bresenhamLine(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec3 fBeforeFinalPoint, inout vec3 fFinalPoint, inout bool notFound, inout float t)
 {
     float imageLength = uImageWidth / 2.;
     float imageRatio = imageLength / uBBSize;
-    // point arrived : (* uBBSize) -> need to be (* imagePixelLength / 2 (because we are in -1 to 1 -> need to be at the size of the image))
+    // point arrived : (* uBBSize) -> need to be (* imagePixelLength / 2 / uBBSize (because we are in -1 to 1 -> need to be at the size of the image))
     fEndPoint *= imageRatio;
     linePoint *= imageRatio;
     ivec2 startPoint = ivec2(int(linePoint.x), int(linePoint.y));
@@ -389,6 +390,7 @@ void bresenhamLine(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec
     float actualZ = lastZ;
 
     bool overTheMap = true;
+    float lastT = 0.;
 
     // Init Bresenham algorithm variables.
     int dx = abs(endPoint.x - startPoint.x);
@@ -427,19 +429,16 @@ void bresenhamLine(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec
         actualZ = texZ * uFlatten * uBBSize;
 
         fBeforeFinalPoint = fFinalPoint;
-        fFinalPoint = closestPointOnLine(linePoint, lineDirection, vec3(texPosition, actualZ * imageRatio)) / imageRatio;
+        fFinalPoint = closestPointOnLine(linePoint, lineDirection, vec3(texPosition, actualZ * imageRatio), t) / imageRatio;
 
         float onLineZ = fFinalPoint.z;
+        float temT = t;
 
         // If the ray is under the map.
         if(lastZ > onLineZ && actualZ > onLineZ){
             // The line was over the map and now it under.
             if(overTheMap && i != 0){
-                vec3 fBeforeFinalPointReel = fBeforeFinalPoint;
-                fBeforeFinalPointReel.z = lastZ;
-                vec3 fFinalPointReel = fFinalPoint;
-                fFinalPointReel.z = actualZ;
-                fFinalPoint = intersectionBetweenLines(fBeforeFinalPoint, fFinalPoint, fBeforeFinalPointReel, fFinalPointReel);
+                t = lastT;
                 break;
             }
             overTheMap = false;
@@ -448,26 +447,24 @@ void bresenhamLine(vec3 fEndPoint, vec3 linePoint, vec3 lineDirection, inout vec
         else if(lastZ < onLineZ && actualZ < onLineZ){
             // The line was under the map and now it over.
             if(!overTheMap && i != 0){
-                vec3 fBeforeFinalPointReel = fBeforeFinalPoint;
-                fBeforeFinalPointReel.z = lastZ;
-                vec3 fFinalPointReel = fFinalPoint;
-                fFinalPointReel.z = actualZ;
-                fFinalPoint = intersectionBetweenLines(fBeforeFinalPoint, fFinalPoint, fBeforeFinalPointReel, fFinalPointReel);
+                t = lastT;
                 break;
             }
             overTheMap = true;
         }
         // If the ray is between the two calculated points.
         else{
+            t = lastT;
             break;
         }
 
-
-        if(startPoint.x > int(imageLength) || startPoint.x < int(-imageLength)
-        || startPoint.y > int(imageLength) || startPoint.y < int(-imageLength))
+        float lambda = 0.;
+        if(startPoint.x > int(imageLength + lambda) || startPoint.x < int(-imageLength - lambda)
+        || startPoint.y > int(imageLength + lambda) || startPoint.y < int(-imageLength - lambda))
         {
             notFound = true;
             break;
         }
+        lastT = temT;
     }
 }
