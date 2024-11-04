@@ -36,7 +36,8 @@ vec3 borderColor(vec3 position);
 vec3 intersectionBetweenLines(vec3 A1, vec3 B1, vec3 A2, vec3 B2);
 vec3 RGB2Lab(vec3 rgb);
 void draw_line(vec3 vec3EndPoint, vec3 linePoint, vec3 lineDirection, inout vec3 fBeforeFinalPoint, inout vec3 fFinalPoint);
-void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection, inout vec3 vec3FinalPoint, inout bool bNotFound, inout float t);
+void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection, inout vec3 vec3BeforeFinalPoint,
+inout vec3 vec3FinalPoint, inout bool bNotFound, inout float t);
 
 void main(void)
 {
@@ -81,30 +82,34 @@ void main(void)
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
         vec3 position = vVertexPosition + t * dirPixelObj;
+
+        t += PAS;
+
+        bool bNotFound = false;
+        // We use the bresenham algorithm just one time.
+        /*
+        if(useBresenham)
+        {
+            bresenhamLine(pointHitTheGround, position, dirPixelObj, lastPosition, position, bNotFound, t);
+            useBresenham = false;
+        }
+*/
+
         vec4 texHeightMap = texture2D(uHeightMapTypeSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.));
 
         if(uIsImageInColor) {
             // We use the L of the LAB color metric.
             // heightMapL = (RGB2Lab(texHeightMap.xyz).x / 5.) * uFlatten * 0.1;
-            heightMapL = RGB2Lab(texHeightMap.xyz).x  * uFlatten * 0.1;
+            heightMapL = RGB2Lab(texHeightMap.xyz).x * uBBSize * uFlatten / 100.;
         }
         else {
             // We use the R of the RGB color metric.
             heightMapL =  texHeightMap.x * uBBSize * uFlatten;
         }
 
-        t += PAS;
-
-        bool bNotFound = false;
-        // We use the bresenham algorithm just one time. 
-        if(useBresenham)
-        {
-            bresenhamLine(pointHitTheGround, position, dirPixelObj, position, bNotFound, t);
-            useBresenham = false;
-        }
-
 
         // If the point is outside of the box.
+
         if(position.z < -0.1 || position.x > uBBSize || position.x < -uBBSize
         || position.y > uBBSize || position.y < -uBBSize || bNotFound)
         {
@@ -373,7 +378,8 @@ int abs(int x) {
 * @param bNotFound (inout) Tell if the point returned is usable or not.
 * @param t (inout) The factor to get the final point with the line formula.
 */
-void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection, inout vec3 vec3FinalPoint, inout bool bNotFound, inout float t)
+void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection, inout vec3 vec3BeforeFinalPoint,
+                    inout vec3 vec3FinalPoint, inout bool bNotFound, inout float t)
 {
     // The size of the image (divided by 2 because we are in -1 to 1 range).
     float fImageLength = uImageWidth / 2.;
@@ -397,6 +403,8 @@ void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection
     // The previous 't' used to calculate the point on the line.
     float lastT = 0.;
 
+    // The previous point of the previous point calculated.
+    vec3 fBeforeBeforeFinalPoint;
     // The previous point calculated.
     vec3 fBeforeFinalPoint;
     // The point just calculated.
@@ -447,10 +455,12 @@ void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection
         float fTemT = t;
 
         // We get the point the closest on the line from the point that we found.
+        fBeforeBeforeFinalPoint = fBeforeFinalPoint;
         fBeforeFinalPoint = fFinalPoint;
-        fFinalPoint = closestPointOnLine(vec3LinePoint, vec3LineDirection, vec3(vec2TexPosition, actualZ * fImageRatio), fTemT) / fImageRatio;
+        fFinalPoint = closestPointOnLine(vec3LinePoint, vec3LineDirection, vec3(vec2TexPosition * fImageRatio, actualZ), fTemT) / fImageRatio;
 
         // We past the point that we found before, for if we go out of the loop.
+        vec3BeforeFinalPoint = fBeforeBeforeFinalPoint;
         vec3FinalPoint = fBeforeFinalPoint;
 
         // The z of the found point.
