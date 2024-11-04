@@ -210,7 +210,7 @@ class BoundingBox extends ObjectToDraw {
         gl.uniform1i(this.shader.uIsWireFrame, isWireFrameActiveBoundingBox);
         this.checkGlError();
 
-        gl.uniform1i(this.shader.uIsOpaque, isOpaqueActiveBoundigBox);
+        gl.uniform1i(this.shader.uIsOpaque, isOpaqueActiveBoundingBox);
         this.checkGlError();
 
 

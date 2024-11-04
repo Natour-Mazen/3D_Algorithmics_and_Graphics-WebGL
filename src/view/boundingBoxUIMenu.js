@@ -26,7 +26,7 @@ let isWireFrameActiveBoundingBox = false;
 /**
  * @type {Boolean}
  */
-let isOpaqueActiveBoundigBox = false;
+let isOpaqueActiveBoundingBox = false;
 
 /**
  * @type {Boolean}
@@ -161,13 +161,13 @@ function initBoundingBoxUIComponents() {
     initSelector(boundingBoxElements.borderSelector, boundingBoxBorderLoader, function () {
         if(this.value === 'WireFrame'){
             isWireFrameActiveBoundingBox = true;
-            isOpaqueActiveBoundigBox = false;
+            isOpaqueActiveBoundingBox = false;
         } else if (this.value === 'Opaque'){
             isWireFrameActiveBoundingBox = false;
-            isOpaqueActiveBoundigBox = true;
+            isOpaqueActiveBoundingBox = true;
         } else {
             isWireFrameActiveBoundingBox = false;
-            isOpaqueActiveBoundigBox = false;
+            isOpaqueActiveBoundingBox = false;
         }
     });
 
