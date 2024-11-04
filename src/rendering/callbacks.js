@@ -8,7 +8,7 @@ let lastMouseX = null;
 let lastMouseY = null;
 let rotY = 0;
 let rotX = -1;
-const DEFAULT_MAX_Z = 0;
+const DEFAULT_MAX_Z = -30;
 
 // =====================================================
 window.requestAnimFrame = (function()

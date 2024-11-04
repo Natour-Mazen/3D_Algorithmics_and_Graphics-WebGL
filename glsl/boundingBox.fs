@@ -77,7 +77,7 @@ void main(void)
     vec3 lastPosition = vVertexPosition + t * dirPixelObj;
     float fLastZ = 0.;
 
-    bool useBresenham = true;
+    bool useBresenham = false;
 
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
@@ -99,8 +99,7 @@ void main(void)
 
         if(uIsImageInColor) {
             // We use the L of the LAB color metric.
-            // heightMapL = (RGB2Lab(texHeightMap.xyz).x / 5.) * uFlatten * 0.1;
-            heightMapL = RGB2Lab(texHeightMap.xyz).x * uBBSize * uFlatten / 100.;
+            heightMapL = RGB2Lab(texHeightMap.xyz).x / 100.  * uFlatten * uBBSize;
         }
         else {
             // We use the R of the RGB color metric.
