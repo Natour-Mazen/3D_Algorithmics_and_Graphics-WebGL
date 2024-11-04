@@ -121,7 +121,7 @@ void main(void)
                 // Yellow roof or wire.
                 if(position.z >= uBBSize) {
                     if(uIsWireFrame && position.z >= uBBSize + BORDER_SIZE) {
-                        //discard;
+                        discard;
                     }
                     else{
                         color = vec3(1., 1., 0.);
@@ -455,7 +455,7 @@ void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection
         actualZ = fTexZ * uFlatten * uBBSize;
 
         // We store the found 't' for later.
-        float fTemT = t;
+        float fTemT = 0.;
 
         // We get the point the closest on the line from the point that we found.
         fBeforeBeforeFinalPoint = fBeforeFinalPoint;
