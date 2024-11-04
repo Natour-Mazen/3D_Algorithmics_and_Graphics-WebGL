@@ -37,18 +37,20 @@ let isColoredBoundingBoxHeightMapType = false;
  * @constant {Object[]}
  */
 const boundingBoxHeightMapTypeLoader = [
-    { name: 'texture1.png', isColor: false },
-    { name: 'texture2.png', isColor: false },
-    { name: 'texture3.png', isColor: false },
-    { name: 'texture4.png', isColor: false },
-    { name: 'texture5.png', isColor: true },
-    { name: 'texture2Colored.png', isColor: true }
+    { value: 'texture1.png', name: 'texture1_RGB', isColor: false },
+    { value: 'texture2.png', name: 'texture2_RGB', isColor: false },
+    { value: 'texture3.png', name: 'texture3_RGB', isColor: false },
+    { value: 'texture4.png', name: 'texture4_RGB', isColor: false },
+    { value: 'texture5.png', name: 'texture5_LAB', isColor: true },
+    { value: 'texture6.png', name: 'texture6_LAB', isColor: true },
+    { value: 'texture7.png', name: 'texture7_LAB', isColor: true },
+    { value: 'texture8.png', name: 'texture8_LAB', isColor: true }
 ];
 
 /**
  * @type {string[]}
  */
-const boundingBoxHeightMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg", "texture2Colored.png"];
+const boundingBoxHeightMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg"];
 
 /**
  * @type {string[]}
@@ -190,7 +192,7 @@ function initBoundingBoxUIComponents() {
             }
             handleBoundingBoxHeightMapSelection(this.value, 'type');
         },
-        'name', // Property to use for option value
+        'value', // Property to use for option value
         'name', // Property to use for option text content
         { isColor: 'isColor' } // Additional data attributes
     );

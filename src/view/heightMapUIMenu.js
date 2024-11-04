@@ -21,7 +21,7 @@ const heightMapLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'textur
 /**
  * @type {string[]}
  */
-const heightMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg", "texture2Colored.png"];
+const heightMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg"];
 
 /**
  * @type {HeightMap|null}
