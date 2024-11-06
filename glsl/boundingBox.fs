@@ -55,6 +55,7 @@ void main(void)
     vec2 pixel = vVertexPositionSpace.xy / vVertexPositionSpace.w;
 
     // Calcul de la direction du rayon dans l'espace caméra
+    // Work well in an aspect ratio of 1 (exemple: screen 1000px by 1000px)
     vec3 dirCam = vec3(pixel, -2.41);
 
     // Transformation du rayon dans l'espace objet
@@ -77,7 +78,7 @@ void main(void)
     vec3 lastPosition = vVertexPosition + t * dirPixelObj;
     float fLastZ = 0.;
 
-    bool useBresenham = true;
+    bool useBresenham = false;
 
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
@@ -446,11 +447,11 @@ void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection
         
         // We convert our point from int to float.
         vec2TexPosition = vec2(float(ivec2StartPoint.x), float(ivec2StartPoint.y));
-        
+
         // We get the height of the point that we found.
         fLastZ = actualZ;
         // We transform the 0 to 1 value at the size of the box (with uBBSize).
-        vec4 fTex = texture2D(uHeightMapTypeSampler, goodTexCoord(((vec2TexPosition.xy / fImageRatio/ uBBSize) + 1.) / 2.));
+        vec4 fTex = texture2D(uHeightMapTypeSampler, goodTexCoord(((vec2TexPosition.xy / fImageRatio / uBBSize) + 1.) / 2.));
         fTexZ = fTex.z;
         if(uIsImageInColor) {
             // We use the L of the LAB color metric.
@@ -514,3 +515,165 @@ void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection
         t = fTemT / fImageRatio;
     }
 }
+
+void foundIntersectionPixel(vec3 vec3EndPoint, vec3 vec3StartPoint, inout ivec2 ivec2LastPoint, ivec2 ivec2Point,
+                            inout int iXYRatio, inout bool bAbove, inout vec3 vec3PointRes)
+{
+    vec3 AB = vec3(vec3EndPoint.x - vec3StartPoint.x, vec3EndPoint.y - vec3StartPoint.y, vec3EndPoint.z - vec3StartPoint.z);
+    float u = AB.x;
+    float v = AB.y;
+    float w = AB.z;
+
+    // x = x1 + t * u
+    // y = y1 + t * v
+    // z = z1 + t * w
+
+    // To find 'y' and 'z' =>  t = (x - x1) / u
+    // Then we have 't' to calculate 'y' and 'z'
+
+
+
+}
+
+
+
+// Help : http://eugen.dedu.free.fr/projects/bresenham/
+void bresenhamLin2(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection,
+inout vec3 vec3FinalPoint, inout bool bNotFound)
+{
+    // The size of the image (divided by 2 because we are in -1 to 1 range).
+    float fImageLength = uImageWidth / 2.;
+    // The ratio to have a point in the -(uImageWidth/2) to (uImageWidth/2) range.
+    float fImageRatio = fImageLength / uBBSize;
+
+    // Apply the ratio the incoming points.
+    vec3LinePoint *= fImageRatio;
+    vec3EndPoint *= fImageRatio;
+
+    // Intial points.
+    ivec2 ivec2StartPoint = ivec2(int(vec3LinePoint.x), int(vec3LinePoint.y));
+    ivec2 ivec2EndPoint = ivec2(int(vec3EndPoint.x), int(vec3EndPoint.y));
+
+    int i;               // loop counter
+    int ystep, xstep;    // the step on y and x axis
+    int error;           // the error accumulated during the increment
+    int errorprev;       // *vision the previous value of the error variable
+    int x = ivec2StartPoint.x;  // the line points
+    int y = ivec2StartPoint.y;
+    int ddy, ddx;        // compulsory variables: the double values of dy and dx
+    int dx = ivec2EndPoint.x - ivec2StartPoint.x;
+    int dy = ivec2EndPoint.y - ivec2StartPoint.y;
+
+    //POINT (y, x);  // first point
+
+    // NB the last point can't be here, because of its previous point (which has to be verified)
+    if (dy < 0) {
+        ystep = -1;
+        dy = -dy;
+    }
+    else{
+        ystep = 1;
+    }
+
+    if (dx < 0) {
+        xstep = -1;
+        dx = -dx;
+    }
+    else{
+        xstep = 1;
+    }
+
+    ddy = 2 * dy;  // work with double values for full precision
+    ddx = 2 * dx;
+
+    // first octant (0 <= slope <= 1)
+    if (ddx >= ddy){
+        // compulsory initialization (even for errorprev, needed when dx==dy)
+        errorprev = dx;  // start in the middle of the square
+        error = dx;
+
+        for (int i=0; i<MAX_ITERATIONS_FOR; i++){ // do not use the first point (already done)
+            if(i < dx){
+                break;
+            }
+            x += xstep;
+            error += ddy;
+            if (error > ddx){  // increment y if AFTER the middle ( > )
+                y += ystep;
+                error -= ddx;
+                // three cases (octant == right->right-top for directions below):
+                if (error + errorprev < ddx){ // bottom square also
+                    //POINT (y-ystep, x);
+                }
+                else if (error + errorprev > ddx){ // left square also
+                    //POINT (y, x-xstep);
+                }
+                else{  // corner: bottom and left squares also
+                    //POINT (y-ystep, x);
+                    //POINT (y, x-xstep);
+                }
+            }
+            //POINT (y, x);
+            errorprev = error;
+        }
+    }
+    else{  // the same as above
+        errorprev = dy;
+        error = dy;
+        for (int i=0; i<MAX_ITERATIONS_FOR; i++){
+            if(i < dy){
+               break;
+            }
+            y += ystep;
+            error += ddx;
+            if (error > ddy){
+                x += xstep;
+                error -= ddy;
+                if (error + errorprev < ddy){
+                    //POINT (y, x-xstep);
+                }
+                else if (error + errorprev > ddy){
+                    //POINT (y-ystep, x);
+                }
+                else{
+                    //POINT (y, x-xstep);
+                    //POINT (y-ystep, x);
+                }
+            }
+            //POINT (y, x);
+            errorprev = error;
+        }
+    }
+
+    if(ivec2EndPoint.x == x && ivec2EndPoint.y == y) {
+        //if(!overTheMap){
+        //  bNotFound = true;
+        //}
+
+        if(ivec2StartPoint.x > int(fImageLength) || ivec2StartPoint.x < int(-fImageLength)
+        || ivec2StartPoint.y > int(fImageLength) || ivec2StartPoint.y < int(-fImageLength))
+        {
+            // To indicate that the point doesn't exist.
+            bNotFound = true;
+        }
+        //vec3FinalPoint
+    }
+}
+
+
+// Faire un vrai Bresenham 4 segment
+// On calcule pas le point le plus proche, on a l'elevation du pixel donc on sait (ex: si on a vec2(1.52, 2.87), ivec2(2, 3) le z est le même partout
+// Pour le 2.41 -> aspect ratio et fov du canvas car on modifie le canvas
+
+
+/*
+On calcule tous les points les uns à la suite des autres
+
+Si un point d'entrée est égale au point de sorti : on fait la droite entre les deux et interpolation
+
+Sinon on attend d'avoir notre point qui passe en dessous
+
+
+
+
+*/
