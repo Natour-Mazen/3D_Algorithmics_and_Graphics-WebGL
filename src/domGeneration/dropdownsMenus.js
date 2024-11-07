@@ -45,7 +45,6 @@ const dropdowns = [
             { type: 'slider', label: 'Size:', id: 'boundingBox_size_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBox_size_value' },
             { type: 'select', label: 'Type', id: 'boundingBox_heightMap_type_selector', options: ['None'] },
             { type: 'select', label: 'Texture', id: 'boundingBox_heightMap_texture_selector', options: ['None'] },
-            { type: 'switch', label1: 'Normal rendering', label2: 'Optimized rendering', id: 'boundingBox_heightMap_switch' },
             { type: 'slider', label: 'Flatten Factor:', id: 'boundingBox_heightMap_flatten_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBox_heightMap_flatten_value' }
         ]
     },

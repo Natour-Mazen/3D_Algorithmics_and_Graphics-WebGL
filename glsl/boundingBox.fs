@@ -12,7 +12,6 @@ uniform float uImageHeight; // The image height.
 uniform bool uIsImageInColor; // If the image is in color (true) else (false).
 uniform bool uIsWireFrame; // If the wireframe is displayed.
 uniform bool uIsOpaque; // If the object is opaque.
-uniform bool uUseBresenham; // If we use the Bresenham algorithm.
 uniform float uAspectRatio; // The image aspect ratio.
 uniform float uFOV; // FOV.
 

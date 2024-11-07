@@ -35,11 +35,6 @@ let isOpaqueActiveBoundingBox = false;
 let isColoredBoundingBoxHeightMapType = false;
 
 /**
- * @type {Boolean}
- */
-let isOptimizedRenderingBoundingBoxActive = false;
-
-/**
  * @constant {Object[]}
  */
 const boundingBoxHeightMapTypeLoader = [
@@ -209,20 +204,6 @@ function initBoundingBoxUIComponents() {
     initSelector(boundingBoxElements.heightMapTextureSelector, boundingBoxHeightMapTextureLoader, function () {
         handleBoundingBoxHeightMapSelection(this.value, 'texture');
     });
-
-    initSwitch(boundingBoxElements.heightMapRenderingSwitch, isOptimizedRenderingBoundingBoxActive, function () {
-        isOptimizedRenderingBoundingBoxActive = this.checked;
-    });
-
-    const element = boundingBoxElements.heightMapRenderingSwitch.closest('.row');
-    if(element !== null){
-        const switchLabel = element.querySelector('.switch__label2');
-        const switchBtn = element.querySelector('.switch');
-        if(switchLabel === null || switchBtn === null)
-            return;
-        switchLabel.style.margin = '0 70px';
-        switchBtn.style.margin = '0 73px';
-    }
 
     initSlider(boundingBoxElements.heightMapFlattenSlider, function () {
         if(theBoundingBox !== null){

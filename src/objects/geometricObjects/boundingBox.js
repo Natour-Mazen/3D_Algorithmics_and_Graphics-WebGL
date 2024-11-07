@@ -183,7 +183,6 @@ class BoundingBox extends ObjectToDraw {
         this.shader.uIsOpaque = gl.getUniformLocation(this.shader, "uIsOpaque");
         this.shader.uAspectRatio = gl.getUniformLocation(this.shader, "uAspectRatio");
         this.shader.uFOV = gl.getUniformLocation(this.shader, "uFOV");
-        this.shader.uUseBresenham = gl.getUniformLocation(this.shader, "uUseBresenham");
     }
 
     setUniforms() {
@@ -214,9 +213,6 @@ class BoundingBox extends ObjectToDraw {
         this.checkGlError();
 
         gl.uniform1i(this.shader.uIsOpaque, isOpaqueActiveBoundingBox);
-        this.checkGlError();
-
-        gl.uniform1i(this.shader.uUseBresenham, isOptimizedRenderingBoundingBoxActive);
         this.checkGlError();
 
         // We send the image aspect ratio.
