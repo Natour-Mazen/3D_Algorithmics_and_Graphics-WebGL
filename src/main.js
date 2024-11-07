@@ -7,6 +7,8 @@ let distCENTER;
 let main_plane;
 let main_objectsToDraw = [];
 let main_light = new Light();
+let main_aspectRatio = 0.;
+let main_FOV = 45.;
 
 
 const canvasID = 'WebGL-canvas';
@@ -26,7 +28,8 @@ function resizeCanvas() {
     // b : aspect ratio
     // c : zNear
     // d : zFar
-    mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 250.0, pMatrix);
+    main_aspectRatio = gl.viewportWidth / gl.viewportHeight;
+    mat4.perspective(main_FOV, main_aspectRatio, 0.1, 250.0, pMatrix);
 }
 
 window.addEventListener('load', resizeCanvas);

@@ -147,7 +147,20 @@ L'algorithme de Bresenham
 
 
 
+final_color = 0.;
+color.rgba
+color.r = color.r * color.a;
+color.g = color.g * color.a;
+color.b = color.b * color.a;
 
+pour la couleur => utliser une transform function
+En fonction du alpha la couleur est differente, voir photos 
+Selon la transparence on redonne une autre couleur
+
+final_color += color* (1 - final_color.a)
+
+if(final_color.a < 0.99 )
+   break;
 
 
 

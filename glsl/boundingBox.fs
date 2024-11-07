@@ -12,6 +12,8 @@ uniform float uImageHeight; // The image height.
 uniform bool uIsImageInColor; // If the image is in color (true) else (false).
 uniform bool uIsWireFrame; // If the wireframe is displayed.
 uniform bool uIsOpaque; // If the object is opaque.
+uniform float uAspectRatio; // The image aspect ratio.
+uniform float uFOV; // FOV.
 
 uniform sampler2D uHeightMapTypeSampler; // The height map.
 uniform sampler2D uHeightMapTextureSampler; // The texture.
@@ -58,7 +60,8 @@ void main(void)
 
     // Calcul de la direction du rayon dans l'espace caméra
     // Work well in an aspect ratio of 1 (exemple: screen 1000px by 1000px)
-    vec3 dirCam = vec3(pixel, -2.41);
+    //vec3 dirCam = vec3(pixel, -2.41);
+    vec3 dirCam = vec3(pixel.x * uAspectRatio, pixel.y, -(1. / tan(radians(uFOV) / 2.)));
 
     // Transformation du rayon dans l'espace objet
     vec3 dirPixelObj = normalize((viMVMatrix * vec4(dirCam, 1.0)).xyz);
@@ -80,7 +83,7 @@ void main(void)
     vec3 lastPosition = vVertexPosition + t * dirPixelObj;
     float fLastZ = 0.;
 
-    bool useBresenham = true;
+    bool useBresenham = false;
 
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
@@ -388,6 +391,7 @@ int abs(int x) {
 * @param bNotFound (inout) Tell if the point returned is usable or not.
 * @param t (inout) The factor to get the final point with the line formula.
 */
+/*
 void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection, inout vec3 vec3BeforeFinalPoint,
                     inout vec3 vec3FinalPoint, inout bool bNotFound, inout float t, inout bool bAbove)
 {
@@ -522,6 +526,7 @@ void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection
         t = fTemT / fImageRatio;
     }
 }
+*/
 
 bool foundIntersectionPixel(vec3 vec3EndPoint, vec3 vec3StartPoint, inout ivec2 ivec2LastPoint, ivec2 ivec2Point, float fImageRatio,
                             inout bool bAbove, inout vec3 vec3LastPointRes, inout vec3 vec3PointRes,
@@ -539,9 +544,9 @@ bool foundIntersectionPixel(vec3 vec3EndPoint, vec3 vec3StartPoint, inout ivec2 
     // To find 'y' and 'z' =>  t = (x - x1) / u
     // Then we have 't' to calculate 'y' and 'z'
 
-    float x;
-    float y;
-    float z;
+    float x = 0.;
+    float y = 0.;
+    float z = 0.;
 
     // If the point have move on the 'x' axis, the 'x' entry point have a discreet value, not the 'y' (on the line / ray).
     if(abs(ivec2LastPoint.x) < abs(ivec2Point.x))
@@ -563,10 +568,10 @@ bool foundIntersectionPixel(vec3 vec3EndPoint, vec3 vec3StartPoint, inout ivec2 
         x = vec3StartPoint.x + t * u;
         z = vec3StartPoint.z + t * w;
     }
-    else{
-        ivec2LastPoint = ivec2Point;
-        return false;
-    }
+//    else{
+//        ivec2LastPoint = ivec2Point;
+//        return false;
+//    }
 
     // We transform the 0 to 1 value at the size of the box (with uBBSize).
     vec4 vec4Tex = texture2D(uHeightMapTypeSampler, goodTexCoord(((vec2(x, y) / fImageRatio) + 1.) / 2.));
@@ -585,21 +590,19 @@ bool foundIntersectionPixel(vec3 vec3EndPoint, vec3 vec3StartPoint, inout ivec2 
     if(bAbove && vec4Tex.z >= z){
         bAbove = false;
         // Stop here
-        return false;
+        return true;
     }
     // We were under, and we now are above. => intersection
     if(!bAbove && vec4Tex.z <= z){
 
         bAbove = true;
         // Stop here
-        return false;
+        return true;
     }
 
     // We are still above or under.
     return false;
 }
-
-
 
 // Help : http://eugen.dedu.free.fr/projects/bresenham/
 void bresenhamLine2(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection,
@@ -619,6 +622,7 @@ void bresenhamLine2(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirectio
     ivec2 ivec2EndPoint = ivec2(int(vec3EndPoint.x), int(vec3EndPoint.y));
 
     ivec2 ivec2LastPoint = ivec2StartPoint;
+
     // vec3LinePoint.x close to -fImageLength.
     if(vec3LinePoint.x <= -fImageLength + 0.1 * fImageLength){
         ivec2LastPoint.y = int(-fImageLength);
@@ -692,26 +696,26 @@ void bresenhamLine2(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirectio
                 // three cases (octant == right->right-top for directions below):
                 if (error + errorprev < ddx){ // bottom square also
                     //POINT (y-ystep, x);
-//                    if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x, y-ystep), fImageRatio, bAbove,
-//                                           vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
+                    if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x, y-ystep), fImageLength, bAbove,
+                                           vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
                 }
                 else if (error + errorprev > ddx){ // left square also
                     //POINT (y, x-xstep);
-//                    if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x-xstep, y), fImageRatio, bAbove,
-//                                             vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
+                    if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x-xstep, y), fImageLength, bAbove,
+                                             vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
                 }
                 else{  // corner: bottom and left squares also
                     //POINT (y-ystep, x);
-//                    if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x, y-ystep), fImageRatio, bAbove,
-//                                                 vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
+                    if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x, y-ystep), fImageLength, bAbove,
+                                                 vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
                     //POINT (y, x-xstep);
-//                    if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x-xstep, y), fImageRatio, bAbove,
-//                                                 vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
+                    if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x-xstep, y), fImageLength, bAbove,
+                                                 vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
                 }
             }
             //POINT (y, x);
-//            if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x, y), fImageRatio, bAbove,
-//                                        vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
+            if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x, y), fImageLength, bAbove,
+                                        vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
             errorprev = error;
         }
     }
@@ -729,26 +733,26 @@ void bresenhamLine2(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirectio
                 error -= ddy;
                 if (error + errorprev < ddy){
                     //POINT (y, x-xstep);
-//                    if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x-xstep, y), fImageRatio, bAbove,
-//                                              vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
+                    if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x-xstep, y), fImageLength, bAbove,
+                                              vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
                 }
                 else if (error + errorprev > ddy){
                     //POINT (y-ystep, x);
-//                    if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x, y-ystep), fImageRatio, bAbove,
-//                                              vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
+                    if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x, y-ystep), fImageLength, bAbove,
+                                              vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
                 }
                 else{
                     //POINT (y, x-xstep);
-//                    if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x-xstep, y), fImageRatio, bAbove,
-//                                              vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
+                    if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x-xstep, y), fImageLength, bAbove,
+                                              vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
                     //POINT (y-ystep, x);
-//                    if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x, y-ystep), fImageRatio, bAbove,
-//                                              vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
+                    if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x, y-ystep), fImageRatio, bAbove,
+                                              vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
                 }
             }
             //POINT (y, x);
-//            if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x, y), fImageRatio, bAbove,
-//                                      vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
+            if(foundIntersectionPixel(vec3EndPoint, vec3LinePoint, ivec2LastPoint, ivec2(x, y), fImageLength, bAbove,
+                                      vec3LastPointRes, vec3PointRes, vec3LastPointMapRes, vec3PointMapRes)) break;
             errorprev = error;
         }
     }
@@ -770,7 +774,7 @@ void bresenhamLine2(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirectio
     {
         // To indicate that the point doesn't exist.
         bNotFound = true;
-        vec3FinalPoint = vec3(0.7, 0.7, 0.7);
+        vec3FinalPoint = vec3(0.9, 0.7, 0.7);
         return;
     }
 
