@@ -12,6 +12,7 @@ uniform float uImageHeight; // The image height.
 uniform bool uIsImageInColor; // If the image is in color (true) else (false).
 uniform bool uIsWireFrame; // If the wireframe is displayed.
 uniform bool uIsOpaque; // If the object is opaque.
+uniform bool uUseBresenham; // If we use the Bresenham algorithm.
 uniform float uAspectRatio; // The image aspect ratio.
 uniform float uFOV; // FOV.
 
@@ -24,7 +25,6 @@ float BORDER_SIZE = 0.005 * uBBSize;
 
 float DIAGO = sqrt(sqrt(uBBSize * uBBSize + uBBSize * uBBSize) * sqrt(uBBSize * uBBSize + uBBSize * uBBSize) + uBBSize * uBBSize);
 float PAS = DIAGO / sqrt(uImageWidth * uImageWidth + uImageHeight * uImageHeight) * 2.;
-
 
 varying vec3 vVertexPositionMV;
 varying vec3 vVertexPosition;        // Position 3D du vertex
@@ -59,8 +59,6 @@ void main(void)
     vec2 pixel = vVertexPositionSpace.xy / vVertexPositionSpace.w;
 
     // Calcul de la direction du rayon dans l'espace caméra
-    // Work well in an aspect ratio of 1 (exemple: screen 1000px by 1000px)
-    //vec3 dirCam = vec3(pixel, -2.41);
     vec3 dirCam = vec3(pixel.x * uAspectRatio, pixel.y, -(1. / tan(radians(uFOV) / 2.)));
 
     // Transformation du rayon dans l'espace objet
@@ -82,141 +80,114 @@ void main(void)
     // The last position computed.
     vec3 lastPosition = vVertexPosition + t * dirPixelObj;
     float fLastZ = 0.;
-
     bool useBresenham = false;
 
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
         vec3 position = vVertexPosition + t * dirPixelObj;
-
         t += PAS;
 
         bool bNotFound = false;
-        // We use the bresenham algorithm just one time.
 
-        if(useBresenham)
-        {
-            //bresenhamLine(pointHitTheGround, position, dirPixelObj, lastPosition, position, bNotFound, t, above);
-
-            // Test
+        if(useBresenham){
             bresenhamLine2(pointHitTheGround, position, dirPixelObj, position, bNotFound);
             color = position;
             break;
+        }else{
+            vec4 texHeightMap = texture2D(uHeightMapTypeSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.));
 
-            vec4 texHeightMap = texture2D(uHeightMapTypeSampler, goodTexCoord(((lastPosition.xy / uBBSize) + 1.) / 2.));
-            fLastZ = texHeightMap.z;
+            if(uIsImageInColor) {
+                heightMapL = RGB2Lab(texHeightMap.xyz).x * uBBSize * uFlatten / 100.;
+            }
+            else {
+                heightMapL =  texHeightMap.x * uBBSize * uFlatten;
+            }
 
-            useBresenham = false;
-        }
-
-        vec4 texHeightMap = texture2D(uHeightMapTypeSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.));
-
-        if(uIsImageInColor) {
-            // We use the L of the LAB color metric.
-            heightMapL = RGB2Lab(texHeightMap.xyz).x * uBBSize * uFlatten / 100.;
-        }
-        else {
-            // We use the R of the RGB color metric.
-            heightMapL =  texHeightMap.x * uBBSize * uFlatten;
-        }
-
-
-        // If the point is outside of the box.
-
-        if(position.z < -0.1 || position.x > uBBSize || position.x < -uBBSize
-        || position.y > uBBSize || position.y < -uBBSize || bNotFound)
-        {
-            // If is opaque or in wire frame mode, the draw a color.
-            if(uIsOpaque || uIsWireFrame) {
-                // Yellow roof or wire.
-                if(position.z >= uBBSize) {
-                    if(uIsWireFrame && position.z >= uBBSize + BORDER_SIZE) {
-                        discard;
+            if(position.z < -0.1 || position.x > uBBSize || position.x < -uBBSize
+            || position.y > uBBSize || position.y < -uBBSize || bNotFound)
+            {
+                if(uIsOpaque || uIsWireFrame) {
+                    if(position.z >= uBBSize) {
+                        if(uIsWireFrame && position.z >= uBBSize + BORDER_SIZE) {
+                            discard;
+                        }
+                        else{
+                            color = vec3(1., 1., 0.);
+                        }
                     }
-                    else{
-                        color = vec3(1., 1., 0.);
+                    else if(position.x > uBBSize && position.y <= uBBSize && position.y >= -uBBSize) {
+                        if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
+                        !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
+                            discard;
+                        }
+                        else{
+                            color = vec3(1., 0., 0.);
+                        }
                     }
-                }
-                // Red wall or wire.
-                else if(position.x > uBBSize && position.y <= uBBSize && position.y >= -uBBSize) {
-                    if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
-                    !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
-                        discard;
+                    else if( position.x < -uBBSize && position.y <= uBBSize && position.y >= -uBBSize) {
+                        if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
+                        !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
+                            discard;
+                        }
+                        else {
+                            color = vec3(0., 1., 0.);
+                        }
                     }
-                    else{
-                        color = vec3(1., 0., 0.);
+                    else if(position.y > uBBSize && position.x <= uBBSize && position.x >= -uBBSize) {
+                        if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
+                        !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
+                            discard;
+                        }
+                        else{
+                            color = vec3(0., 0., 1.);
+                        }
                     }
-                }
-                // Green wall or wire.
-                else if( position.x < -uBBSize && position.y <= uBBSize && position.y >= -uBBSize) {
-                    if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
-                    !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
-                        discard;
+                    else if(position.y < -uBBSize && position.x <= uBBSize && position.x >= -uBBSize) {
+                        if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
+                        !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
+                            discard;
+                        }
+                        else {
+                            color = vec3(1., 0., 1.);
+                        }
                     }
                     else {
-                        color = vec3(0., 1., 0.);
-                    }
-                }
-                // Blue wall or wire.
-                else if(position.y > uBBSize && position.x <= uBBSize && position.x >= -uBBSize) {
-                    if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
-                    !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
                         discard;
                     }
-                    else{
-                        color = vec3(0., 0., 1.);
-                    }
-                }
-                // Pink wall or wire.
-                else if(position.y < -uBBSize && position.x <= uBBSize && position.x >= -uBBSize) {
-                    if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
-                    !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
-                        discard;
-                    }
-                    else {
-                        color = vec3(1., 0., 1.);
-                    }
+                    break;
                 }
                 else {
                     discard;
+                    break;
                 }
-                break;
             }
-            else {
-                discard;
-                break;
-            }
-        }
 
-        // The ray is above the map.
-        if(heightMapL < position.z)
-        {
-            above = true;
-        }
-        // The ray is bolow the map.
-        else if(heightMapL >= position.z)
-        {
-            // If it was above the map before.
-            if(above)
+            if(heightMapL < position.z)
             {
-                vec3 positionZ = position;
-                positionZ.z = heightMapL;
-                vec3 lastPositionZ = lastPosition;
-                lastPositionZ.z = fLastZ;
-
-                vec3 pointOnTheLine = intersectionBetweenLines(lastPosition, position, lastPositionZ, positionZ);
-
-                vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((pointOnTheLine.xy / uBBSize) + 1.) / 2.));
-                color = texColor.xyz;
-                break;
+                above = true;
             }
-            above = false;
+            else if(heightMapL >= position.z)
+            {
+                if(above)
+                {
+                    vec3 positionZ = position;
+                    positionZ.z = heightMapL;
+                    vec3 lastPositionZ = lastPosition;
+                    lastPositionZ.z = fLastZ;
+
+                    vec3 pointOnTheLine = intersectionBetweenLines(lastPosition, position, lastPositionZ, positionZ);
+
+                    vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((pointOnTheLine.xy / uBBSize) + 1.) / 2.));
+                    color = texColor.xyz;
+                    break;
+                }
+                above = false;
+            }
+            lastPosition = position;
+            fLastZ = heightMapL;
         }
-        lastPosition = position;
-        fLastZ = heightMapL;
     }
 
-    // Sortie de la couleur du fragment
     gl_FragColor = vec4(color, 1.0);
 }
 

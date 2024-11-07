@@ -9,6 +9,7 @@ const boundingBoxElements = {
     sizeValueDisplay: doc.getElementById('boundingBox_size_value'),
     heightMapTypeSelector: doc.getElementById('boundingBox_heightMap_type_selector'),
     heightMapTextureSelector: doc.getElementById('boundingBox_heightMap_texture_selector'),
+    heightMapRenderingSwitch: doc.getElementById('boundingBox_heightMap_switch'),
     heightMapFlattenSlider: doc.getElementById('boundingBox_heightMap_flatten_slider'),
     heightMapFlattenValueDisplay: doc.getElementById('boundingBox_heightMap_flatten_value'),
 };
@@ -32,6 +33,11 @@ let isOpaqueActiveBoundingBox = false;
  * @type {Boolean}
  */
 let isColoredBoundingBoxHeightMapType = false;
+
+/**
+ * @type {Boolean}
+ */
+let isOptimizedRenderingBoundingBoxActive = false;
 
 /**
  * @constant {Object[]}
@@ -203,6 +209,20 @@ function initBoundingBoxUIComponents() {
     initSelector(boundingBoxElements.heightMapTextureSelector, boundingBoxHeightMapTextureLoader, function () {
         handleBoundingBoxHeightMapSelection(this.value, 'texture');
     });
+
+    initSwitch(boundingBoxElements.heightMapRenderingSwitch, isOptimizedRenderingBoundingBoxActive, function () {
+        isOptimizedRenderingBoundingBoxActive = this.checked;
+    });
+
+    const element = boundingBoxElements.heightMapRenderingSwitch.closest('.row');
+    if(element !== null){
+        const switchLabel = element.querySelector('.switch__label2');
+        const switchBtn = element.querySelector('.switch');
+        if(switchLabel === null || switchBtn === null)
+            return;
+        switchLabel.style.margin = '0 70px';
+        switchBtn.style.margin = '0 73px';
+    }
 
     initSlider(boundingBoxElements.heightMapFlattenSlider, function () {
         if(theBoundingBox !== null){
