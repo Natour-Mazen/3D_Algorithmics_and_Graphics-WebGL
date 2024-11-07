@@ -7,8 +7,8 @@ let distCENTER;
 let main_plane;
 let main_objectsToDraw = [];
 let main_light = new Light();
-let main_aspectRatio = 0.;
-let main_FOV = 45.;
+let main_aspectRatio = 1;
+let main_FOV = 45;
 
 
 const canvasID = 'WebGL-canvas';
