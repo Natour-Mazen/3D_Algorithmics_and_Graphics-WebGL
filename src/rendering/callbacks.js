@@ -122,7 +122,7 @@ function updateCoordinates() {
 	doc.getElementById('coordinate__content__data__y').innerText = `Y: ${distCENTER[1].toFixed(2)}`;
 	doc.getElementById('coordinate__content__data__z').innerText = `Z: ${distCENTER[2].toFixed(2)}`;
 }
-let DEFAULT_DISTCENTER = [0, 0, -35];
+let DEFAULT_DISTCENTER = [0, -2, -35];
 
 function resetCoordinates() {
 	distCENTER = vec3.create(DEFAULT_DISTCENTER)
