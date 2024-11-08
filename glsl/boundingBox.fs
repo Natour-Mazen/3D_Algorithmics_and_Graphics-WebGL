@@ -19,34 +19,40 @@ uniform sampler2D uHeightMapTypeSampler; // The height map.
 uniform sampler2D uHeightMapTextureSampler; // The texture.
 
 const int MAX_ITERATIONS = 700; // For the ray marching.
-const int MAX_ITERATIONS_FOR = 1000; // For Bresenham "FOR" -> image are at 512 * 512 pixel max.
-float BORDER_SIZE = 0.005 * uBBSize;
+const int MAX_ITERATIONS_FOR = 600; // For Bresenham "FOR" -> image are at 512 * 512 pixel max.
+float BORDER_SIZE = 0.005 * uBBSize; // The border size of the wireframe.
 
-float DIAGO = sqrt(sqrt(uBBSize * uBBSize + uBBSize * uBBSize) * sqrt(uBBSize * uBBSize + uBBSize * uBBSize) + uBBSize * uBBSize);
+// Nyquist–Shannon sampling to have the best step.
+float uBBSizeCarre = uBBSize * uBBSize;
+float DIAGO = sqrt(sqrt(uBBSizeCarre + uBBSizeCarre) * sqrt(uBBSizeCarre + uBBSizeCarre) + uBBSizeCarre);
 float PAS = DIAGO / sqrt(uImageWidth * uImageWidth + uImageHeight * uImageHeight) * 2.;
 
-varying vec3 vVertexPositionMV;
-varying vec3 vVertexPosition;        // Position 3D du vertex
-varying vec4 vVertexPositionSpace;   // Position projetée dans l'espace caméra
-varying mat4 viMVMatrix;
-varying vec3 vVertexNormal;
 
+varying vec3 vVertexPosition;        // Reel vertex position.
+varying vec4 vVertexPositionSpace;   // Vertex position project on the sreen.
+varying mat4 viMVMatrix;             // Inverse MVMatrix.
 
+// All the utility fonctions.
 vec2 goodTexCoord(vec2 tex);
 vec3 borderColor(vec3 position);
 vec3 intersectionBetweenLines(vec3 A1, vec3 B1, vec3 A2, vec3 B2);
 vec3 RGB2Lab(vec3 rgb);
-void draw_line(vec3 vec3EndPoint, vec3 linePoint, vec3 lineDirection, inout vec3 fBeforeFinalPoint, inout vec3 fFinalPoint);
+
+// The Bresenham fonctions to avoid missing steps.
+// First version that stop before hiting a point and let the current code finish the job.
 void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection, inout vec3 vec3BeforeFinalPoint,
-inout vec3 vec3FinalPoint, inout bool bNotFound, inout float t, inout bool bAbove);
+                    inout vec3 vec3FinalPoint, inout bool bNotFound, inout float t, inout bool bAbove);
+// Second version that return the color of the pixel. (Not working).
 void bresenhamLine2(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection,
-inout vec3 vec3FinalPoint, inout bool bNotFound);
+                    inout vec3 vec3FinalPoint, inout bool bNotFound);
+
 
 void main(void)
 {
     // Default color.
     vec3 color = vec3(0.7, 0.7, 0.7);
 
+    // The color of the border (wireframe).
     vec3 borderColor = borderColor(vVertexPosition);
     if(borderColor.x != -1.)
     {
@@ -54,15 +60,16 @@ void main(void)
         return;
     }
 
-    // Conversion des coordonnées du vertex dans l'espace écran (normé)
+    // Conversion of vertex coordinates to screen space (normalized).
     vec2 pixel = vVertexPositionSpace.xy / vVertexPositionSpace.w;
 
-    // Calcul de la direction du rayon dans l'espace caméra
+    // Calculating the ray direction in camera space.
     vec3 dirCam = vec3(pixel.x * uAspectRatio, pixel.y, -(1. / tan(radians(uFOV) / 2.)));
 
-    // Transformation du rayon dans l'espace objet
+    // Transform the ray into object space
     vec3 dirPixelObj = normalize((viMVMatrix * vec4(dirCam, 1.0)).xyz);
 
+    // Calculation of the end point, when the ray is outside of the box (for Bresenham).
     float tWhereZEgal0 = - (vVertexPosition.z / dirPixelObj.z);
     if(vVertexPosition.z < 1. * uBBSize && dirPixelObj.z > 0.)
     {
@@ -78,113 +85,142 @@ void main(void)
     bool above = false;
     // The last position computed.
     vec3 lastPosition = vVertexPosition + t * dirPixelObj;
+    // The last 'z' position calculated.
     float fLastZ = 0.;
-    bool useBresenham = false;
+    // If we use bresenham or not.
+    bool useBresenham = true;
+    // If a position has been found or not.
+    bool bNotFound = false;
 
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
         vec3 position = vVertexPosition + t * dirPixelObj;
         t += PAS;
 
-        bool bNotFound = false;
+        if(useBresenham)
+        {
+            // === First try of Bresenham (uncomment to use it, kinda working) === //
+            //bresenhamLine(pointHitTheGround, position, dirPixelObj, lastPosition, position, bNotFound, t, above);
 
-        if(useBresenham){
-            bresenhamLine2(pointHitTheGround, position, dirPixelObj, position, bNotFound);
-            color = position;
-            break;
-        }else{
-            vec4 texHeightMap = texture2D(uHeightMapTypeSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.));
+            //vec4 texHeightMap = texture2D(uHeightMapTypeSampler, goodTexCoord(((lastPosition.xy / uBBSize) + 1.) / 2.));
+            //fLastZ = texHeightMap.z;
+            //useBresenham = false;
 
-            if(uIsImageInColor) {
-                heightMapL = RGB2Lab(texHeightMap.xyz).x * uBBSize * uFlatten / 100.;
-            }
-            else {
-                heightMapL =  texHeightMap.x * uBBSize * uFlatten;
-            }
+            // === Second try of Bresenham (uncomment to use it, not working) === //
+            //bresenhamLine2(pointHitTheGround, position, dirPixelObj, position, bNotFound);
+            //color = position;
+            //break;
+        }
 
-            if(position.z < -0.1 || position.x > uBBSize || position.x < -uBBSize
-            || position.y > uBBSize || position.y < -uBBSize || bNotFound)
-            {
-                if(uIsOpaque || uIsWireFrame) {
-                    if(position.z >= uBBSize) {
-                        if(uIsWireFrame && position.z >= uBBSize + BORDER_SIZE) {
-                            discard;
-                        }
-                        else{
-                            color = vec3(1., 1., 0.);
-                        }
-                    }
-                    else if(position.x > uBBSize && position.y <= uBBSize && position.y >= -uBBSize) {
-                        if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
-                        !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
-                            discard;
-                        }
-                        else{
-                            color = vec3(1., 0., 0.);
-                        }
-                    }
-                    else if( position.x < -uBBSize && position.y <= uBBSize && position.y >= -uBBSize) {
-                        if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
-                        !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
-                            discard;
-                        }
-                        else {
-                            color = vec3(0., 1., 0.);
-                        }
-                    }
-                    else if(position.y > uBBSize && position.x <= uBBSize && position.x >= -uBBSize) {
-                        if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
-                        !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
-                            discard;
-                        }
-                        else{
-                            color = vec3(0., 0., 1.);
-                        }
-                    }
-                    else if(position.y < -uBBSize && position.x <= uBBSize && position.x >= -uBBSize) {
-                        if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
-                        !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
-                            discard;
-                        }
-                        else {
-                            color = vec3(1., 0., 1.);
-                        }
-                    }
-                    else {
+        // To get the color of the pixel in the current position.
+        vec4 texHeightMap = texture2D(uHeightMapTypeSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.));
+
+        // If the image is in color, we use the 'L' of the LAB color metric.
+        if(uIsImageInColor) {
+            heightMapL = RGB2Lab(texHeightMap.xyz).x * uBBSize * uFlatten / 100.;
+        }
+        // If the color is in black and white, we use the 'R' of the RGB color metric.
+        else {
+            heightMapL =  texHeightMap.r * uBBSize * uFlatten;
+        }
+
+        // If we are under the map, outside of the box or if we haven't found a valid position.
+        if(position.z < -0.1 || position.x > uBBSize || position.x < -uBBSize
+        || position.y > uBBSize || position.y < -uBBSize || bNotFound)
+        {
+            // If we are in opaque or wireframe mode.
+            if(uIsOpaque || uIsWireFrame) {
+                // Yellow color.
+                if(position.z >= uBBSize) {
+                    if(uIsWireFrame && position.z >= uBBSize + BORDER_SIZE) {
                         discard;
                     }
-                    break;
+                    else{
+                        color = vec3(1., 1., 0.);
+                    }
+                }
+                // Red color.
+                else if(position.x > uBBSize && position.y <= uBBSize && position.y >= -uBBSize) {
+                    if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
+                    !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
+                        discard;
+                    }
+                    else{
+                        color = vec3(1., 0., 0.);
+                    }
+                }
+                // Green color.
+                else if( position.x < -uBBSize && position.y <= uBBSize && position.y >= -uBBSize) {
+                    if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
+                    !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
+                        discard;
+                    }
+                    else {
+                        color = vec3(0., 1., 0.);
+                    }
+                }
+                // Blue color.
+                else if(position.y > uBBSize && position.x <= uBBSize && position.x >= -uBBSize) {
+                    if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
+                    !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
+                        discard;
+                    }
+                    else{
+                        color = vec3(0., 0., 1.);
+                    }
+                }
+                // Pink color.
+                else if(position.y < -uBBSize && position.x <= uBBSize && position.x >= -uBBSize) {
+                    if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
+                    !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
+                        discard;
+                    }
+                    else {
+                        color = vec3(1., 0., 1.);
+                    }
                 }
                 else {
                     discard;
-                    break;
                 }
+                break;
             }
-
-            if(heightMapL < position.z)
-            {
-                above = true;
+            // If we don't have a mode, we discard all pixels outside of the box.
+            else {
+                discard;
+                break;
             }
-            else if(heightMapL >= position.z)
-            {
-                if(above)
-                {
-                    vec3 positionZ = position;
-                    positionZ.z = heightMapL;
-                    vec3 lastPositionZ = lastPosition;
-                    lastPositionZ.z = fLastZ;
-
-                    vec3 pointOnTheLine = intersectionBetweenLines(lastPosition, position, lastPositionZ, positionZ);
-
-                    vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((pointOnTheLine.xy / uBBSize) + 1.) / 2.));
-                    color = texColor.xyz;
-                    break;
-                }
-                above = false;
-            }
-            lastPosition = position;
-            fLastZ = heightMapL;
         }
+
+        // If the are above.
+        if(heightMapL < position.z)
+        {
+            above = true;
+        }
+        // If we are under.
+        else if(heightMapL >= position.z)
+        {
+            // The position was above before.
+            if(above)
+            {
+                // Position with the 'z' of the map.
+                vec3 positionZ = position;
+                positionZ.z = heightMapL;
+                // Last position with the 'z' of the map.
+                vec3 lastPositionZ = lastPosition;
+                lastPositionZ.z = fLastZ;
+
+                // The intersection between the two lines (lastPosition/position and lastPositionZ/positionZ).
+                vec3 pointOnTheLine = intersectionBetweenLines(lastPosition, position, lastPositionZ, positionZ);
+
+                // The get the texture of the found position.
+                vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((pointOnTheLine.xy / uBBSize) + 1.) / 2.));
+                color = texColor.xyz;
+                break;
+            }
+            above = false;
+        }
+        lastPosition = position;
+        fLastZ = heightMapL;
     }
 
     gl_FragColor = vec4(color, 1.0);
@@ -361,7 +397,6 @@ int abs(int x) {
 * @param bNotFound (inout) Tell if the point returned is usable or not.
 * @param t (inout) The factor to get the final point with the line formula.
 */
-/*
 void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection, inout vec3 vec3BeforeFinalPoint,
                     inout vec3 vec3FinalPoint, inout bool bNotFound, inout float t, inout bool bAbove)
 {
@@ -496,8 +531,10 @@ void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection
         t = fTemT / fImageRatio;
     }
 }
-*/
 
+/* Used in Bresenham2 to found an intersection between the ray and the map.
+
+*/
 bool foundIntersectionPixel(vec3 vec3EndPoint, vec3 vec3StartPoint, inout ivec2 ivec2LastPoint, ivec2 ivec2Point, float fImageLength,
                             inout bool bAbove, inout vec3 vec3LastPointRes, inout vec3 vec3PointRes,
                             inout vec3 vec3LastPointMapRes, inout vec3 vec3PointMapRes, inout int counter)
@@ -746,27 +783,20 @@ void bresenhamLine2(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirectio
         }
     }
 
+    // Webgl console log.
     if(vec3LastPointRes.x == 50. && counter >= 1)
     {
         vec3FinalPoint = vec3(float(counter) * 0.05, 0., 0.);
         return;
     }
 
-//    if(ivec2EndPoint.x == x && ivec2EndPoint.y == y) {
-//
-//        //vec3FinalPoint = vec3(0., 1., 0.);
-//        vec4 texColor = texture2D(uHeightMapTextureSampler, goodTexCoord(((vec2(x, y) / fImageLength) + 1.) / 2.));
-//        vec3FinalPoint = texColor.xyz;
-//        return;
-//    }
-    //vec3FinalPoint = vec3(1., 0., 0.);
-
+    // Outside of the box.
     if(x > int(fImageLength) || x < int(-fImageLength)
     || y > int(fImageLength) || y < int(-fImageLength))
     {
         // To indicate that the point doesn't exist.
         bNotFound = true;
-        //vec3FinalPoint = vec3(0.9, 0.7, 0.7);
+        vec3FinalPoint = vec3(0.9, 0.7, 0.7);
         return;
     }
 
