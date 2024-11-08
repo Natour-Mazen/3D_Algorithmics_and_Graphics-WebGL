@@ -14,9 +14,20 @@ const heightMapElements = {
 };
 
 /**
- * @type {string[]}
+ * @type {Object[]}
  */
-const heightMapLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png'];
+const heightMapLoader = [
+    { value: 'texture1.png', name: 'texture1'},
+    { value: 'texture2.png', name: 'texture2'},
+    { value: 'texture3.png', name: 'texture3'},
+    { value: 'texture4.png', name: 'texture4'},
+    { value: 'texture10.png', name: 'texture5'},
+    { value: 'texture11.png', name: 'texture6'},
+    { value: 'texture12.png', name: 'texture7'},
+    { value: 'texture13.png', name: 'texture8'},
+    { value: 'texture14.png', name: 'texture9'},
+    { value: 'texture15.png', name: 'texture10'},
+];
 
 /**
  * @type {string[]}
@@ -63,6 +74,10 @@ function handleCreateHeightMap() {
     theHeightMap = new HeightMap();
 
     main_objectsToDraw.push(theHeightMap);
+
+    if(isTherePlane) {
+        setPlaneState(false);
+    }
 }
 
 
@@ -102,6 +117,9 @@ function resetHeightMapSelection(selectionType) {
     if (selectionType === 'type') {
         main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof HeightMap));
         heightMapType = null;
+        if(!isTherePlane) {
+            setPlaneState(true);
+        }
     } else {
         lastSelectedHeightMapTexturePath = "";
         heightMap_texturePathMap = heightMapType ?`res/heightMaps/${heightMapElements.selector.value}` : null;
@@ -111,6 +129,8 @@ function resetHeightMapSelection(selectionType) {
             updateScaleHeightMap(scaleSliderValue);
         }
     }
+
+
 }
 
 /**
@@ -154,10 +174,18 @@ function initHeightMapUIComponents() {
         isWireFrameActiveHeightMap = this.checked;
     });
 
-    initSelector(heightMapElements.selector, heightMapLoader, function () {
-        handleHeightMapSelection(this.value, 'type');
-    });
+    initGenericObjectSelector(
+        heightMapElements.selector,
+        heightMapLoader,
+        function () {
+            handleHeightMapSelection(this.value, 'type');
+        },
+        'value', // Property to use for option value
+        'name', // Property to use for option text content
+        { } // Additional data attributes
+    );
 
+    
     initSelector(heightMapElements.textureSelector, heightMapTextureLoader, function () {
         handleHeightMapSelection(this.value, 'texture');
     });
