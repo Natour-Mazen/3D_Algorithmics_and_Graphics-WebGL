@@ -43,7 +43,7 @@
     
     </details>
   - [Instructions pour Exécuter le Projet](#instructions-pour-exécuter-le-projet)
-  - [Explication des fonctionnalités du Jalon 2](#explication-des-fonctionnalités-du-jalon-2)
+  - [Explication des nouvelles fonctionnalités faite dans le Jalon 2](#explication-des-nouvelles-fonctionnalités-faite-dans-le-jalon-2)
   - [Remarques](#remarques)
   
 
