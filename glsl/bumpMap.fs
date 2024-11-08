@@ -9,6 +9,9 @@ uniform vec4 uLightColor; // The color light.
 uniform bool uBumMap; // true if the bump map is activeted, false otherwise.
 uniform float uLightIntensity; // The light intensity.
 uniform float uPI;
+uniform vec4 uLightSpecular;
+uniform float uLightShininess;
+uniform bool uIsPhongShader; // true if the shader is a phong shader, false otherwise.
 
 varying vec2 vTexCoords;
 varying vec3 vVertexNormal;
@@ -39,8 +42,29 @@ void main(void)
     // Lambertian reflection.
     //vec3 fragColor = texColor.rgb * weight * (uAmbientLight.rgb + weight * uLightColor.rgb);
 
+    vec3 fragColor;
     // Course Formula.
-    vec3 fragColor = uLightColor.rgb * texColor.rgb * (1.0 / uPI) * weight * uLightIntensity;
+    if(uIsPhongShader){
+         fragColor = phongLighting( // phongLighting function from glsl/common.glsl
+            uLightShininess, // shininess
+            lightDir, // lightDir
+            uLightSpecular, // lightSpecular
+            uLightColor, // lightColor
+            texColor, // texColor
+            uPI, // PI
+            weight, // weight
+            normal // normal
+        );
+    }else{
+         fragColor = lambertLighting( // lambertLighting function from glsl/common.glsl
+            uLightIntensity, // lightIntensity
+            uLightColor, // lightColor
+            texColor, // texColor
+            weight, // weight
+            uPI // PI
+        );
+    }
+
 
     gl_FragColor = vec4(fragColor, 1.0);
 }

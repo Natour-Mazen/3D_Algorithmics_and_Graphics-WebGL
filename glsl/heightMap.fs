@@ -9,6 +9,9 @@ uniform vec4 uLightColor; // The color light.
 uniform vec3 uLightPosition; // Position of the light.
 uniform float uPI;
 uniform float uLightIntensity; // The light intensity.
+uniform vec4 uLightSpecular;
+uniform float uLightShininess;
+uniform bool uIsPhongShader; // true if the shader is a phong shader, false otherwise.
 
 varying vec4 vVertexPosition;
 varying vec3 vVertexNormal;
@@ -25,17 +28,17 @@ void main(void)
     // Weight of the color.
     float weight = max(dot(normal, lightDir), 0.0);
 
-    vec3 finalColor = vec3(0., 0., 0.);
+    vec4 finalColor = vec4(0., 0., 0., 1.);
 
     // If we use the pre-defined color.
     if(uIsColor)
     {
-        vec3 sandColor = vec3(0.9, 0.9, 0.3);
-        vec3 planeColor = vec3(0.2, 0.7, 0.15);
-        vec3 forestColor = vec3(0.2, 0.45, 0.1);
-        vec3 stoneColor = vec3(0.5, 0.5, 0.5);
-        vec3 snowColor = vec3(1.0, 1.0, 1.0);
-        vec3 waterColor = vec3(0.0, 0.0, 1.0);
+        vec4 sandColor = vec4(0.9, 0.9, 0.3, 1.);
+        vec4 planeColor = vec4(0.2, 0.7, 0.15, 1.);
+        vec4 forestColor = vec4(0.2, 0.45, 0.1, 1.);
+        vec4 stoneColor = vec4(0.5, 0.5, 0.5, 1.);
+        vec4 snowColor = vec4(1.0, 1.0, 1.0, 1.);
+        vec4 waterColor = vec4(0.0, 0.0, 1.0, 1.);
 
         // The height need to be between 0 and 1.
         // The z-axis is equal to the y-axis.
@@ -82,12 +85,34 @@ void main(void)
     else // We use the texture color.
     {
         vec4 textureColor = texture2D(uSampler, vTexCoord);
-        finalColor = textureColor.rgb;
+        finalColor = textureColor;
     }
 
     // OLD Formula.
     //vec3 fragColor = finalColor * (uAmbientLight.rgb + weight * uLightColor.rgb);
-    vec3 fragColor = uLightColor.rgb * finalColor * (1.0 / uPI) * weight * uLightIntensity;
+
+    vec3 fragColor;
+    // Course Formula.
+    if(uIsPhongShader){
+        fragColor = phongLighting( // phongLighting function from glsl/common.glsl
+            uLightShininess, // shininess
+            lightDir, // lightDir
+            uLightSpecular, // lightSpecular
+            uLightColor, // lightColor
+            finalColor, // texColor or the color of the material
+            uPI, // PI
+            weight, // weight
+            normal // normal
+        );
+    }else{
+        fragColor = lambertLighting( // lambertLighting function from glsl/common.glsl
+            uLightIntensity, // lightIntensity
+            uLightColor, // lightColor
+            finalColor, // texColor or the color of the material
+            weight, // weight
+            uPI // PI
+        );
+    }
 
     gl_FragColor = vec4(fragColor, 1.0);
 }

@@ -7,6 +7,8 @@ let distCENTER;
 let main_plane;
 let main_objectsToDraw = [];
 let main_light = new Light();
+let main_aspectRatio = 1;
+let main_FOV = 45;
 
 
 const canvasID = 'WebGL-canvas';
@@ -22,7 +24,12 @@ function resizeCanvas() {
     gl.viewportHeight = canvas.height;
     gl.viewport(0, 0, canvas.width, canvas.height);
 
-    mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+    // a : fov
+    // b : aspect ratio
+    // c : zNear
+    // d : zFar
+    main_aspectRatio = gl.viewportWidth / gl.viewportHeight;
+    mat4.perspective(main_FOV, main_aspectRatio, 0.1, 250.0, pMatrix);
 }
 
 window.addEventListener('load', resizeCanvas);
@@ -102,7 +109,7 @@ function webGLStart() {
     main_objectsToDraw.push(main_plane);
 
     updateTheDefaultLightIntensitySliderValue(main_light.getLightIntensity());
-
+    updateTheDefaultLightShininessSliderValue(main_light.getLightShininess());
 
     tick();
 }

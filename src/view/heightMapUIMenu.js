@@ -14,14 +14,25 @@ const heightMapElements = {
 };
 
 /**
- * @type {string[]}
+ * @type {Object[]}
  */
-const heightMapLoader = ['texture1.png', 'texture2.png', 'texture3.png', 'texture4.png'];
+const heightMapLoader = [
+    { value: 'texture1.png', name: 'texture1'},
+    { value: 'texture2.png', name: 'texture2'},
+    { value: 'texture3.png', name: 'texture3'},
+    { value: 'texture4.png', name: 'texture4'},
+    { value: 'texture10.png', name: 'texture5'},
+    { value: 'texture11.png', name: 'texture6'},
+    { value: 'texture12.png', name: 'texture7'},
+    { value: 'texture13.png', name: 'texture8'},
+    { value: 'texture14.png', name: 'texture9'},
+    { value: 'texture15.png', name: 'texture10'},
+];
 
 /**
  * @type {string[]}
  */
-const heightMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg", "texture2Colored.png"];
+const heightMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg"];
 
 /**
  * @type {HeightMap|null}
@@ -49,14 +60,10 @@ let isWireFrameActiveHeightMap = false;
 let flattenFactorHeightMap = 1;
 
 /**
- * @constant {string}
+ *
+ * @type {string}
  */
-const DEFAULT_HEIGHTMAP_TEXTURE = 'res/textures/white.png';
-
-/**
- * @constant {number}
- */
-const DEFAULT_HEIGHTMAP_SCALE = 1;
+let lastSelectedHeightMapTexturePath = "";
 
 
 /**
@@ -67,6 +74,10 @@ function handleCreateHeightMap() {
     theHeightMap = new HeightMap();
 
     main_objectsToDraw.push(theHeightMap);
+
+    if(isTherePlane) {
+        setPlaneState(false);
+    }
 }
 
 
@@ -76,34 +87,50 @@ function handleCreateHeightMap() {
  * @param {string} selectionType - The type of selection ('type' or 'texture').
  */
 function handleHeightMapSelection(selectedHeightMap, selectionType) {
-    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof HeightMap));
-    if (selectedHeightMap !== 'None') {
-        if (selectionType === 'type') {
-            heightMapType = `res/heightMaps/${selectedHeightMap}`;
-        } else if (selectionType === 'texture') {
-            heightMap_texturePathMap = `res/textures/${selectedHeightMap}`;
-        }
+    if (selectedHeightMap === 'None') {
+        resetHeightMapSelection(selectionType);
+        return;
+    }
 
-        if (heightMap_texturePathMap === null) {
-            heightMap_texturePathMap = DEFAULT_HEIGHTMAP_TEXTURE;
-        }
+    const path = selectionType === 'type' ? `res/heightMaps/${selectedHeightMap}` : `res/textures/${selectedHeightMap}`;
+
+    if (selectionType === 'type') {
+        heightMapType = path;
+        heightMap_texturePathMap = lastSelectedHeightMapTexturePath ? lastSelectedHeightMapTexturePath : path;
     } else {
-        if (selectionType === 'type') {
-            heightMapType = null;
-        } else if (selectionType === 'texture') {
-            heightMap_texturePathMap = DEFAULT_HEIGHTMAP_TEXTURE;
-        }
+        lastSelectedHeightMapTexturePath = path;
+        heightMap_texturePathMap = path;
     }
 
     if (heightMapType !== null) {
         handleCreateHeightMap();
         let scaleSliderValue = heightMapElements.scaleSlider.value;
-        if (scaleSliderValue === '0') {
-            updateScaleHeightMap(DEFAULT_HEIGHTMAP_SCALE);
-        } else {
-            updateScaleHeightMap(parseInt(scaleSliderValue));
+        updateScaleHeightMap(scaleSliderValue);
+    }
+}
+
+/**
+ * Resets the height map selection.
+ * @param {string} selectionType - The type of selection ('type' or 'texture').
+ */
+function resetHeightMapSelection(selectionType) {
+    if (selectionType === 'type') {
+        main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof HeightMap));
+        heightMapType = null;
+        if(!isTherePlane) {
+            setPlaneState(true);
+        }
+    } else {
+        lastSelectedHeightMapTexturePath = "";
+        heightMap_texturePathMap = heightMapType ?`res/heightMaps/${heightMapElements.selector.value}` : null;
+        if(heightMapType !== null) {
+            handleCreateHeightMap();
+            let scaleSliderValue = heightMapElements.scaleSlider.value;
+            updateScaleHeightMap(scaleSliderValue);
         }
     }
+
+
 }
 
 /**
@@ -126,13 +153,13 @@ function handleHeightMapSwitch() {
 
     if (heightMapElements.switch.checked) {
         heightMapTextureSelectorItem.style.display = 'none';
-        heightMapElements.textureSelector.value = 'None';
     } else {
         heightMapTextureSelectorItem.style.display = 'block';
     }
 
     if (heightMapType !== null) {
-        heightMap_texturePathMap = DEFAULT_HEIGHTMAP_TEXTURE;
+        heightMap_texturePathMap = lastSelectedHeightMapTexturePath === "" ?
+            `res/heightMaps/${heightMapElements.selector.value}` : lastSelectedHeightMapTexturePath;
         handleCreateHeightMap();
         updateScaleHeightMap(heightMapElements.scaleSlider.value);
     }
@@ -147,10 +174,18 @@ function initHeightMapUIComponents() {
         isWireFrameActiveHeightMap = this.checked;
     });
 
-    initSelector(heightMapElements.selector, heightMapLoader, function () {
-        handleHeightMapSelection(this.value, 'type');
-    });
+    initGenericObjectSelector(
+        heightMapElements.selector,
+        heightMapLoader,
+        function () {
+            handleHeightMapSelection(this.value, 'type');
+        },
+        'value', // Property to use for option value
+        'name', // Property to use for option text content
+        { } // Additional data attributes
+    );
 
+    
     initSelector(heightMapElements.textureSelector, heightMapTextureLoader, function () {
         handleHeightMapSelection(this.value, 'texture');
     });

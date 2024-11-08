@@ -43,7 +43,7 @@ function handleObjectSelection(selectedObject) {
         main_objectsToDraw.push(obj);
         obj.setColor(Color.hextoRGB(objectsElements.colorPicker.value).toArray());
         let scaleSliderValue = objectsElements.scaleSlider.value;
-        if (typeof scaleSliderValue === 'string' || scaleSliderValue === 0) {
+        if (scaleSliderValue === 0) {
             updateScaleOBJ(DEFAULT_OBJ_SCALE);
         } else {
             updateScaleOBJ(scaleSliderValue);

@@ -1,7 +1,9 @@
 // shaders.js
 function loadShaders(Obj3D) {
-    loadShaderText(Obj3D, '.vs');
-    loadShaderText(Obj3D, '.fs');
+    loadCommonShader(Obj3D, function() {
+        loadShaderText(Obj3D, '.vs');
+        loadShaderText(Obj3D, '.fs');
+    });
 }
 
 function loadShaderText(Obj3D, ext) {
@@ -13,6 +15,10 @@ function loadShaderText(Obj3D, ext) {
             if (ext === '.fs') { Obj3D.fsTxt = xhttp.responseText; Obj3D.loaded++; }
             if (Obj3D.loaded === 2) {
                 Obj3D.loaded++;
+                const commonCode = Obj3D.commonTxt;
+                // Uncomment the following line to inject common code into the vertex shader
+                //Obj3D.vsTxt = injectCommonCode(Obj3D.vsTxt, commonCode);
+                Obj3D.fsTxt = injectCommonCode(Obj3D.fsTxt, commonCode);
                 compileShaders(Obj3D);
                 Obj3D.loaded++;
             }
@@ -21,11 +27,40 @@ function loadShaderText(Obj3D, ext) {
 
     Obj3D.loaded = 0;
     xhttp.open("GET", Obj3D.shaderName + ext, true);
+    xhttp.overrideMimeType("text/plain")
+    xhttp.send();
+}
+
+function injectCommonCode(shaderCode, commonCode) {
+    const mainIndex = shaderCode.indexOf("void main(void)");
+    if (mainIndex !== -1) {
+        const beforeMain = shaderCode.substring(0, mainIndex);
+        const afterMain = shaderCode.substring(mainIndex);
+        return beforeMain + commonCode + "\n" + afterMain + "\n" ;
+    }
+    return shaderCode;
+}
+
+function loadCommonShader(Obj3D, callback) {
+    const xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (xhttp.readyState === 4 && xhttp.status === 200) {
+            Obj3D.commonTxt = xhttp.responseText;
+            callback();
+        }
+    };
+    xhttp.open("GET", "glsl/common.glsl", true);
     xhttp.overrideMimeType("text/plain");
     xhttp.send();
 }
 
 function compileShaders(Obj3D) {
+
+    // For debugging purposes
+    // console.log("Compiling shaders for " + Obj3D.shaderName);
+    // console.log(Obj3D.vsTxt);
+    // console.log(Obj3D.fsTxt);
+
     Obj3D.vshader = gl.createShader(gl.VERTEX_SHADER);
     gl.shaderSource(Obj3D.vshader, Obj3D.vsTxt);
     gl.compileShader(Obj3D.vshader);
@@ -50,4 +85,5 @@ function compileShaders(Obj3D) {
         console.log("Could not initialise shaders");
         console.log(gl.getShaderInfoLog(Obj3D.shader));
     }
+
 }
