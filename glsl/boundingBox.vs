@@ -7,20 +7,17 @@ uniform mat4 uMVMatrix;  // Matrice modèle-vue
 uniform mat4 uRMatrix;   // Matrice de rotation
 uniform mat4 uPMatrix;   // Matrice de projection
 
-varying vec3 vVertexPositionMV;
 varying vec3 vVertexPosition;        // Position 3D du vertex
 varying vec4 vVertexPositionSpace;   // Position projetée dans l'espace caméra
 varying mat4 viMVMatrix;
-varying vec3 vVertexNormal;
 
 mat4 transpose(mat4 m);
 
 void main(void)
 {
-    vVertexPositionMV = (uMVMatrix * vec4(aVertexPosition, 1.0)).xyz;
+    vec3 vertexPositionMV = (uMVMatrix * vec4(aVertexPosition, 1.0)).xyz;
     // Position originale du vertex (non projetée) pour les calculs dans le fragment shader
     vVertexPosition = aVertexPosition;
-    vVertexNormal = vec3(uRMatrix * vec4(aVertexNormal,1.0));
 
     // Calcul de la position du vertex dans l'espace projeté (clip space)
     vVertexPositionSpace = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
