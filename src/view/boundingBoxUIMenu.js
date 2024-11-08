@@ -48,7 +48,8 @@ const boundingBoxHeightMapTypeLoader = [
     { value: 'texture8.png', name: 'texture8_LAB', isColor: true },
     { value: 'texture9.png', name: 'texture9_LAB', isColor: true },
     { value: 'texture10.png', name: 'texture10_LAB', isColor: true },
-    { value: 'texture10.png', name: 'texture10_RGB', isColor: false }
+    { value: 'texture10.png', name: 'texture10_RGB', isColor: false },
+    { value: 'texture15.png', name: 'texture11_LAB', isColor: true }
 ];
 
 /**
