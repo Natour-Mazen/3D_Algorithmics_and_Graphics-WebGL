@@ -189,13 +189,36 @@
    - Q : Aller à gauche
    - D : Aller à droite
 
-## Explication des fonctionnalités du Jalon 2
-- le Jalon 2 inclut toutes les fonctionnalités du Jalon 1 et ajoute les fonctionnalités suivantes :
-  - Empêcher la caméra d'aller "en dessous" en bloquant la caméra à une certaine hauteur dans le fichier callbacks.js
-  - L'ajout du choix de la luminosité entre Lambert et Phong pour toutes les fonctionnalités qui utilisent la lumière (excepté la boite englobante)
-    cela a impliqué de changer les shaders en injectant le code de la luminosité donc nous 
-    avons ajouté une fonction dans le fichier shaders.js pour injecter le code de la luminosité dans les shaders pour pouvoir utiliser la luminosité de Phong ou Lambert.
-  - L'ajout de la boite englobante, avec les options d'afficher juste la height map, les murs intérieurs en opaque en couleur et avec en fils de fer de couleurs
+## Explication des nouvelles fonctionnalités faite dans le Jalon 2
+- Le Jalon 2 inclut toutes les fonctionnalités du Jalon 1 et ajoute les fonctionnalités suivantes :
+  - Empêcher la caméra d'aller "en dessous" en bloquant la caméra à une certaine hauteur dans le fichier callbacks.js.
+  - L'ajout du **choix de la luminosité entre Lambert et Phong** pour toutes les fonctionnalités qui utilisent la lumière (excepté la boite englobante)
+    cela a impliqué de changer les shaders en injectant le code de la luminosité donc nous avons ajouté une fonction dans le fichier shaders.js pour 
+    injecter le code de la luminosité dans les shaders pour pouvoir utiliser la luminosité de Phong ou Lambert.
+  - L'ajout de la **boite englobante**, avec les options d'afficher juste la height map, les murs intérieurs en couleur et avec en fils de fer de couleurs
+  - **Ray Marching (explication) :**  
+    Pour afficher notre height map en 3D, nous utilisons cette fois-ci le ray marching, qui consiste à lancer des rayons 
+    et à calculer l'intersection avec la map pour pouvoir afficher les points de couleur sur une boîte placée au-dessus 
+    de la height map. Pour obtenir l'intersection avec la map, nous parcourons notre rayon avec un pas régulier, et en 
+    fonction de la position x,y, nous pouvons déterminer la hauteur du rayon par rapport à la map.  
+    <br/>
+    Cette technique que nous utilisons n'est pas parfaite. En effet, nous pouvons voir que sur les textures où il y a des 
+    pics verticaux vers le bas ou le haut, la technique que nous utilisons avec un pas régulier n'est pas optimale car elle 
+    peut manquer des pixels sur la map, ce qui engendre un non-affichage de ces pics.
+    Une solution pour résoudre cela est d'utiliser l'algorithme de Bresenham pour passer par tous les pixels et donc 
+    éviter le problème précédent (utilisation d'un pas variable cette fois-ci).  
+    <br/>
+    Pour commencer, l'algorithme de Bresenham est un algorithme qui peut manquer des pixels. Il faut donc une version 
+    modifiée pour ne pas en manquer. Cette version modifiée permet d'obtenir tous les pixels par lesquels notre rayon 
+    passe. Ensuite, nous parcourons tous les pixels au fil du calcul pour savoir si notre rayon est en dessous ou 
+    au-dessus de la map. En fonction de cela, nous pouvons déterminer quand notre rayon intersecte avec la map.  
+    <br/>
+    Une fois que nous avons une intersection avec deux points en dessous et deux points au-dessus de la map 
+    (un point sur le rayon et un point dans le même axe que le rayon, mais avec le 'z' que nous récupérons de la map), 
+    nous pouvons utiliser ces quatre points pour former deux lignes : une qui est celle du rayon et l'autre entre les deux 
+    points récupérés de la map. Avec ces deux lignes, nous trouvons l'intersection qui nous donne notre point à afficher.  
+    <br/>
+    Cette technique fonctionne en théorie, mais nous n'avons pas réussi à l'implémenter par manque de temps.  
 
 ## Remarques
 - L'interface utilisateur est entièrement générée en JavaScript pour permettre une interaction dynamique.
