@@ -3,7 +3,7 @@ const dropdowns = [
         title: 'Light',
         items:
         [
-            { type: 'select', label: 'Shader', id: 'light_shaderType_selector', options: [] },
+            { type: 'select', label: 'Type', id: 'light_shaderType_selector', options: [] },
             { type: 'color', label: 'Color:', id: 'light_color', value: '#ffffff' },
             { type: 'slider', label: 'Light Intensity:', id: 'lightIntensity_slider', min: 1, max: 6, step: 1, value: 1, displayId: 'lightIntensity_value' },
             { type: 'slider', label: 'Light Shininess:', id: 'lightShininess_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'lightShininess_value' },
