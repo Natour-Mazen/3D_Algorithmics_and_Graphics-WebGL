@@ -218,7 +218,8 @@
     nous pouvons utiliser ces quatre points pour former deux lignes : une qui est celle du rayon et l'autre entre les deux 
     points récupérés de la map. Avec ces deux lignes, nous trouvons l'intersection qui nous donne notre point à afficher.  
     <br/>
-    Cette technique fonctionne en théorie, mais nous n'avons pas réussi à l'implémenter par manque de temps.  
+    Cette technique fonctionne en théorie, mais nous n'avons pas réussi à l'implémenter complètement par manque de temps,
+      vous trouverez tout de même le code en commentaire dans le shader boundingBox.fs .  
 
 ## Remarques
 - L'interface utilisateur est entièrement générée en JavaScript pour permettre une interaction dynamique.
