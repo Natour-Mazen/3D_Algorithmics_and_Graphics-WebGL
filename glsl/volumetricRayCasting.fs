@@ -45,12 +45,44 @@ vec3 RGB2Lab(vec3 rgb);
 
 vec4 getVoxcelInPos(vec3 position)
 {
-    vec2 position2D = ((position.xy / uBBSize) + 1.) / 2.;
-    float fImageWidth = WIDTH * position.z;
-    position2D.x /= fImageWidth;
+    vec3 positionN = position / uBBSize;
+    positionN.xy += 1.;
+    positionN.xy /= 2.;
+    // positionN x: 0 to 1, y: 0 to 1, z: 0 to 1
 
-    vec4 texImage = texture2D(uHeightMapTypeSampler, goodTexCoord(position2D));
+    vec3 position_512 = positionN * 512.;
+
+    //float x = mod(position_512.z, 32.);
+    //float y = position_512.z / 32.;
+
+    //vec2 positionTexture = vec2(512. / 32. * x, 512. / 16. * y);
+    //positionTexture /= 512.;
+
+    float sliceIndex = floor(position_512.z); // L'indice de tranche en profondeur
+    float x = mod(sliceIndex, 32.0);          // Colonne de la tranche dans la grille
+    float y = floor(sliceIndex / 32.0);       // Ligne de la tranche dans la grille
+
+    vec2 positionTexture = vec2(
+    (x * 512.0 + position_512.x) / (32.0 * 512.0), // Position x en prenant en compte la colonne
+    (y * 512.0 + position_512.y) / (16.0 * 512.0)  // Position y en prenant en compte la ligne
+    );
+
+    //vec4 texImage = texture2D(uHeightMapTypeSampler, goodTexCoord(positionTexture));
+    vec4 texImage = texture2D(uHeightMapTypeSampler, positionTexture);
     return texImage;
+}
+
+vec4 transformationBlackToWhite(vec4 color)
+{
+    color.a = color.r;
+    if(color.a <= 0.05){
+        color.a = 0.;
+    }
+    else{
+        // Remove to do VRC
+        color.a = 1.;
+    }
+    return color;
 }
 
 
@@ -104,14 +136,16 @@ void main(void)
 
         // To get the color of the pixel in the current position.
         vec4 texImage = getVoxcelInPos(position);
+        texImage = transformationBlackToWhite(texImage);
 
         texImage.r *= texImage.a;
         texImage.g *= texImage.a;
         texImage.b *= texImage.a;
 
         color += texImage * (1. - color.a);
+        //color += texImage;
 
-        if(color.a > 0.8)
+        if(color.a > 0.99)
             break;
 
         // If we are under the map, outside of the box or if we haven't found a valid position.
