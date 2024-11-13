@@ -1,4 +1,4 @@
-# Jalon 2
+# Jalon 3
 
 
 ## Config
@@ -9,22 +9,22 @@ about:config --> security.fileuri.strict_origin_policy --> true to false
 Open the .html file in firefox.  
 
 ## TODO (in French)
-- Empêcher la camera d'aller "en dessous"
+L'objectif est de réaliser un lancer de rayon volumique avec une fonction de transfert pour le calcul de transparence et de la couleur.
+
 - Construire la géométrie d'une boite englobante, mettre les options pour l'afficher (ou non, en opaque, fils de fer, etc.)
-- Lancer de rayon sur une carte de hauteur
-- Choisir différentes cartes de hauteur
-- Appliquer une seconde texture sur la carte de hauteur.
-- Utiliser une texture couleur pour faire la carte de hauteur. Dans ce cas, nous utiliserons la composante L de l'espace de couleur Lab.
-- Ajouter un slider pour gérer la hauteur de la texture
-- Optimiser le parcours pour le bon delta T
+- Faire le lancer de rayon.
+- IMPORTANT : WebGL ne permet pas de faire une texture 3D, pour palier à cela il suffit d'utiliser de manière 
+intelligente les textures 2D pour stocker des séries d'images 3D. **Expliquez comment vous avez fait**.
+- Faire une fonction de transfert paramétrable.
+- Pouvoir choisir le modèle à visualiser.
 
 ## TODO (in English)
 
-- Prevent the camera from going "underneath"
-- Construct the geometry of a bounding box, set the options to display it (or not, opaque, wireframe, etc.)
-- Ray tracing on a height map
-- Choose different height maps
-- Apply a second texture to the height map.
-- Use a color texture to make the height map. In this case, we will use the L component of the Lab color space.
-- Add a slider to manage the height of the texture
-- Optimize the route for the correct delta T
+The goal is to implement volumetric ray casting with a transfer function to calculate transparency and color.
+
+- Build the geometry of a bounding box, with options to display it (or not, in opaque, wireframe, etc.).
+- Perform the ray casting.
+- IMPORTANT: WebGL does not support 3D textures, so to overcome this, you can intelligently use 2D textures to store 
+3D image slices. **Explain how you did this**.
+- Implement a configurable transfer function.
+- Allow selection of the model to visualize.
