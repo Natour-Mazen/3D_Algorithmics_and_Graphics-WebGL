@@ -1,7 +1,7 @@
 class BoundingBox extends ObjectToDraw {
     // --------------------------------------------
     constructor() {
-        super('glsl/boundingBox', -1, null);
+        super('glsl/volumetricRayCasting', -1, null);
         this.boundingBoxHeightMapflattenFactor = 1;
         this.boundingBoxHeightMapSize = 1;
     }
