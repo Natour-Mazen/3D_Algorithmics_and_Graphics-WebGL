@@ -22,9 +22,13 @@ const int MAX_ITERATIONS = 700; // For the ray marching.
 const int MAX_ITERATIONS_FOR = 600; // For Bresenham "FOR" -> image are at 512 * 512 pixel max.
 float BORDER_SIZE = 0.005 * uBBSize; // The border size of the wireframe.
 
-const float WIDTH = 512.;
-const float HEIGHT = 512.;
-const float DEPTH = 512.;
+//const float IMAGE_SIZE = 512.;
+const float IMAGE_SIZE = 256.;
+
+//const float NB_IMAGE_WIDTH = 32.;
+//const float NB_IMAGE_HEIGHT = 16.;
+const float NB_IMAGE_WIDTH = 16.;
+const float NB_IMAGE_HEIGHT = 16.;
 
 // Nyquist–Shannon sampling to have the best step.
 float uBBSizeCarre = uBBSize * uBBSize;
@@ -50,21 +54,15 @@ vec4 getVoxcelInPos(vec3 position)
     positionN.xy /= 2.;
     // positionN x: 0 to 1, y: 0 to 1, z: 0 to 1
 
-    vec3 position_512 = positionN * 512.;
-
-    //float x = mod(position_512.z, 32.);
-    //float y = position_512.z / 32.;
-
-    //vec2 positionTexture = vec2(512. / 32. * x, 512. / 16. * y);
-    //positionTexture /= 512.;
+    vec3 position_512 = positionN * IMAGE_SIZE;
 
     float sliceIndex = floor(position_512.z); // L'indice de tranche en profondeur
-    float x = mod(sliceIndex, 32.0);          // Colonne de la tranche dans la grille
-    float y = floor(sliceIndex / 32.0);       // Ligne de la tranche dans la grille
+    float x = mod(sliceIndex, NB_IMAGE_WIDTH);          // Colonne de la tranche dans la grille
+    float y = floor(sliceIndex / NB_IMAGE_WIDTH);       // Ligne de la tranche dans la grille
 
     vec2 positionTexture = vec2(
-    (x * 512.0 + position_512.x) / (32.0 * 512.0), // Position x en prenant en compte la colonne
-    (y * 512.0 + position_512.y) / (16.0 * 512.0)  // Position y en prenant en compte la ligne
+    (x * IMAGE_SIZE + position_512.x) / (NB_IMAGE_WIDTH * IMAGE_SIZE), // Position x en prenant en compte la colonne
+    (y * IMAGE_SIZE + position_512.y) / (NB_IMAGE_HEIGHT * IMAGE_SIZE)  // Position y en prenant en compte la ligne
     );
 
     //vec4 texImage = texture2D(uHeightMapTypeSampler, goodTexCoord(positionTexture));
