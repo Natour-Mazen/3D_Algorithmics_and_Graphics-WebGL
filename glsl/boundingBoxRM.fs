@@ -6,14 +6,14 @@ uniform vec4 uLightColor; // The color light.
 uniform float uLightIntensity; // The light intensity.
 uniform float uPI; // 3.14...
 uniform float uBBSize; // The bounding box size factor.
-uniform float uFlatten; // The flattering factor.
-uniform float uImageWidth; // The image width.
-uniform float uImageHeight; // The image height.
-uniform bool uIsImageInColor; // If the image is in color (true) else (false).
 uniform bool uIsWireFrame; // If the wireframe is displayed.
 uniform bool uIsOpaque; // If the object is opaque.
 uniform float uAspectRatio; // The image aspect ratio.
 uniform float uFOV; // FOV.
+uniform float uHeightMapFlatten; // The flattering factor.
+uniform float uImageWidth; // The image width.
+uniform float uImageHeight; // The image height.
+uniform bool uHeightMapIsImageInColor; // If the image is in color (true) else (false).
 
 uniform sampler2D uHeightMapTypeSampler; // The height map.
 uniform sampler2D uHeightMapTextureSampler; // The texture.
@@ -116,12 +116,12 @@ void main(void)
         vec4 texHeightMap = texture2D(uHeightMapTypeSampler, goodTexCoord(((position.xy / uBBSize) + 1.) / 2.));
 
         // If the image is in color, we use the 'L' of the LAB color metric.
-        if(uIsImageInColor) {
-            heightMapL = RGB2Lab(texHeightMap.xyz).x * uBBSize * uFlatten / 100.;
+        if(uHeightMapIsImageInColor) {
+            heightMapL = RGB2Lab(texHeightMap.xyz).x * uBBSize * uHeightMapFlatten / 100.;
         }
         // If the color is in black and white, we use the 'R' of the RGB color metric.
         else {
-            heightMapL =  texHeightMap.r * uBBSize * uFlatten;
+            heightMapL =  texHeightMap.r * uBBSize * uHeightMapFlatten;
         }
 
         // If we are under the map, outside of the box or if we haven't found a valid position.
@@ -414,7 +414,7 @@ void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection
     // We get the first 'z' with the starting point.
     vec2 vec2TexPosition = vec2(float(ivec2StartPoint.x), float(ivec2StartPoint.y));
     float fTexZ = texture2D(uHeightMapTypeSampler, goodTexCoord(((vec2TexPosition.xy / fImageRatio / uBBSize) + 1.) / 2.)).z;
-    float fLastZ =  fTexZ * uFlatten * uBBSize;
+    float fLastZ =  fTexZ * uHeightMapFlatten * uBBSize;
     float actualZ = fLastZ;
 
     // Tell if we are over the map (true) or under (false), init in the first loop.
@@ -469,13 +469,13 @@ void bresenhamLine(vec3 vec3EndPoint, vec3 vec3LinePoint, vec3 vec3LineDirection
         // We transform the 0 to 1 value at the size of the box (with uBBSize).
         vec4 fTex = texture2D(uHeightMapTypeSampler, goodTexCoord(((vec2TexPosition.xy / fImageRatio / uBBSize) + 1.) / 2.));
         fTexZ = fTex.z;
-        if(uIsImageInColor) {
+        if(uHeightMapIsImageInColor) {
             // We use the L of the LAB color metric.
-            actualZ = RGB2Lab(fTex.xyz).x * uBBSize * uFlatten / 100.;
+            actualZ = RGB2Lab(fTex.xyz).x * uBBSize * uHeightMapFlatten / 100.;
         }
         else {
             // We use the R of the RGB color metric.
-            actualZ =  fTexZ * uBBSize * uFlatten;
+            actualZ =  fTexZ * uBBSize * uHeightMapFlatten;
         }
 
         // We store the found 't' for later.

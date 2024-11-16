@@ -6,17 +6,14 @@ uniform vec4 uLightColor; // The color light.
 uniform float uLightIntensity; // The light intensity.
 uniform float uPI; // 3.14...
 uniform float uBBSize; // The bounding box size factor.
-uniform float uFlatten; // The flattering factor.
-uniform float uImageWidth; // The image width.
-uniform float uImageHeight; // The image height.
-uniform bool uIsImageInColor; // If the image is in color (true) else (false).
 uniform bool uIsWireFrame; // If the wireframe is displayed.
 uniform bool uIsOpaque; // If the object is opaque.
 uniform float uAspectRatio; // The image aspect ratio.
 uniform float uFOV; // FOV.
+uniform float uImageWidth; // The image width.
+uniform float uImageHeight; // The image height.
 
-uniform sampler2D uHeightMapTypeSampler; // The height map.
-uniform sampler2D uHeightMapTextureSampler; // The texture.
+uniform sampler2D uVoxelMapTypeSampler; // The voxel map.
 
 const int MAX_ITERATIONS = 700; // For the ray marching.
 const int MAX_ITERATIONS_FOR = 600; // For Bresenham "FOR" -> image are at 512 * 512 pixel max.
@@ -66,7 +63,7 @@ vec4 getVoxcelInPos(vec3 position)
     );
 
     //vec4 texImage = texture2D(uHeightMapTypeSampler, goodTexCoord(positionTexture));
-    vec4 texImage = texture2D(uHeightMapTypeSampler, positionTexture);
+    vec4 texImage = texture2D(uVoxelMapTypeSampler, positionTexture);
     return texImage;
 }
 
