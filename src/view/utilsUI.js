@@ -140,3 +140,25 @@ function initSwitch(switchElement, initialState, onChange) {
    switchElement.checked = initialState;
    switchElement.addEventListener('change', onChange);
 }
+
+
+/**
+ * Handles the display of an HTML selector element.
+ * @param {HTMLElement} htmlElem - The HTML element to display or hide.
+ * @param {string} value - The display value ('block', 'none', etc.).
+ */
+function handleDisplayHTMLSelectorElement(htmlElem, value) {
+    const element = htmlElem.closest('.row');
+    element.style.display = value;
+}
+
+/**
+ * Removes all event listeners from an element by cloning it.
+ * @param {HTMLElement} element - The element from which to remove event listeners.
+ * @returns {HTMLElement} - The new element without the event listeners.
+ */
+function removeAllEventListeners(element) {
+    const clone = element.cloneNode(true);
+    element.parentNode.replaceChild(clone, element);
+    return clone; // return the new element without event listeners
+}
