@@ -121,6 +121,7 @@ async function handleCreateOrDeleteBoundingBoxObjects() {
         if (isVolumicRayCastingActiveBoundingBox) {
             theBoundingBox = new BoundingBoxVRC();
             await handleUpdateBoundingBoxSize(boundingBoxElements.sizeSlider.value);
+            theBoundingBox.setBoundingBoxVoxelMapRayDepth(boundingBoxElements.voxelMapRayDepthSlider.value);
             main_objectsToDraw.push(theBoundingBox);
         } else {
             theBoundingBox = new BoundingBoxRM();
