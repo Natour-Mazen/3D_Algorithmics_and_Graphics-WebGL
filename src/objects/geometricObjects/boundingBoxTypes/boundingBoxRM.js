@@ -4,15 +4,13 @@ class BoundingBoxRM extends BoundingBox {
     constructor() {
         super('glsl/boundingBoxRM', -1,null );
         this.boundingBoxHeightMapflattenFactor = 1;
-        this.isColoredBoundingBoxHeightMapType = false;
     }
 
 
     // --------------------------------------------
     setShadersParams() {
         super.setShadersParams();
-
-
+        
         this.shader.uHeightMapIsImageInColor = gl.getUniformLocation(this.shader, "uHeightMapIsImageInColor");
         this.shader.uHeightMapFlatten = gl.getUniformLocation(this.shader, "uHeightMapFlatten");
         this.shader.uHeightMapTypeSampler = gl.getUniformLocation(this.shader, "uHeightMapTypeSampler");
