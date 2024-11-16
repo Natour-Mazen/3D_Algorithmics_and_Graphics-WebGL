@@ -8,7 +8,7 @@
  */
 const boundingBoxElements = {
     toggle: doc.getElementById('boundingBox_checkbox'),
-    borderSelector: doc.getElementById('borderBoundingBox_selector'),
+    borderSelector: doc.getElementById('boundingBox_border_selector'),
     typeSelector: doc.getElementById('boundingBox_type_selector'),
     renderTypeSwitch: doc.getElementById('boundingBox_renderingType_switch'),
     sizeSlider: doc.getElementById('boundingBox_size_slider'),

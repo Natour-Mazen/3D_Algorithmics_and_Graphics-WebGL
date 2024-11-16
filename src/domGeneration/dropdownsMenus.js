@@ -41,7 +41,7 @@ const dropdowns = [
         title: 'Bounding Box',
         items: [
             { type: 'checkbox', label: 'BoundingBox', id: 'boundingBox_checkbox', checked: false },
-            { type: 'select', label: 'Border', id: 'borderBoundingBox_selector', options: ['None'] },
+            { type: 'select', label: 'Border', id: 'boundingBox_border_selector', options: ['None'] },
             { type: 'slider', label: 'Size:', id: 'boundingBox_size_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBox_size_value' },
             { type: 'switch', label1: 'Ray Marching', label2: 'Volumic Ray Casting', id: 'boundingBox_renderingType_switch' },
             { type: 'select', label: 'Type', id: 'boundingBox_type_selector', options: ['None'] },
