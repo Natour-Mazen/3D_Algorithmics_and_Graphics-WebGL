@@ -212,7 +212,6 @@ class BoundingBox extends ObjectToDraw {
         // We send the FOV.
         gl.uniform1f(this.shader.uFOV, main_FOV);
         this.checkGlError();
-
     }
 
     // --------------------------------------------
