@@ -22,7 +22,7 @@
       - [`geometricObjects/plane.js`](#geometricobjectsplanejs)
       - [`entitiesObjects/bumpMap.js`](#entitiesobjectsbumpmapjs)
       - [`geometricObjects/heightMap.js`](#geometricobjectsheightmapjs)
-      - [`geometricObjects/boundingBox.js`](#geometricobjectsboundingboxjs)
+      - [`geometricObjects/boundingBoxRM.js`](#geometricobjectsboundingboxjs)
     - [`src/view/`](#srcview)
       - [`utilsUI.js`](#utilsuijs)
       - [`objectsUIMenu.js`](#objectsuimenujs)
@@ -109,7 +109,7 @@
   Cette classe est responsable de la génération et du rendu des terrains à partir de cartes de hauteur.
   Elle configure les paramètres des shaders, les uniformes et les buffers nécessaires pour dessiner les terrains.
 
-#### `geometricObjects/boundingBox.js`
+#### `geometricObjects/boundingBoxRM.js`
 - Ce fichier définit la classe BoundingBox, qui hérite de ObjectToDraw. Cette classe est responsable de la création et du rendu d'une boîte englobante.
   Elle configure les paramètres des shaders, les uniformes et les buffers nécessaires pour dessiner la boîte englobante.
 
