@@ -37,8 +37,7 @@ function updateTheDefaultLightShininessSliderValue(value){
  * @param {string} value - The display value (e.g., 'block', 'none').
  */
 function handleDisplayLightShininessSlider(value) {
-    const lightElementsLightShininessSlide = lightElements.lightShininessSlider.closest('.row');
-    lightElementsLightShininessSlide.style.display = value;
+    handleDisplayHTMLSelectorElement(lightElements.lightShininessSlider,value);
 }
 
 /**
