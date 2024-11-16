@@ -1,14 +1,16 @@
 class BoundingBox extends ObjectToDraw {
     // --------------------------------------------
-    constructor() {
-        super('glsl/volumetricRayCasting', -1, null);
-        this.boundingBoxHeightMapflattenFactor = 1;
-        this.boundingBoxHeightMapSize = 1;
+    constructor(shaderName, loaded, shader ) {
+        super(shaderName, loaded, shader);
+        if (new.target === BoundingBox) {
+            throw new TypeError("Cannot construct BoundingBox instances directly");
+        }
+        this.boundingBoxSize = 1;
     }
 
     // --------------------------------------------
     async initAll() {
-        const size = this.boundingBoxHeightMapSize ? this.boundingBoxHeightMapSize : 1;
+        const size = this.boundingBoxSize ? this.boundingBoxSize : 1;
         const vertices = [
             // 4 sommets sur le plan z=0
             -size, -size, 0.0, // 0
@@ -172,27 +174,21 @@ class BoundingBox extends ObjectToDraw {
             { attribName: "aVertexNormal", buffer: this.nRedBuffer, itemSize: this.nRedBuffer.itemSize },
         ]);
 
-        this.shader.uHeightMapTypeSampler = gl.getUniformLocation(this.shader, "uHeightMapTypeSampler");
-        this.shader.uHeightMapTextureSampler = gl.getUniformLocation(this.shader, "uHeightMapTextureSampler");
         this.shader.uBBSize = gl.getUniformLocation(this.shader, "uBBSize");
-        this.shader.uFlatten = gl.getUniformLocation(this.shader, "uFlatten");
-        this.shader.uImageWidth = gl.getUniformLocation(this.shader, "uImageWidth");
-        this.shader.uImageHeight = gl.getUniformLocation(this.shader, "uImageHeight");
-        this.shader.uIsImageInColor = gl.getUniformLocation(this.shader, "uIsImageInColor");
+
+
         this.shader.uIsWireFrame = gl.getUniformLocation(this.shader, "uIsWireFrame");
         this.shader.uIsOpaque = gl.getUniformLocation(this.shader, "uIsOpaque");
         this.shader.uAspectRatio = gl.getUniformLocation(this.shader, "uAspectRatio");
         this.shader.uFOV = gl.getUniformLocation(this.shader, "uFOV");
+        this.shader.uImageWidth = gl.getUniformLocation(this.shader, "uImageWidth");
+        this.shader.uImageHeight = gl.getUniformLocation(this.shader, "uImageHeight");
     }
 
     setUniforms() {
 
         // We send the Bounding Box Size factor.
-        gl.uniform1f(this.shader.uBBSize, this.boundingBoxHeightMapSize);
-        this.checkGlError();
-
-        // We send the flattering factor (between 0.1 and 1.).
-        gl.uniform1f(this.shader.uFlatten, 1.1 - this.boundingBoxHeightMapflattenFactor * 0.1);
+        gl.uniform1f(this.shader.uBBSize, this.boundingBoxSize);
         this.checkGlError();
 
         // We send the image width.
@@ -201,12 +197,6 @@ class BoundingBox extends ObjectToDraw {
 
         // We send the image height.
         gl.uniform1f(this.shader.uImageHeight, 512.);
-        this.checkGlError();
-
-        // We tell if the image is in color (1) or not (0).
-        // If (1) -> we use the L in the LAB color metric.
-        // If (0) -> we use the R in the RGB color metric.
-        gl.uniform1i(this.shader.uIsImageInColor, isColoredBoundingBoxHeightMapType);
         this.checkGlError();
 
         gl.uniform1i(this.shader.uIsWireFrame, isWireFrameActiveBoundingBox);
@@ -223,18 +213,6 @@ class BoundingBox extends ObjectToDraw {
         gl.uniform1f(this.shader.uFOV, main_FOV);
         this.checkGlError();
 
-
-        // Bind and set the bump map texture
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, boundingBoxHeightMapType);
-        gl.uniform1i(this.shader.uHeightMapTypeSampler, 0); // Use texture unit 0 for bump map
-        this.checkGlError();
-
-        // Bind and set the main texture
-        gl.activeTexture(gl.TEXTURE1);
-        gl.bindTexture(gl.TEXTURE_2D, boundingBoxHeightMapTexture);
-        gl.uniform1i(this.shader.uHeightMapTextureSampler, 1); // Use texture unit 1 for main texture
-        this.checkGlError();
     }
 
     // --------------------------------------------
@@ -262,12 +240,8 @@ class BoundingBox extends ObjectToDraw {
 
     // --------------------------------------------
 
-    setBoundingBoxHeightSize(value) {
-        this.boundingBoxHeightMapSize = value;
-    }
-
-    setBoundingBoxHeightMapFlattenFactor(value) {
-        this.boundingBoxHeightMapflattenFactor = value;
+    setBoundingBoxSize(value) {
+        this.boundingBoxSize = value;
     }
 
 }
