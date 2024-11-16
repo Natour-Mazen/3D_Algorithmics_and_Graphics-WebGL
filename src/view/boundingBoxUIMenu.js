@@ -24,6 +24,11 @@ const boundingBoxElements = {
 };
 
 /**
+ * @type {BoundingBoxRM|BoundingBoxVRC|null}
+ */
+let theBoundingBox = null;
+
+/**
  * @type {Boolean}
  */
 let isWireFrameActiveBoundingBox = false;
@@ -54,14 +59,9 @@ const boundingBoxBorderLoader = ['WireFrame', 'Opaque'];
  * @returns {Promise} {Promise<void>} - A promise that resolves when the bounding box has been updated.
  */
 async function handleUpdateBoundingBoxSize(value) {
-    if (theBoundingBoxRM !== null || theBoundingBoxVRC !== null) {
-        if(isVolumicRayCastingActiveBoundingBox){
-            theBoundingBoxVRC.setBoundingBoxSize(value);
-            await theBoundingBoxVRC.initAll();
-        }else {
-            theBoundingBoxRM.setBoundingBoxSize(value);
-            await theBoundingBoxRM.initAll();
-        }
+    if (theBoundingBox !== null) {
+        theBoundingBox.setBoundingBoxSize(value);
+        await theBoundingBox.initAll();
     }
 }
 
@@ -115,19 +115,18 @@ function initTypesSelectorBoundingBox() {
  * @returns {Promise<void>} A promise that resolves when the bounding box objects have been created or deleted.
  */
 async function handleCreateOrDeleteBoundingBoxObjects() {
-    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof BoundingBoxRM) && !(obj instanceof BoundingBoxVRC));
+    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof BoundingBox) );
+    theBoundingBox = null;
     if (isThereBoundingBox) {
         if (isVolumicRayCastingActiveBoundingBox) {
-            theBoundingBoxVRC = new BoundingBoxVRC();
-            theBoundingBoxRM = null;
+            theBoundingBox = new BoundingBoxVRC();
             await handleUpdateBoundingBoxSize(boundingBoxElements.sizeSlider.value);
-            main_objectsToDraw.push(theBoundingBoxVRC);
+            main_objectsToDraw.push(theBoundingBox);
         } else {
-            theBoundingBoxRM = new BoundingBoxRM();
-            theBoundingBoxVRC = null;
+            theBoundingBox = new BoundingBoxRM();
             await handleUpdateBoundingBoxSize(boundingBoxElements.sizeSlider.value);
-            theBoundingBoxRM.setBoundingBoxHeightMapFlattenFactor(boundingBoxElements.heightMapFlattenSlider.value);
-            main_objectsToDraw.push(theBoundingBoxRM);
+            theBoundingBox.setBoundingBoxHeightMapFlattenFactor(boundingBoxElements.heightMapFlattenSlider.value);
+            main_objectsToDraw.push(theBoundingBox);
         }
         if(isTherePlane){
             setPlaneState(false);
@@ -143,11 +142,6 @@ async function handleCreateOrDeleteBoundingBoxObjects() {
 /****************************************************/
 /*            BOUNDING BOX RM VARIABLES             */
 /****************************************************/
-
-/**
- * @type {BoundingBoxRM|null}
- */
-let theBoundingBoxRM = null;
 
 /**
  * @type {Boolean}
@@ -243,11 +237,6 @@ function resetBoundingBoxHeightMapSelection(selectionType) {
 /****************************************************/
 /*            BOUNDING BOX VRC VARIABLES            */
 /****************************************************/
-
-/**
- * @type {BoundingBoxVRC|null}
- */
-let theBoundingBoxVRC = null;
 
 /**
  * @constant {string[]}
@@ -376,8 +365,8 @@ function initBoundingBoxUIComponents() {
 
     /***************BOUNDING BOX RM INITS***************/
     initSlider(boundingBoxElements.heightMapFlattenSlider, function () {
-        if(theBoundingBoxRM !== null){
-            theBoundingBoxRM.setBoundingBoxHeightMapFlattenFactor(this.value);
+        if(theBoundingBox !== null){
+            theBoundingBox.setBoundingBoxHeightMapFlattenFactor(this.value);
             boundingBoxElements.heightMapFlattenValueDisplay.innerHTML = this.value;
         }
     });
@@ -391,8 +380,8 @@ function initBoundingBoxUIComponents() {
         boundingBoxElements.voxelMapTransfertFuncSelector,
         boundingBoxVoxelMapTransfertFuncLoader,
         function () {
-            if(theBoundingBoxVRC !== null){
-                theBoundingBoxVRC.setBoundingBoxVoxelMapTransfertFunc(this.value);
+            if(theBoundingBox !== null){
+                theBoundingBox.setBoundingBoxVoxelMapTransfertFunc(this.value);
             }
         },
         'value',
@@ -401,8 +390,8 @@ function initBoundingBoxUIComponents() {
     )
 
     initSlider(boundingBoxElements.voxelMapRayDepthSlider, function () {
-        if(theBoundingBoxVRC !== null){
-            theBoundingBoxVRC.setBoundingBoxVoxelMapRayDepth(this.value);
+        if(theBoundingBox !== null){
+            theBoundingBox.setBoundingBoxVoxelMapRayDepth(this.value);
             boundingBoxElements.voxelMapRayDepthValueDisplay.innerHTML = this.value;
         }
     });
