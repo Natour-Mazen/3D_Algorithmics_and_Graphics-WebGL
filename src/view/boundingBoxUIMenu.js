@@ -1,23 +1,27 @@
 // src/view/boundingBoxUIMenu.js
+/****************************************************/
+/*         BOUNDING BOX GENERAL VARIABLES           */
+/****************************************************/
+
 /**
  * @type {Object}
  */
 const boundingBoxElements = {
     toggle: doc.getElementById('boundingBox_checkbox'),
     borderSelector: doc.getElementById('borderBoundingBox_selector'),
+    typeSelector: doc.getElementById('boundingBox_type_selector'),
+    renderTypeSwitch: doc.getElementById('boundingBox_renderingType_switch'),
     sizeSlider: doc.getElementById('boundingBox_size_slider'),
     sizeValueDisplay: doc.getElementById('boundingBox_size_value'),
-    heightMapTypeSelector: doc.getElementById('boundingBox_heightMap_type_selector'),
+
     heightMapTextureSelector: doc.getElementById('boundingBox_heightMap_texture_selector'),
-    heightMapRenderingSwitch: doc.getElementById('boundingBox_heightMap_switch'),
     heightMapFlattenSlider: doc.getElementById('boundingBox_heightMap_flatten_slider'),
     heightMapFlattenValueDisplay: doc.getElementById('boundingBox_heightMap_flatten_value'),
-};
 
-/**
- * @type {BoundingBox|null}
- */
-let theBoundingBox = null;
+    voxelMapTransfertFuncSelector: doc.getElementById('boundingBox_voxelMap_transfertFunc_selector'),
+    voxelMapRayDepthSlider: doc.getElementById('boundingBox_voxelMap_ray_depth_slider'),
+    voxelMapRayDepthValueDisplay: doc.getElementById('boundingBox_voxelMap_ray_depth_value')
+};
 
 /**
  * @type {Boolean}
@@ -30,38 +34,125 @@ let isWireFrameActiveBoundingBox = false;
 let isOpaqueActiveBoundingBox = false;
 
 /**
- * @type {Boolean}
+ * @type {boolean}
  */
-let isColoredBoundingBoxHeightMapType = false;
-
-/**
- * @constant {Object[]}
- */
-const boundingBoxHeightMapTypeLoader = [
-    { value: 'texture1.png', name: 'texture1_RGB', isColor: false },
-    { value: 'texture2.png', name: 'texture2_RGB', isColor: false },
-    { value: 'texture3.png', name: 'texture3_RGB', isColor: false },
-    { value: 'texture4.png', name: 'texture4_RGB', isColor: false },
-    { value: 'texture5.png', name: 'texture5_LAB', isColor: true },
-    { value: 'texture6.png', name: 'texture6_LAB', isColor: true },
-    { value: 'texture7.png', name: 'texture7_LAB', isColor: true },
-    { value: 'texture8.png', name: 'texture8_LAB', isColor: true },
-    { value: 'texture14.png', name: 'texture9_LAB', isColor: true },
-    { value: 'texture10.png', name: 'texture10_LAB', isColor: true },
-    { value: 'texture10.png', name: 'texture10_RGB', isColor: false },
-    { value: 'texture15.png', name: 'texture11_LAB', isColor: true },
-    { value: 'hazelnut_256.png', name: 'hazelnut', isColor: true }
-];
-
-/**
- * @type {string[]}
- */
-const boundingBoxHeightMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png', "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg"];
+let isThereBoundingBox = false;
 
 /**
  * @type {string[]}
  */
 const boundingBoxBorderLoader = ['WireFrame', 'Opaque'];
+
+
+/****************************************************/
+/*         BOUNDING BOX GENERAL FUNCTIONS           */
+/****************************************************/
+
+/**
+ * Updates the bounding box size.
+ * @param {number} value - The new size value.
+ * @returns {Promise} {Promise<void>} - A promise that resolves when the bounding box has been updated.
+ */
+async function handleUpdateBoundingBoxSize(value) {
+    if (theBoundingBoxRM !== null || theBoundingBoxVRC !== null) {
+        if(isVolumicRayCastingActiveBoundingBox){
+            theBoundingBoxVRC.setBoundingBoxSize(value);
+            await theBoundingBoxVRC.initAll();
+        }else {
+            theBoundingBoxRM.setBoundingBoxSize(value);
+            await theBoundingBoxRM.initAll();
+        }
+    }
+}
+
+/**
+ * Initializes the types selector for the bounding box.
+ * Removes all existing event listeners from the type selector element,
+ * resets its content, and sets up new event listeners based on the current state.
+ */
+function initTypesSelectorBoundingBox() {
+    // Récupérer l'élément et supprimer tous les listeners "change"
+    boundingBoxElements.typeSelector = removeAllEventListeners(boundingBoxElements.typeSelector);
+
+    const typesSelector = boundingBoxElements.typeSelector;
+
+    // Réinitialiser le contenu du select
+    typesSelector.innerHTML = '<option value="None">None</option>';
+
+    if (isVolumicRayCastingActiveBoundingBox) {
+        initSelector(typesSelector, boundingBoxVoxelMapTypeLoader, function () {
+            handleBoundingBoxVoxelMapSelection(this.value);
+        });
+    } else {
+        initGenericObjectSelector(
+            typesSelector,
+            boundingBoxHeightMapTypeLoader,
+            function () {
+                const selectedOption = this.options[this.selectedIndex];
+                const isColor = selectedOption.dataset.isColor === 'true'; // Convert to boolean
+                isColoredBoundingBoxHeightMapType = isColor;
+                if (isColor || this.value === 'None') {
+                    lastSelectedBoundingBoxHeightMapTexturePath = "";
+                    boundingBoxElements.heightMapTextureSelector.value = 'None';
+                    handleDisplayHTMLSelectorElement(boundingBoxElements.heightMapTextureSelector, 'none');
+                } else {
+                    handleDisplayHTMLSelectorElement(boundingBoxElements.heightMapTextureSelector, 'block');
+                }
+                handleBoundingBoxHeightMapSelection(this.value, 'type');
+            },
+            'value', // Property to use for option value
+            'name', // Property to use for option text content
+            { isColor: 'isColor' } // Additional data attributes
+        );
+    }
+}
+
+/**
+ * Creates or deletes bounding box objects based on the current state.
+ * Filters out existing bounding box objects from the main objects to draw,
+ * then creates new bounding box objects if necessary.
+ *
+ * @returns {Promise<void>} A promise that resolves when the bounding box objects have been created or deleted.
+ */
+async function handleCreateOrDeleteBoundingBoxObjects() {
+    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof BoundingBoxRM) && !(obj instanceof BoundingBoxVRC));
+    if (isThereBoundingBox) {
+        if (isVolumicRayCastingActiveBoundingBox) {
+            theBoundingBoxVRC = new BoundingBoxVRC();
+            theBoundingBoxRM = null;
+            await handleUpdateBoundingBoxSize(boundingBoxElements.sizeSlider.value);
+            main_objectsToDraw.push(theBoundingBoxVRC);
+        } else {
+            theBoundingBoxRM = new BoundingBoxRM();
+            theBoundingBoxVRC = null;
+            await handleUpdateBoundingBoxSize(boundingBoxElements.sizeSlider.value);
+            theBoundingBoxRM.setBoundingBoxHeightMapFlattenFactor(boundingBoxElements.heightMapFlattenSlider.value);
+            main_objectsToDraw.push(theBoundingBoxRM);
+        }
+        if(isTherePlane){
+            setPlaneState(false);
+        }
+    } else {
+        if(!isTherePlane){
+            setPlaneState(true);
+        }
+    }
+}
+
+
+/****************************************************/
+/*            BOUNDING BOX RM VARIABLES             */
+/****************************************************/
+
+/**
+ * @type {BoundingBoxRM|null}
+ */
+let theBoundingBoxRM = null;
+
+/**
+ * @type {Boolean}
+ */
+let isColoredBoundingBoxHeightMapType = false;
 
 /**
  * @type {string|null}
@@ -79,6 +170,33 @@ let boundingBoxHeightMapTexture = null;
  */
 let lastSelectedBoundingBoxHeightMapTexturePath = "";
 
+/**
+ * @constant {Object[]}
+ */
+const boundingBoxHeightMapTypeLoader = [
+    { value: 'texture1.png', name: 'texture1_RGB', isColor: false },
+    { value: 'texture2.png', name: 'texture2_RGB', isColor: false },
+    { value: 'texture3.png', name: 'texture3_RGB', isColor: false },
+    { value: 'texture4.png', name: 'texture4_RGB', isColor: false },
+    { value: 'texture5.png', name: 'texture5_LAB', isColor: true },
+    { value: 'texture6.png', name: 'texture6_LAB', isColor: true },
+    { value: 'texture7.png', name: 'texture7_LAB', isColor: true },
+    { value: 'texture8.png', name: 'texture8_LAB', isColor: true },
+    { value: 'texture14.png', name: 'texture9_LAB', isColor: true },
+    { value: 'texture10.png', name: 'texture10_LAB', isColor: true },
+    { value: 'texture10.png', name: 'texture10_RGB', isColor: false },
+    { value: 'texture15.png', name: 'texture11_LAB', isColor: true },
+];
+
+/**
+ * @type {string[]}
+ */
+const boundingBoxHeightMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png',
+    "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg"];
+
+/****************************************************/
+/*            BOUNDING BOX RM FUNCTIONS             */
+/****************************************************/
 
 /**
  * Handles the bounding box height map selection.
@@ -116,52 +234,109 @@ function resetBoundingBoxHeightMapSelection(selectionType) {
 
     } else {
         lastSelectedBoundingBoxHeightMapTexturePath = "";
-        boundingBoxHeightMapTexture = boundingBoxHeightMapType ? loadTexture(gl, `res/heightMaps/${boundingBoxElements.heightMapTypeSelector.value}`) : null;
+        boundingBoxHeightMapTexture = boundingBoxHeightMapType ? loadTexture(gl, `res/heightMaps/${boundingBoxElements.typeSelector.value}`) : null;
+    }
+}
+
+
+
+/****************************************************/
+/*            BOUNDING BOX VRC VARIABLES            */
+/****************************************************/
+
+/**
+ * @type {BoundingBoxVRC|null}
+ */
+let theBoundingBoxVRC = null;
+
+/**
+ * @constant {string[]}
+ */
+const boundingBoxVoxelMapTypeLoader = ['hazelnut_256.png'];
+
+/**
+ * @constant {Object[]}
+ */
+const boundingBoxVoxelMapTransfertFuncLoader = [
+    { name: 'TFunc 0', value: 0 },
+    { name: 'TFunc 1', value: 1 },
+    { name: 'TFunc 2', value: 2 },
+    { name: 'TFunc 3', value: 3 },
+    { name: 'TFunc 4', value: 4 },
+];
+
+/**
+ * @type {Boolean}
+ */
+let isVolumicRayCastingActiveBoundingBox = false;
+
+/**
+ * @type {string|null}
+ */
+let boundingBoxVoxelMapType = null;
+
+
+/****************************************************/
+/*            BOUNDING BOX VRC FUNCTIONS            */
+/****************************************************/
+
+/**
+ * Handles the bounding box voxel map selection.
+ * @param selectedVoxelMap - The selected voxel map.
+ */
+function handleBoundingBoxVoxelMapSelection(selectedVoxelMap) {
+    if (selectedVoxelMap === 'None') {
+        boundingBoxVoxelMapType = null;
+        return;
+    }
+
+    const path = `res/voxelMaps/${selectedVoxelMap}` ;
+    if(path) {
+        boundingBoxVoxelMapType = loadTexture(gl, path);
     }
 }
 
 /**
- * Updates the bounding box size.
- * @param {number} value - The new size value.
- * @returns {Promise} {Promise<void>} - A promise that resolves when the bounding box has been updated.
+ * Activates the HTML elements related to volumic ray casting for the bounding box.
+ * Displays the voxel map elements and hides the height map elements.
+ * Resets the height map type, texture, and last selected texture path.
  */
-async function handleUpdateBoundingBoxSize(value) {
-    if (theBoundingBox !== null) {
-        theBoundingBox.setBoundingBoxHeightSize(value);
-        await theBoundingBox.initAll();
-    }
+function handleActivateVolumicRayCastingBoundingBoxHTMLElements() {
+    // active voxel map elements
+    handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapTransfertFuncSelector,'block');
+    handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapRayDepthSlider,'block');
+
+    // disable height map elements and reset values
+    handleDisplayHTMLSelectorElement(boundingBoxElements.heightMapTextureSelector,'none');
+    handleDisplayHTMLSelectorElement(boundingBoxElements.heightMapFlattenSlider,'none');
+    boundingBoxHeightMapType = null;
+    boundingBoxHeightMapTexture = null;
+    lastSelectedBoundingBoxHeightMapTexturePath = "";
 }
 
 /**
- * Handles the display of the height map texture selector.
- * @param {string} value - The display value ('block' or 'none').
+ * Disables the HTML elements related to volumic ray casting for the bounding box.
+ * Hides the voxel map elements and displays the height map elements.
+ * Resets the voxel map type.
  */
-function handleDisplayBoundingBoxHeightMapTextureSelector(value) {
-    const element = boundingBoxElements.heightMapTextureSelector.closest('.row');
-    element.style.display = value;
+function handleDisableVolumicRayCastingBoundingBoxHTMLElements() {
+    handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapTransfertFuncSelector,'none');
+    handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapRayDepthSlider,'none');
+
+    handleDisplayHTMLSelectorElement(boundingBoxElements.heightMapFlattenSlider,'block');
+    boundingBoxVoxelMapType = null;
 }
 
-/**
- * Initializes the UI components for the height map.
- */
+/****************************************************/
+/*               BOUNDING BOX UI INIT               */
+/****************************************************/
+
 function initBoundingBoxUIComponents() {
 
-    initToggle(boundingBoxElements.toggle,false, async function () {
-        if (this.checked) {
-            theBoundingBox = new BoundingBox();
-            await handleUpdateBoundingBoxSize(boundingBoxElements.sizeSlider.value);
-            theBoundingBox.setBoundingBoxHeightMapFlattenFactor(boundingBoxElements.heightMapFlattenSlider.value);
-            main_objectsToDraw.push(theBoundingBox);
-            if(isTherePlane){
-                setPlaneState(false);
-            }
-        } else {
-            main_objectsToDraw = main_objectsToDraw.filter(obj => obj !== theBoundingBox);
-            theBoundingBox = null;
-            if(!isTherePlane){
-                setPlaneState(true);
-            }
-        }
+    /***************BOUNDING BOX GENERAL INITS***************/
+    initToggle(boundingBoxElements.toggle, isThereBoundingBox, async function () {
+        isThereBoundingBox = this.checked;
+        await handleCreateOrDeleteBoundingBoxObjects();
     });
 
     initSelector(boundingBoxElements.borderSelector, boundingBoxBorderLoader, function () {
@@ -182,39 +357,73 @@ function initBoundingBoxUIComponents() {
         boundingBoxElements.sizeValueDisplay.innerHTML = this.value;
     });
 
-    initGenericObjectSelector(
-        boundingBoxElements.heightMapTypeSelector,
-        boundingBoxHeightMapTypeLoader,
-        function () {
-            const selectedOption = this.options[this.selectedIndex];
-            const isColor = selectedOption.dataset.isColor === 'true'; // Convert to boolean
-            isColoredBoundingBoxHeightMapType = isColor;
-            if (isColor || this.value === 'None') {
-                lastSelectedBoundingBoxHeightMapTexturePath = "";
-                boundingBoxElements.heightMapTextureSelector.value = 'None';
-                handleDisplayBoundingBoxHeightMapTextureSelector('none');
-            } else {
-                handleDisplayBoundingBoxHeightMapTextureSelector('block');
+    initSwitch(boundingBoxElements.renderTypeSwitch, isVolumicRayCastingActiveBoundingBox, async function () {
+        isVolumicRayCastingActiveBoundingBox = this.checked;
+        if (isVolumicRayCastingActiveBoundingBox) {
+            handleActivateVolumicRayCastingBoundingBoxHTMLElements();
+        } else {
+            handleDisableVolumicRayCastingBoundingBoxHTMLElements();
+        }
+        await handleCreateOrDeleteBoundingBoxObjects().then(
+            () => {
+                initTypesSelectorBoundingBox();
             }
-            handleBoundingBoxHeightMapSelection(this.value, 'type');
-        },
-        'value', // Property to use for option value
-        'name', // Property to use for option text content
-        { isColor: 'isColor' } // Additional data attributes
-    );
+        );
+
+    });
+
+    initTypesSelectorBoundingBox();
+
+    /***************BOUNDING BOX RM INITS***************/
+    initSlider(boundingBoxElements.heightMapFlattenSlider, function () {
+        if(theBoundingBoxRM !== null){
+            theBoundingBoxRM.setBoundingBoxHeightMapFlattenFactor(this.value);
+            boundingBoxElements.heightMapFlattenValueDisplay.innerHTML = this.value;
+        }
+    });
 
     initSelector(boundingBoxElements.heightMapTextureSelector, boundingBoxHeightMapTextureLoader, function () {
         handleBoundingBoxHeightMapSelection(this.value, 'texture');
     });
 
-    initSlider(boundingBoxElements.heightMapFlattenSlider, function () {
-        if(theBoundingBox !== null){
-            theBoundingBox.setBoundingBoxHeightMapFlattenFactor(this.value);
-            boundingBoxElements.heightMapFlattenValueDisplay.innerHTML = this.value;
+    /***************BOUNDING BOX VRC INITS***************/
+    initGenericObjectSelector(
+        boundingBoxElements.voxelMapTransfertFuncSelector,
+        boundingBoxVoxelMapTransfertFuncLoader,
+        function () {
+            if(theBoundingBoxVRC !== null){
+                theBoundingBoxVRC.setBoundingBoxVoxelMapTransfertFunc(this.value);
+            }
+        },
+        'value',
+        'name',
+        { }
+    )
+
+    initSlider(boundingBoxElements.voxelMapRayDepthSlider, function () {
+        if(theBoundingBoxVRC !== null){
+            theBoundingBoxVRC.setBoundingBoxVoxelMapRayDepth(this.value);
+            boundingBoxElements.voxelMapRayDepthValueDisplay.innerHTML = this.value;
         }
     });
 
-    handleDisplayBoundingBoxHeightMapTextureSelector('none');
+    /***************BOUNDING BOX GENERAL UPDATES***************/
+    const element = boundingBoxElements.renderTypeSwitch.closest('.row');
+
+    if(element !== null){
+        element.style.margin = '7px 0 7px 0';
+        const switchLabel2 = element.querySelector('.switch__label2');
+        const switchBtn = element.querySelector('.switch');
+        if(switchLabel2 === null || switchBtn === null) {
+            return;
+        }
+        switchLabel2.style.margin = '0 0 0 62px';
+        switchBtn.style.margin = '0 68px';
+    }
+
+    handleDisplayHTMLSelectorElement(boundingBoxElements.heightMapTextureSelector,'none');
+    handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapTransfertFuncSelector,'none');
+    handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapRayDepthSlider,'none');
 }
 
 initBoundingBoxUIComponents();
