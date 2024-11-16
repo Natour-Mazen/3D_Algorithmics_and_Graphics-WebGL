@@ -10,7 +10,7 @@ class BoundingBoxRM extends BoundingBox {
     // --------------------------------------------
     setShadersParams() {
         super.setShadersParams();
-        
+
         this.shader.uHeightMapIsImageInColor = gl.getUniformLocation(this.shader, "uHeightMapIsImageInColor");
         this.shader.uHeightMapFlatten = gl.getUniformLocation(this.shader, "uHeightMapFlatten");
         this.shader.uHeightMapTypeSampler = gl.getUniformLocation(this.shader, "uHeightMapTypeSampler");
