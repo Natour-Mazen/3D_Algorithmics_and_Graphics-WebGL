@@ -14,9 +14,10 @@ uniform float uImageWidth; // The image width.
 uniform float uImageHeight; // The image height.
 
 uniform sampler2D uVoxelMapTypeSampler; // The voxel map.
+uniform float uVoxelMapRayDepth; // The ray depth.
+uniform int uVoxelMapTransfertFunc; // The choice of the transfer function.
 
 const int MAX_ITERATIONS = 700; // For the ray marching.
-const int MAX_ITERATIONS_FOR = 600; // For Bresenham "FOR" -> image are at 512 * 512 pixel max.
 float BORDER_SIZE = 0.005 * uBBSize; // The border size of the wireframe.
 
 //const float IMAGE_SIZE = 512.;
@@ -51,32 +52,78 @@ vec4 getVoxcelInPos(vec3 position)
     positionN.xy /= 2.;
     // positionN x: 0 to 1, y: 0 to 1, z: 0 to 1
 
-    vec3 position_512 = positionN * IMAGE_SIZE;
+    vec3 positionOnImage = positionN * IMAGE_SIZE;
 
-    float sliceIndex = floor(position_512.z); // L'indice de tranche en profondeur
+    float sliceIndex = floor(positionOnImage.z); // L'indice de tranche en profondeur
     float x = mod(sliceIndex, NB_IMAGE_WIDTH);          // Colonne de la tranche dans la grille
     float y = floor(sliceIndex / NB_IMAGE_WIDTH);       // Ligne de la tranche dans la grille
 
     vec2 positionTexture = vec2(
-    (x * IMAGE_SIZE + position_512.x) / (NB_IMAGE_WIDTH * IMAGE_SIZE), // Position x en prenant en compte la colonne
-    (y * IMAGE_SIZE + position_512.y) / (NB_IMAGE_HEIGHT * IMAGE_SIZE)  // Position y en prenant en compte la ligne
+    (x * IMAGE_SIZE + positionOnImage.x) / (NB_IMAGE_WIDTH * IMAGE_SIZE), // Position x en prenant en compte la colonne
+    (y * IMAGE_SIZE + positionOnImage.y) / (NB_IMAGE_HEIGHT * IMAGE_SIZE)  // Position y en prenant en compte la ligne
     );
 
-    //vec4 texImage = texture2D(uHeightMapTypeSampler, goodTexCoord(positionTexture));
-    vec4 texImage = texture2D(uVoxelMapTypeSampler, positionTexture);
+    vec4 texImage = texture2D(uVoxelMapTypeSampler, goodTexCoord(positionTexture));
     return texImage;
 }
 
 vec4 transformationBlackToWhite(vec4 color)
 {
     color.a = color.r;
-    if(color.a <= 0.05){
+    if(color.a <= 0.1 / uVoxelMapRayDepth){
         color.a = 0.;
     }
     else{
         // Remove to do VRC
-        color.a = 1.;
+        //color.a = 1.;
     }
+    return color;
+}
+
+vec4 transformationRed(vec4 color)
+{
+    color.a = color.r;
+    if(color.a <= 0.1 / uVoxelMapRayDepth){
+        color.a = 0.;
+    }
+    color.g = 0.;
+    color.b = 0.;
+    return color;
+}
+
+vec4 transformationBlueToGreen(vec4 color)
+{
+    color.a = color.r;
+    if(color.a <= 0.1 / uVoxelMapRayDepth){
+        color.a = 0.;
+    }
+    color.r = 0.;
+    color.g = mix(1., 0., color.a);
+    color.b = mix(0., 1., color.a);
+    return color;
+}
+
+
+vec4 transformationFunction(vec4 color)
+{
+
+    int v = uVoxelMapTransfertFunc;
+    if(uVoxelMapTransfertFunc == 0){
+        color = transformationBlackToWhite(color);
+    }
+    else if(uVoxelMapTransfertFunc == 1){
+        color = transformationRed(color);
+    }
+    else if(uVoxelMapTransfertFunc == 2){
+        color = transformationBlueToGreen(color);
+    }
+    else if(uVoxelMapTransfertFunc == 3){
+        color = transformationRed(color);
+    }
+    else{
+        color = transformationBlackToWhite(color);
+    }
+
     return color;
 }
 
@@ -112,7 +159,7 @@ void main(void)
     vec3 pointHitTheGround = vVertexPosition + tWhereZEgal0 * dirPixelObj;
 
     // The value that we increment during the ray marching.
-    float t = 0.1;
+    float t = 0.0;
     // The value of the height of the height map.
     float heightMapL = 0.;
     // To know if the last position was above.
@@ -131,7 +178,7 @@ void main(void)
 
         // To get the color of the pixel in the current position.
         vec4 texImage = getVoxcelInPos(position);
-        texImage = transformationBlackToWhite(texImage);
+        texImage = transformationFunction(texImage);
 
         texImage.r *= texImage.a;
         texImage.g *= texImage.a;
@@ -144,8 +191,8 @@ void main(void)
             break;
 
         // If we are under the map, outside of the box or if we haven't found a valid position.
-        if(position.z < -0.1 || position.x > uBBSize || position.x < -uBBSize
-        || position.y > uBBSize || position.y < -uBBSize || bNotFound)
+        if((position.z < -0.1 || position.x > uBBSize || position.x < -uBBSize
+        || position.y > uBBSize || position.y < -uBBSize || bNotFound) && color.a == 0.)
         {
             // If we are in opaque or wireframe mode.
             if(uIsOpaque || uIsWireFrame) {
@@ -222,8 +269,7 @@ void main(void)
 vec2 goodTexCoord(vec2 tex)
 {
     tex.x = max(0., min(tex.x, 1.));
-    // To have the ray marching height map in the same direction as the classic height map.
-    tex.y = 1. - max(0., min(tex.y, 1.));
+    tex.y = max(0., min(tex.y, 1.));
     return tex;
 }
 

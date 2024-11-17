@@ -248,9 +248,9 @@ const boundingBoxVoxelMapTypeLoader = ['hazelnut_256.png'];
  * @constant {Object[]}
  */
 const boundingBoxVoxelMapTransfertFuncLoader = [
-    { name: 'TFunc 0', value: 0 },
-    { name: 'TFunc 1', value: 1 },
-    { name: 'TFunc 2', value: 2 },
+    { name: 'Default', value: 0 },
+    { name: 'Red', value: 1 },
+    { name: 'BleuToGreen', value: 2 },
     { name: 'TFunc 3', value: 3 },
     { name: 'TFunc 4', value: 4 },
 ];
