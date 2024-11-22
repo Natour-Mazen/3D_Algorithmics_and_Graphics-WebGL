@@ -103,6 +103,100 @@ vec4 transformationBlueToGreen(vec4 color)
     return color;
 }
 
+vec4 transformationYellowToCyan(vec4 color) {
+    color.a = color.r;
+    if (color.a <= 0.1 / uVoxelMapRayDepth) {
+        color.a = 0.;
+    }
+    color.r = mix(1., 0., color.a);
+    color.g = mix(1., 0., color.a);
+    color.b = mix(0., 1., color.a);
+    return color;
+}
+
+vec4 transformationInvert(vec4 color) {
+    color.a = color.r;
+    if (color.a <= 0.1 / uVoxelMapRayDepth) {
+        color.a = 0.;
+    }
+    color.rgb = vec3(1.0) - color.rgb;
+    return color;
+}
+
+vec4 transformationCartoon(vec4 color) {
+    color.a = color.r;
+    if (color.a <= 0.1 / uVoxelMapRayDepth) {
+        color.a = 0.;
+    }
+    float intensity = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+    if (intensity > 0.8) {
+        color.rgb = vec3(1.0);
+    } else if (intensity > 0.5) {
+        color.rgb = vec3(0.7);
+    } else if (intensity > 0.3) {
+        color.rgb = vec3(0.4);
+    } else {
+        color.rgb = vec3(0.1);
+    }
+    return color;
+}
+
+vec4 transformationSepia(vec4 color) {
+    color.a = color.r;
+    if (color.a <= 0.1 / uVoxelMapRayDepth) {
+        color.a = 0.;
+    }
+    float r = color.r;
+    float g = color.g;
+    float b = color.b;
+    color.r = dot(vec3(0.393, 0.769, 0.189), vec3(r, g, b));
+    color.g = dot(vec3(0.349, 0.686, 0.168), vec3(r, g, b));
+    color.b = dot(vec3(0.272, 0.534, 0.131), vec3(r, g, b));
+    return color;
+}
+
+vec4 transformationThermal(vec4 color) {
+    color.a = color.r;
+    if (color.a <= 0.1 / uVoxelMapRayDepth) {
+        color.a = 0.;
+    }
+    float intensity = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+    if (intensity > 0.8) {
+        color.rgb = vec3(1.0, 0.0, 0.0); // Red
+    } else if (intensity > 0.6) {
+        color.rgb = vec3(1.0, 0.5, 0.0); // Orange
+    } else if (intensity > 0.4) {
+        color.rgb = vec3(1.0, 1.0, 0.0); // Yellow
+    } else if (intensity > 0.2) {
+        color.rgb = vec3(0.0, 1.0, 0.0); // Green
+    } else {
+        color.rgb = vec3(0.0, 0.0, 1.0); // Blue
+    }
+    return color;
+}
+
+vec4 transformationRainbow(vec4 color) {
+    color.a = color.r;
+    if (color.a <= 0.1 / uVoxelMapRayDepth) {
+        color.a = 0.;
+    }
+    float intensity = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+    float hue = mod(intensity * 6.0, 6.0);
+    if (hue < 1.0) {
+        color.rgb = vec3(1.0, hue, 0.0);
+    } else if (hue < 2.0) {
+        color.rgb = vec3(2.0 - hue, 1.0, 0.0);
+    } else if (hue < 3.0) {
+        color.rgb = vec3(0.0, 1.0, hue - 2.0);
+    } else if (hue < 4.0) {
+        color.rgb = vec3(0.0, 4.0 - hue, 1.0);
+    } else if (hue < 5.0) {
+        color.rgb = vec3(hue - 4.0, 0.0, 1.0);
+    } else {
+        color.rgb = vec3(1.0, 0.0, 6.0 - hue);
+    }
+    return color;
+}
 
 vec4 transformationFunction(vec4 color)
 {
@@ -110,17 +204,23 @@ vec4 transformationFunction(vec4 color)
     int v = uVoxelMapTransfertFunc;
     if(uVoxelMapTransfertFunc == 0){
         color = transformationBlackToWhite(color);
-    }
-    else if(uVoxelMapTransfertFunc == 1){
+    } else if(uVoxelMapTransfertFunc == 1){
         color = transformationRed(color);
-    }
-    else if(uVoxelMapTransfertFunc == 2){
+    } else if(uVoxelMapTransfertFunc == 2){
         color = transformationBlueToGreen(color);
-    }
-    else if(uVoxelMapTransfertFunc == 3){
-        color = transformationRed(color);
-    }
-    else{
+    } else if(uVoxelMapTransfertFunc == 3){
+        color = transformationSepia(color);
+    }  else if (uVoxelMapTransfertFunc == 4) {
+        color = transformationYellowToCyan(color);
+    } else if (uVoxelMapTransfertFunc == 5) {
+        color = transformationInvert(color);
+    } else if (uVoxelMapTransfertFunc == 6) {
+        color = transformationCartoon(color);
+    } else if (uVoxelMapTransfertFunc == 7) {
+        color = transformationThermal(color);
+    }else if (uVoxelMapTransfertFunc == 8) {
+        color = transformationRainbow(color);
+    } else {
         color = transformationBlackToWhite(color);
     }
 
