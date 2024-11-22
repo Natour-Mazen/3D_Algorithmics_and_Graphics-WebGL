@@ -18,7 +18,7 @@ const boundingBoxElements = {
     heightMapFlattenSlider: doc.getElementById('boundingBox_heightMap_flatten_slider'),
     heightMapFlattenValueDisplay: doc.getElementById('boundingBox_heightMap_flatten_value'),
 
-    voxelMapTransfertFuncSelector: doc.getElementById('boundingBox_voxelMap_transfertFunc_selector'),
+    voxelMapTransferFuncSelector: doc.getElementById('boundingBox_voxelMap_transferFunc_selector'),
     voxelMapRayDepthSlider: doc.getElementById('boundingBox_voxelMap_ray_depth_slider'),
     voxelMapRayDepthValueDisplay: doc.getElementById('boundingBox_voxelMap_ray_depth_value')
 };
@@ -79,7 +79,7 @@ function initTypesSelectorBoundingBox() {
     // Réinitialiser le contenu du select
     typesSelector.innerHTML = '<option value="None">None</option>';
 
-    if (isVolumicRayCastingActiveBoundingBox) {
+    if (isVolumeRayCastingActiveBoundingBox) {
         initSelector(typesSelector, boundingBoxVoxelMapTypeLoader, function () {
             handleBoundingBoxVoxelMapSelection(this.value);
         });
@@ -118,7 +118,7 @@ async function handleCreateOrDeleteBoundingBoxObjects() {
     main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof BoundingBox) );
     theBoundingBox = null;
     if (isThereBoundingBox) {
-        if (isVolumicRayCastingActiveBoundingBox) {
+        if (isVolumeRayCastingActiveBoundingBox) {
             theBoundingBox = new BoundingBoxVRC();
             await handleUpdateBoundingBoxSize(boundingBoxElements.sizeSlider.value);
             theBoundingBox.setBoundingBoxVoxelMapRayDepth(boundingBoxElements.voxelMapRayDepthSlider.value);
@@ -247,7 +247,7 @@ const boundingBoxVoxelMapTypeLoader = ['hazelnut_256.png'];
 /**
  * @constant {Object[]}
  */
-const boundingBoxVoxelMapTransfertFuncLoader = [
+const boundingBoxVoxelMapTransferFuncLoader = [
     { name: 'Default', value: 0 },
     { name: 'Red', value: 1 },
     { name: 'BleuToGreen', value: 2 },
@@ -262,7 +262,7 @@ const boundingBoxVoxelMapTransfertFuncLoader = [
 /**
  * @type {Boolean}
  */
-let isVolumicRayCastingActiveBoundingBox = false;
+let isVolumeRayCastingActiveBoundingBox = false;
 
 /**
  * @type {string|null}
@@ -295,9 +295,9 @@ function handleBoundingBoxVoxelMapSelection(selectedVoxelMap) {
  * Displays the voxel map elements and hides the height map elements.
  * Resets the height map type, texture, and last selected texture path.
  */
-function handleActivateVolumicRayCastingBoundingBoxHTMLElements() {
+function handleActivateVolumeRayCastingBoundingBoxHTMLElements() {
     // active voxel map elements
-    handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapTransfertFuncSelector,'block');
+    handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapTransferFuncSelector,'block');
     handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapRayDepthSlider,'block');
 
     // disable height map elements and reset values
@@ -313,8 +313,8 @@ function handleActivateVolumicRayCastingBoundingBoxHTMLElements() {
  * Hides the voxel map elements and displays the height map elements.
  * Resets the voxel map type.
  */
-function handleDisableVolumicRayCastingBoundingBoxHTMLElements() {
-    handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapTransfertFuncSelector,'none');
+function handleDisableVolumeRayCastingBoundingBoxHTMLElements() {
+    handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapTransferFuncSelector,'none');
     handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapRayDepthSlider,'none');
 
     handleDisplayHTMLSelectorElement(boundingBoxElements.heightMapFlattenSlider,'block');
@@ -351,12 +351,12 @@ function initBoundingBoxUIComponents() {
         boundingBoxElements.sizeValueDisplay.innerHTML = this.value;
     });
 
-    initSwitch(boundingBoxElements.renderTypeSwitch, isVolumicRayCastingActiveBoundingBox, async function () {
-        isVolumicRayCastingActiveBoundingBox = this.checked;
-        if (isVolumicRayCastingActiveBoundingBox) {
-            handleActivateVolumicRayCastingBoundingBoxHTMLElements();
+    initSwitch(boundingBoxElements.renderTypeSwitch, isVolumeRayCastingActiveBoundingBox, async function () {
+        isVolumeRayCastingActiveBoundingBox = this.checked;
+        if (isVolumeRayCastingActiveBoundingBox) {
+            handleActivateVolumeRayCastingBoundingBoxHTMLElements();
         } else {
-            handleDisableVolumicRayCastingBoundingBoxHTMLElements();
+            handleDisableVolumeRayCastingBoundingBoxHTMLElements();
         }
         await handleCreateOrDeleteBoundingBoxObjects().then(
             () => {
@@ -382,8 +382,8 @@ function initBoundingBoxUIComponents() {
 
     /***************BOUNDING BOX VRC INITS***************/
     initGenericObjectSelector(
-        boundingBoxElements.voxelMapTransfertFuncSelector,
-        boundingBoxVoxelMapTransfertFuncLoader,
+        boundingBoxElements.voxelMapTransferFuncSelector,
+        boundingBoxVoxelMapTransferFuncLoader,
         function () {
             if(theBoundingBox !== null){
                 theBoundingBox.setBoundingBoxVoxelMapTransfertFunc(this.value);
@@ -416,7 +416,7 @@ function initBoundingBoxUIComponents() {
     }
 
     handleDisplayHTMLSelectorElement(boundingBoxElements.heightMapTextureSelector,'none');
-    handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapTransfertFuncSelector,'none');
+    handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapTransferFuncSelector,'none');
     handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapRayDepthSlider,'none');
 }
 

@@ -58,6 +58,8 @@ class ObjectToDraw {
 
     /**
      * Initializes the object buffers.
+     * @abstract
+     * @throws {Error} If the method is not implemented in a subclass.
      */
     async initAll() {
         throw new Error("Method 'initAll()' must be implemented.");
