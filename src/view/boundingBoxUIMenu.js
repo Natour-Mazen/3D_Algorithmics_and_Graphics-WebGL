@@ -260,7 +260,7 @@ function resetBoundingBoxHeightMapSelection(selectionType) {
  * @constant {Object[]}
  */
 const boundingBoxVoxelMapTypeLoader = [
-    {name: 'Hazelnut', value: 'hazelnut_256.png', depth: 256., width: 28, height: 28},
+    {name: 'Hazelnut', value: 'hazelnut_256.png', depth: 256., width: 16, height: 16},
     {name: 'Beechnut', value: 'beechnut_slices2828.png', depth: 784., width: 28, height:28}
 ];
 
