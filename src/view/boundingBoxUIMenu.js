@@ -291,7 +291,7 @@ function handleBoundingBoxVoxelMapSelection(selectedVoxelMap) {
 }
 
 /**
- * Activates the HTML elements related to volumic ray casting for the bounding box.
+ * Activates the HTML elements related to volume ray casting for the bounding box.
  * Displays the voxel map elements and hides the height map elements.
  * Resets the height map type, texture, and last selected texture path.
  */
@@ -309,7 +309,7 @@ function handleActivateVolumeRayCastingBoundingBoxHTMLElements() {
 }
 
 /**
- * Disables the HTML elements related to volumic ray casting for the bounding box.
+ * Disables the HTML elements related to volume ray casting for the bounding box.
  * Hides the voxel map elements and displays the height map elements.
  * Resets the voxel map type.
  */
