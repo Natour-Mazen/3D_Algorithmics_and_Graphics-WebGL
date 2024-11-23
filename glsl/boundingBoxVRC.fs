@@ -16,17 +16,12 @@ uniform float uImageHeight; // The image height.
 uniform sampler2D uVoxelMapTypeSampler; // The voxel map.
 uniform float uVoxelMapRayDepth; // The ray depth.
 uniform int uVoxelMapTransfertFunc; // The choice of the transfer function.
+uniform float uVoxelMapSize; // The size of the images inside the uVoxelMapTypeSampler.
+uniform float uNbImageWidth; // The number of images along the width.
+uniform float uNbImageHeight; // The number of images along the height.
 
 const int MAX_ITERATIONS = 700; // For the ray marching.
 float BORDER_SIZE = 0.005 * uBBSize; // The border size of the wireframe.
-
-//const float IMAGE_SIZE = 512.;
-const float IMAGE_SIZE = 256.;
-
-//const float NB_IMAGE_WIDTH = 32.;
-//const float NB_IMAGE_HEIGHT = 16.;
-const float NB_IMAGE_WIDTH = 16.;
-const float NB_IMAGE_HEIGHT = 16.;
 
 // Nyquist–Shannon sampling to have the best step.
 float uBBSizeCarre = uBBSize * uBBSize;
@@ -52,15 +47,15 @@ vec4 getVoxcelInPos(vec3 position)
     positionN.xy /= 2.;
     // positionN x: 0 to 1, y: 0 to 1, z: 0 to 1
 
-    vec3 positionOnImage = positionN * IMAGE_SIZE;
+    vec3 positionOnImage = positionN * uVoxelMapSize;
 
     float sliceIndex = floor(positionOnImage.z); // L'indice de tranche en profondeur
-    float x = mod(sliceIndex, NB_IMAGE_WIDTH);          // Colonne de la tranche dans la grille
-    float y = floor(sliceIndex / NB_IMAGE_WIDTH);       // Ligne de la tranche dans la grille
+    float x = mod(sliceIndex, uNbImageWidth);          // Colonne de la tranche dans la grille
+    float y = floor(sliceIndex / uNbImageWidth);       // Ligne de la tranche dans la grille
 
     vec2 positionTexture = vec2(
-    (x * IMAGE_SIZE + positionOnImage.x) / (NB_IMAGE_WIDTH * IMAGE_SIZE), // Position x en prenant en compte la colonne
-    (y * IMAGE_SIZE + positionOnImage.y) / (NB_IMAGE_HEIGHT * IMAGE_SIZE)  // Position y en prenant en compte la ligne
+    (x * uVoxelMapSize + positionOnImage.x) / (uNbImageWidth * uVoxelMapSize), // Position x en prenant en compte la colonne
+    (y * uVoxelMapSize + positionOnImage.y) / (uNbImageHeight * uVoxelMapSize)  // Position y en prenant en compte la ligne
     );
 
     vec4 texImage = texture2D(uVoxelMapTypeSampler, goodTexCoord(positionTexture));
