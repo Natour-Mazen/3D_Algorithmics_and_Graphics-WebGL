@@ -5,6 +5,9 @@ class BoundingBoxVRC extends BoundingBox {
         super('glsl/boundingBoxVRC', -1, null);
         this.boundingBoxVoxelMapRayDepth = 1;
         this.boundingBoxVoxelMapTransfertFunc = -1;
+        this.boundingBoxVoxelMapSize = -1;
+        this.boundingBoxVoxelMapNbImageWidth = -1;
+        this.boundingBoxVoxelMapNbImageHeight = -1;
     }
 
     // --------------------------------------------
@@ -32,15 +35,15 @@ class BoundingBoxVRC extends BoundingBox {
         this.checkGlError();
 
         // The size of the images inside the voxel map.
-        gl.uniform1f(this.shader.uVoxelMapSize, 784.);
+        gl.uniform1f(this.shader.uVoxelMapSize, this.boundingBoxVoxelMapSize);
         this.checkGlError();
 
         // The number of images along the width of the voxel map.
-        gl.uniform1f(this.shader.uNbImageWidth, 28.);
+        gl.uniform1f(this.shader.uNbImageWidth, this.boundingBoxVoxelMapNbImageWidth);
         this.checkGlError();
 
         // The number of images along the height of the voxel map.
-        gl.uniform1f(this.shader.uNbImageHeight, 28.);
+        gl.uniform1f(this.shader.uNbImageHeight, this.boundingBoxVoxelMapNbImageHeight);
         this.checkGlError();
 
         gl.activeTexture(gl.TEXTURE0);
@@ -58,6 +61,18 @@ class BoundingBoxVRC extends BoundingBox {
 
     setBoundingBoxVoxelMapTransfertFunc(value) {
         this.boundingBoxVoxelMapTransfertFunc = value;
+    }
+
+    setBoundingBoxVoxelMapSize(value) {
+        this.boundingBoxVoxelMapSize = value;
+    }
+
+    setBoundingBoxVoxelMapNbImageWidth(value) {
+        this.boundingBoxVoxelMapNbImageWidth = value;
+    }
+
+    setBoundingBoxVoxelMapNbImageHeight(value) {
+        this.boundingBoxVoxelMapNbImageHeight = value;
     }
 
 }

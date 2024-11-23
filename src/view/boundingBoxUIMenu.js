@@ -80,9 +80,26 @@ function initTypesSelectorBoundingBox() {
     typesSelector.innerHTML = '<option value="None">None</option>';
 
     if (isVolumeRayCastingActiveBoundingBox) {
-        initSelector(typesSelector, boundingBoxVoxelMapTypeLoader, function () {
-            handleBoundingBoxVoxelMapSelection(this.value);
-        });
+        initGenericObjectSelector(
+            typesSelector,
+            boundingBoxVoxelMapTypeLoader,
+            function () {
+                handleBoundingBoxVoxelMapSelection(this.value);
+                if(theBoundingBox !== null){
+                    const selectedOption = this.options[this.selectedIndex];
+                    theBoundingBox.setBoundingBoxVoxelMapSize(selectedOption.dataset.depth);
+                    theBoundingBox.setBoundingBoxVoxelMapNbImageWidth(selectedOption.dataset.width);
+                    theBoundingBox.setBoundingBoxVoxelMapNbImageHeight(selectedOption.dataset.height);
+                }
+            },
+            'value', // Property to use for option value
+            'name',// Property to use for option text content
+            {
+                depth: 'depth',
+                width: 'width',
+                height: 'height'
+            }
+        );
     } else {
         initGenericObjectSelector(
             typesSelector,
@@ -242,7 +259,10 @@ function resetBoundingBoxHeightMapSelection(selectionType) {
 /**
  * @constant {string[]}
  */
-const boundingBoxVoxelMapTypeLoader = ['hazelnut_256.png', 'beechnut_slices2828.png'];
+const boundingBoxVoxelMapTypeLoader = [
+    {name: 'Hazelnut', value: 'hazelnut_256.png', depth: 256., width: 28, height: 28},
+    {name: 'Beechnut', value: 'beechnut_slices2828.png', depth: 784., width: 28, height:28}
+];
 
 /**
  * @constant {Object[]}
