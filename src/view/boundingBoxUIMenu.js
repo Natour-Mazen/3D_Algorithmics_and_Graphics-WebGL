@@ -314,11 +314,14 @@ function handleActivateVolumeRayCastingBoundingBoxHTMLElements() {
  * Resets the voxel map type.
  */
 function handleDisableVolumeRayCastingBoundingBoxHTMLElements() {
+    // active height map elements
+    handleDisplayHTMLSelectorElement(boundingBoxElements.heightMapFlattenSlider,'block');
+
+    // disable voxel map elements and reset values
     handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapTransferFuncSelector,'none');
     handleDisplayHTMLSelectorElement(boundingBoxElements.voxelMapRayDepthSlider,'none');
-
-    handleDisplayHTMLSelectorElement(boundingBoxElements.heightMapFlattenSlider,'block');
     boundingBoxVoxelMapType = null;
+    boundingBoxElements.voxelMapTransferFuncSelector.value = boundingBoxVoxelMapTransferFuncLoader[0].value;
 }
 
 /****************************************************/
