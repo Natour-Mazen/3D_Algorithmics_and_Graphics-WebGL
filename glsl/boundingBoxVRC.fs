@@ -286,7 +286,7 @@ void main(void)
             break;
 
         // If we are under the map, outside of the box or if we haven't found a valid position.
-        if((position.z < -0.1 || position.x > uBBSize || position.x < -uBBSize
+        if((position.z < -0.1 || position.z > uBBSize || position.x > uBBSize || position.x < -uBBSize
         || position.y > uBBSize || position.y < -uBBSize || bNotFound) && color.a == 0.)
         {
             // If we are in opaque or wireframe mode.
