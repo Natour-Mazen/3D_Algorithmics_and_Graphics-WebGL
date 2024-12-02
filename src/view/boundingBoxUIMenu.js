@@ -287,7 +287,7 @@ const boundingBoxVoxelMapTransferFuncLoader = [
     { name: 'Sepia', value: 3 },
     { name: 'YellowToCyan', value: 4 },
     { name: 'Invert', value: 5 },
-    { name: 'Cartoon', value: 6 },
+    { name: 'Heart Beat', value: 6 },
     { name: 'Thermal', value: 7 },
     { name: 'Rainbow', value: 8 },
 ];

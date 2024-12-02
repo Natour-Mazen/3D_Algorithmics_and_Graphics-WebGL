@@ -19,6 +19,7 @@ uniform int uVoxelMapTransfertFunc; // The choice of the transfer function.
 uniform float uVoxelMapSize; // The size of the images inside the uVoxelMapTypeSampler.
 uniform float uNbImageWidth; // The number of images along the width.
 uniform float uNbImageHeight; // The number of images along the height.
+uniform float uHeartBeatFactor; // The heart factor.
 
 const int MAX_ITERATIONS = 700; // For the ray marching.
 float BORDER_SIZE = 0.005 * uBBSize; // The border size of the wireframe.
@@ -118,21 +119,13 @@ vec4 transformationInvert(vec4 color) {
     return color;
 }
 
-vec4 transformationCartoon(vec4 color) {
+vec4 transformationHeartBeat(vec4 color) {
     color.a = color.r;
     if (color.a <= 0.1 / uVoxelMapRayDepth) {
         color.a = 0.;
     }
-    float intensity = dot(color.rgb, vec3(0.299, 0.587, 0.114));
-    if (intensity > 0.8) {
-        color.rgb = vec3(1.0);
-    } else if (intensity > 0.5) {
-        color.rgb = vec3(0.7);
-    } else if (intensity > 0.3) {
-        color.rgb = vec3(0.4);
-    } else {
-        color.rgb = vec3(0.1);
-    }
+    float glitchFactor = sin(color.a * 10.0 + uHeartBeatFactor) * 0.5 + 0.5;
+    color.rgb = mix(color.rgb, vec3(1.0, 0.0, 0.0), glitchFactor);
     return color;
 }
 
@@ -210,7 +203,7 @@ vec4 transformationFunction(vec4 color)
     } else if (uVoxelMapTransfertFunc == 5) {
         color = transformationInvert(color);
     } else if (uVoxelMapTransfertFunc == 6) {
-        color = transformationCartoon(color);
+        color = transformationHeartBeat(color);
     } else if (uVoxelMapTransfertFunc == 7) {
         color = transformationThermal(color);
     }else if (uVoxelMapTransfertFunc == 8) {

@@ -8,6 +8,7 @@ class BoundingBoxVRC extends BoundingBox {
         this.boundingBoxVoxelMapSize = -1;
         this.boundingBoxVoxelMapNbImageWidth = -1;
         this.boundingBoxVoxelMapNbImageHeight = -1;
+        this.boundingBoxVoxelMapStartTime = Date.now();
     }
 
     // --------------------------------------------
@@ -21,6 +22,7 @@ class BoundingBoxVRC extends BoundingBox {
         this.shader.uVoxelMapSize = gl.getUniformLocation(this.shader, "uVoxelMapSize");
         this.shader.uNbImageWidth = gl.getUniformLocation(this.shader, "uNbImageWidth");
         this.shader.uNbImageHeight = gl.getUniformLocation(this.shader, "uNbImageHeight");
+        this.shader.uHeartBeatFactor = gl.getUniformLocation(this.shader, "uHeartBeatFactor");
     }
 
     setUniforms() {
@@ -44,6 +46,10 @@ class BoundingBoxVRC extends BoundingBox {
 
         // The number of images along the height of the voxel map.
         gl.uniform1f(this.shader.uNbImageHeight, this.boundingBoxVoxelMapNbImageHeight);
+        this.checkGlError();
+
+        // The number of images along the height of the voxel map.
+        gl.uniform1f(this.shader.uHeartBeatFactor, (Date.now() - this.boundingBoxVoxelMapStartTime) / 1000.0);
         this.checkGlError();
 
         gl.activeTexture(gl.TEXTURE0);
