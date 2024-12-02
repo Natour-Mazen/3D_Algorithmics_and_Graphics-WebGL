@@ -48,7 +48,7 @@ class BoundingBoxVRC extends BoundingBox {
         gl.uniform1f(this.shader.uNbImageHeight, this.boundingBoxVoxelMapNbImageHeight);
         this.checkGlError();
 
-        // The number of images along the height of the voxel map.
+        // The time since the start of the bounding box. Used to animate the voxel map. with a heartbeat effect.
         gl.uniform1f(this.shader.uHeartBeatFactor, (Date.now() - this.boundingBoxVoxelMapStartTime) / 1000.0);
         this.checkGlError();
 

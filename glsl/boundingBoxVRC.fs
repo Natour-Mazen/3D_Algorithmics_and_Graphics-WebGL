@@ -99,14 +99,22 @@ vec4 transformationBlueToGreen(vec4 color)
     return color;
 }
 
-vec4 transformationYellowToCyan(vec4 color) {
+
+vec4 transformationGlitch(vec4 color) {
     color.a = color.r;
     if (color.a <= 0.1 / uVoxelMapRayDepth) {
         color.a = 0.;
     }
-    color.r = mix(1., 0., color.a);
-    color.g = mix(1., 0., color.a);
-    color.b = mix(0., 1., color.a);
+    float glitchIntensity = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+    if (glitchIntensity > 0.9) {
+        color.rgb = vec3(1.0, 0.0, 0.0); // Red glitch
+    } else if (glitchIntensity > 0.8) {
+        color.rgb = vec3(0.0, 1.0, 0.0); // Green glitch
+    } else if (glitchIntensity > 0.7) {
+        color.rgb = vec3(0.0, 0.0, 1.0); // Blue glitch
+    } else {
+        color.rgb = mix(color.rgb, vec3(0.0), glitchIntensity * 0.5); // Darken the color
+    }
     return color;
 }
 
@@ -199,7 +207,7 @@ vec4 transformationFunction(vec4 color)
     } else if(uVoxelMapTransfertFunc == 3){
         color = transformationSepia(color);
     }  else if (uVoxelMapTransfertFunc == 4) {
-        color = transformationYellowToCyan(color);
+        color = transformationGlitch(color);
     } else if (uVoxelMapTransfertFunc == 5) {
         color = transformationInvert(color);
     } else if (uVoxelMapTransfertFunc == 6) {
