@@ -27,7 +27,7 @@ float BORDER_SIZE = 0.005 * uBBSize; // The border size of the wireframe.
 // Nyquist–Shannon sampling to have the best step.
 float uBBSizeCarre = uBBSize * uBBSize;
 float DIAGO = sqrt(sqrt(uBBSizeCarre + uBBSizeCarre) * sqrt(uBBSizeCarre + uBBSizeCarre) + uBBSizeCarre);
-float PAS = DIAGO / sqrt(uImageWidth * uImageWidth + uImageHeight * uImageHeight) * 2.;
+float PAS = DIAGO / sqrt(uVoxelMapSize * uVoxelMapSize + uVoxelMapSize * uVoxelMapSize) * 2.;
 
 
 varying vec3 vVertexPosition;        // Reel vertex position.
@@ -264,8 +264,6 @@ void main(void)
     vec3 lastPosition = vVertexPosition + t * dirPixelObj;
     // The last 'z' position calculated.
     float fLastZ = 0.;
-    // If a position has been found or not.
-    bool bNotFound = false;
 
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
@@ -287,15 +285,21 @@ void main(void)
             break;
 
         // If we are under the map, outside of the box or if we haven't found a valid position.
-        if((position.z < -0.1 || position.z > uBBSize || position.x > uBBSize || position.x < -uBBSize
-        || position.y > uBBSize || position.y < -uBBSize || bNotFound) && color.a == 0.)
+        if(position.z < -0.1 || position.z > uBBSize || position.x > uBBSize || position.x < -uBBSize
+        || position.y > uBBSize || position.y < -uBBSize)
         {
+            // We have not found a color along the ray.
+            if(color.a == 0.)
+            {
+                discard;
+                break;
+            }
             // If we are in opaque or wireframe mode.
-            if(uIsOpaque || uIsWireFrame) {
+            else if(uIsOpaque || uIsWireFrame) {
                 // Yellow color.
                 if(position.z >= uBBSize) {
                     if(uIsWireFrame && position.z >= uBBSize + BORDER_SIZE) {
-                        discard;
+                        //discard;
                     }
                     else{
                         color = vec4(1., 1., 0., 0.);
@@ -305,7 +309,7 @@ void main(void)
                 else if(position.x > uBBSize && position.y <= uBBSize && position.y >= -uBBSize) {
                     if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
                     !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
-                        discard;
+                        //discard;
                     }
                     else{
                         color = vec4(1., 0., 0., 0.);
@@ -315,7 +319,7 @@ void main(void)
                 else if( position.x < -uBBSize && position.y <= uBBSize && position.y >= -uBBSize) {
                     if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
                     !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
-                        discard;
+                        //discard;
                     }
                     else {
                         color = vec4(0., 1., 0., 0.);
@@ -325,7 +329,7 @@ void main(void)
                 else if(position.y > uBBSize && position.x <= uBBSize && position.x >= -uBBSize) {
                     if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
                     !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
-                        discard;
+                        //discard;
                     }
                     else{
                         color = vec4(0., 0., 1., 0.);
@@ -335,7 +339,7 @@ void main(void)
                 else if(position.y < -uBBSize && position.x <= uBBSize && position.x >= -uBBSize) {
                     if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
                     !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
-                        discard;
+                        //discard;
                     }
                     else {
                         color = vec4(1., 0., 1., 0.);
@@ -346,9 +350,8 @@ void main(void)
                 }
                 break;
             }
-            // If we don't have a mode, we discard all pixels outside of the box.
+            // If we don't have a mode.
             else {
-                discard;
                 break;
             }
         }
