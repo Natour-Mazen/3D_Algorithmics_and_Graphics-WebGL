@@ -15,6 +15,8 @@ class BoundingBoxRM extends BoundingBox {
         this.shader.uHeightMapFlatten = gl.getUniformLocation(this.shader, "uHeightMapFlatten");
         this.shader.uHeightMapTypeSampler = gl.getUniformLocation(this.shader, "uHeightMapTypeSampler");
         this.shader.uHeightMapTextureSampler = gl.getUniformLocation(this.shader, "uHeightMapTextureSampler");
+        this.shader.uImageWidth = gl.getUniformLocation(this.shader, "uImageWidth");
+        this.shader.uImageHeight = gl.getUniformLocation(this.shader, "uImageHeight");
     }
 
     // --------------------------------------------
@@ -25,6 +27,13 @@ class BoundingBoxRM extends BoundingBox {
         gl.uniform1f(this.shader.uHeightMapFlatten, 1.1 - this.boundingBoxHeightMapflattenFactor * 0.1);
         this.checkGlError();
 
+        // We send the image width.
+        gl.uniform1f(this.shader.uImageWidth, 512.);
+        this.checkGlError();
+
+        // We send the image height.
+        gl.uniform1f(this.shader.uImageHeight, 512.);
+        this.checkGlError();
 
         // We tell if the image is in color (1) or not (0).
         // If (1) -> we use the L in the LAB color metric.
