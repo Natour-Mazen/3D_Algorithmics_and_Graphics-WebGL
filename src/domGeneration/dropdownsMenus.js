@@ -38,17 +38,25 @@ const dropdowns = [
         ]
     },
     {
-        title: 'Bounding Box',
+        title: 'Bounding Box Ray Marching',
         items: [
-            { type: 'checkbox', label: 'BoundingBox', id: 'boundingBox_checkbox', checked: false },
-            { type: 'select', label: 'Border', id: 'boundingBox_border_selector', options: ['None'] },
-            { type: 'slider', label: 'Size:', id: 'boundingBox_size_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBox_size_value' },
-            { type: 'switch', label1: 'Ray Marching', label2: 'Volume Ray Casting', id: 'boundingBox_renderingType_switch' },
-            { type: 'select', label: 'Type', id: 'boundingBox_type_selector', options: ['None'] },
-            { type: 'select', label: 'Texture', id: 'boundingBox_heightMap_texture_selector', options: ['None'] },
-            { type: 'select', label: 'Transfer Func', id: 'boundingBox_voxelMap_transferFunc_selector', options: [] },
-            { type: 'slider', label: 'Flatten Factor:', id: 'boundingBox_heightMap_flatten_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBox_heightMap_flatten_value' },
-            { type: 'slider', label: 'Ray Depth:', id: 'boundingBox_voxelMap_ray_depth_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBox_voxelMap_ray_depth_value' }
+            { type: 'checkbox', label: 'BoundingBox', id: 'boundingBoxRM_checkbox', checked: false },
+            { type: 'select', label: 'Border', id: 'boundingBoxRM_border_selector', options: [] },
+            { type: 'slider', label: 'Size:', id: 'boundingBoxRM_size_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBoxRM_size_value' },
+            { type: 'select', label: 'Type', id: 'boundingBoxRM_type_selector', options: ['None'] },
+            { type: 'select', label: 'Texture', id: 'boundingBoxRM_heightMap_texture_selector', options: ['None'] },
+            { type: 'slider', label: 'Flatten Factor:', id: 'boundingBoxRM_heightMap_flatten_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBoxRM_heightMap_flatten_value' },
+        ]
+    },
+    {
+        title: 'Bounding Box Volume Ray Casting',
+        items: [
+            { type: 'checkbox', label: 'BoundingBox', id: 'boundingBoxVRC_checkbox', checked: false },
+            { type: 'select', label: 'Border', id: 'boundingBoxVRC_border_selector', options: [] },
+            { type: 'slider', label: 'Size:', id: 'boundingBoxVRC_size_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBoxVRC_size_value' },
+            { type: 'select', label: 'Type', id: 'boundingBoxVRC_type_selector', options: ['None'] },
+            { type: 'select', label: 'Transfer Func', id: 'boundingBoxVRC_voxelMap_transferFunc_selector', options: [] },
+            { type: 'slider', label: 'Ray Depth:', id: 'boundingBoxVRC_voxelMap_ray_depth_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBoxVRC_voxelMap_ray_depth_value' }
         ]
     },
 ];
