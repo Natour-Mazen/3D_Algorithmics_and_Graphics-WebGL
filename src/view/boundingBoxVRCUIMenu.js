@@ -1,0 +1,219 @@
+// src/view/boundingBoxUIMenu.js
+/****************************************************/
+/*         BOUNDING BOX GENERAL VARIABLES           */
+/****************************************************/
+
+/**
+ * @type {Object}
+ */
+const boundingBoxVRCElements = {
+    toggle: doc.getElementById('boundingBoxVRC_checkbox'),
+    borderSelector: doc.getElementById('boundingBoxVRC_border_selector'),
+    typeSelector: doc.getElementById('boundingBoxVRC_type_selector'),
+    sizeSlider: doc.getElementById('boundingBoxVRC_size_slider'),
+    sizeValueDisplay: doc.getElementById('boundingBoxVRC_size_value'),
+
+    voxelMapTransferFuncSelector: doc.getElementById('boundingBoxVRC_voxelMap_transferFunc_selector'),
+    voxelMapRayDepthSlider: doc.getElementById('boundingBoxVRC_voxelMap_ray_depth_slider'),
+    voxelMapRayDepthValueDisplay: doc.getElementById('boundingBoxVRC_voxelMap_ray_depth_value')
+};
+
+/**
+ * @type {BoundingBoxRM|BoundingBoxVRC|null}
+ */
+let theVRCBoundingBox = null;
+
+/**
+ * @type {boolean}
+ */
+let isThereVRCBoundingBox = false;
+
+
+
+/****************************************************/
+/*         BOUNDING BOX GENERAL FUNCTIONS           */
+/****************************************************/
+
+
+/**
+ * Creates or deletes bounding box objects based on the current state.
+ * Filters out existing bounding box objects from the main objects to draw,
+ * then creates new bounding box objects if necessary.
+ *
+ * @returns {Promise<void>} A promise that resolves when the bounding box objects have been created or deleted.
+ */
+async function handleCreateOrDeleteBoundingBoxVRCObjects() {
+    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof BoundingBoxVRC) );
+    theVRCBoundingBox = null;
+    if (isThereVRCBoundingBox) {
+        theVRCBoundingBox = new BoundingBoxVRC();
+        await handleUpdateBoundingBoxSize(theVRCBoundingBox, boundingBoxVRCElements.sizeSlider.value);
+        theVRCBoundingBox.setBoundingBoxVoxelMapRayDepth(boundingBoxVRCElements.voxelMapRayDepthSlider.value);
+        main_objectsToDraw.push(theVRCBoundingBox);
+        if(isTherePlane){
+            setPlaneState(false);
+        }
+    } else {
+        const isThereAnObjectBoundingBox = main_objectsToDraw.some(obj => obj instanceof BoundingBox);
+        if(!isTherePlane && !isThereAnObjectBoundingBox){
+            setPlaneState(true);
+        }
+    }
+}
+
+
+
+/****************************************************/
+/*            BOUNDING BOX VRC VARIABLES            */
+/****************************************************/
+
+/**
+ * @constant {Object[]}
+ */
+const boundingBoxVoxelMapTypeLoader = [
+    {name: 'Hazelnut LQ', value: 'hazelnut_slices12x11_128x128.png', depth: 128., width: 12, height: 11}, // Low quality
+    {name: 'Hazelnut NQ', value: 'hazelnut_slices16x16_256x256.png', depth: 256., width: 16, height: 16}, // Normal quality
+    {name: 'Hazelnut HQ', value: 'hazelnut_slices23x23_512x512.png', depth: 512., width: 23, height: 23}, // High quality
+
+    {name: 'Flower LQ', value: 'flower_slices12x11_128x128.png', depth: 128., width: 12, height: 11}, // Low quality
+    {name: 'Flower NQ', value: 'flower_slices16x16_256x256.png', depth: 256., width: 16, height: 16}, // Normal quality
+    {name: 'Flower HQ', value: 'flower_slices23x23_512x512.png', depth: 512., width: 23, height: 23}, // High quality
+
+    {name: 'Beechnut LQ', value: 'beechnut_slices12x11_128x128.png', depth: 128., width: 12, height:11}, // Low quality
+    {name: 'Beechnut NQ', value: 'beechnut_slices17x16_256x256.png', depth: 256., width: 17, height:16}, // Normal quality
+    {name: 'Beechnut HQ', value: 'beechnut_slices23x23_512x512.png', depth: 512., width: 23, height:23}, // High quality
+
+    {name: 'Woodbranch LQ', value: 'woodbranch_slices12x11_128x128.png', depth: 128., width: 12, height:11}, // Low quality
+    {name: 'Woodbranch NQ', value: 'woodbranch_slices16x16_256x256.png', depth: 256., width: 16, height:16}, // Normal quality
+    {name: 'Woodbranch HQ', value: 'woodbranch_slices23x23_512x512.png', depth: 512., width: 23, height:23}, // High quality
+];
+
+/**
+ * @constant {Object[]}
+ */
+const boundingBoxVoxelMapTransferFuncLoader = [
+    { name: 'Default', value: 0 },
+    { name: 'Red', value: 1 },
+    { name: 'BleuToGreen', value: 2 },
+    { name: 'Sepia', value: 3 },
+    { name: 'Glitch', value: 4 },
+    { name: 'Invert', value: 5 },
+    { name: 'Heart Beat', value: 6 },
+    { name: 'Thermal', value: 7 },
+    { name: 'Rainbow', value: 8 },
+];
+
+/**
+ * @type {string|null}
+ */
+let boundingBoxVoxelMapType = null;
+
+
+/****************************************************/
+/*            BOUNDING BOX VRC FUNCTIONS            */
+/****************************************************/
+
+/**
+ * Handles the bounding box voxel map selection.
+ * @param selectedVoxelMap - The selected voxel map.
+ */
+function handleBoundingBoxVoxelMapSelection(selectedVoxelMap) {
+    if (selectedVoxelMap === 'None') {
+        boundingBoxVoxelMapType = null;
+        return;
+    }
+
+    const path = `res/voxelMaps/${selectedVoxelMap}` ;
+    if(path) {
+        boundingBoxVoxelMapType = loadTexture(gl, path);
+    }
+}
+
+/****************************************************/
+/*             BOUNDING BOX UI VRC INIT             */
+/****************************************************/
+
+function initBoundingBoxVRCUIComponents() {
+
+    /***************BOUNDING BOX GENERAL INITS***************/
+    initToggle(boundingBoxVRCElements.toggle, isThereVRCBoundingBox, async function () {
+        isThereVRCBoundingBox = this.checked;
+        await handleCreateOrDeleteBoundingBoxVRCObjects();
+        handleUpdateBoundingBoxBorderType(theRMBoundingBox, boundingBoxVRCElements.borderSelector.value);
+    });
+
+    initGenericObjectSelector(
+        boundingBoxVRCElements.typeSelector,
+        boundingBoxVoxelMapTypeLoader,
+        function () {
+            handleBoundingBoxVoxelMapSelection(this.value);
+            if(theVRCBoundingBox !== null){
+                const selectedOption = this.options[this.selectedIndex];
+                theVRCBoundingBox.setBoundingBoxVoxelMapSize(selectedOption.dataset.depth);
+                theVRCBoundingBox.setBoundingBoxVoxelMapNbImageWidth(selectedOption.dataset.width);
+                theVRCBoundingBox.setBoundingBoxVoxelMapNbImageHeight(selectedOption.dataset.height);
+            }
+        },
+        'value', // Property to use for option value
+        'name',// Property to use for option text content
+        {
+            depth: 'depth',
+            width: 'width',
+            height: 'height'
+        }
+    );
+
+
+    initSelector(boundingBoxVRCElements.borderSelector, boundingBoxBorderLoader, function () {
+        handleUpdateBoundingBoxBorderType(theVRCBoundingBox, this.value);
+    });
+
+
+    initSlider(boundingBoxVRCElements.sizeSlider, async function () {
+        await handleUpdateBoundingBoxSize(theVRCBoundingBox, this.value);
+        boundingBoxVRCElements.sizeValueDisplay.innerHTML = this.value;
+    });
+
+
+    initGenericObjectSelector(
+        boundingBoxVRCElements.voxelMapTransferFuncSelector,
+        boundingBoxVoxelMapTransferFuncLoader,
+        function () {
+            if(theVRCBoundingBox !== null){
+                theVRCBoundingBox.setBoundingBoxVoxelMapTransfertFunc(this.value);
+            }
+        },
+        'value',
+        'name',
+        { }
+    )
+
+    initSlider(boundingBoxVRCElements.voxelMapRayDepthSlider, function () {
+        if(theVRCBoundingBox !== null){
+            theVRCBoundingBox.setBoundingBoxVoxelMapRayDepth(this.value);
+            boundingBoxVRCElements.voxelMapRayDepthValueDisplay.innerHTML = this.value;
+        }
+    });
+
+
+
+
+    const boundingBoxVRCWrapper = boundingBoxVRCElements.toggle.closest('.row').parentElement.parentElement.parentElement;
+    const boundingBoxVRCHeader = boundingBoxVRCWrapper.querySelector('div.header');
+    const boundingBoxVRCSpan = boundingBoxVRCHeader.querySelector('span');
+
+    if (boundingBoxVRCSpan) {
+        boundingBoxVRCSpan.style.top = '40px'; // Set the initial style
+        const observer = new MutationObserver(() => {
+            if (!boundingBoxVRCSpan.classList.contains('cart') && !boundingBoxVRCSpan.classList.contains('up')) {
+                boundingBoxVRCSpan.style.top = '40px';
+            } else {
+                boundingBoxVRCSpan.style.top = ''; // Reset the style if the class is present
+            }
+        });
+
+        observer.observe(boundingBoxVRCSpan, { attributes: true, attributeFilter: ['class'] });
+    }
+}
+
+initBoundingBoxVRCUIComponents();
