@@ -6,6 +6,9 @@ class BoundingBox extends ObjectToDraw {
             throw new TypeError("Cannot construct BoundingBox instances directly");
         }
         this.boundingBoxSize = 1;
+        this.borderType = 'None';
+        this.isWireFrameBorderType = 0; // 0: false, 1: true
+        this.isOpaqueBorderType = 0; // 0: false, 1: true
     }
 
     // --------------------------------------------
@@ -181,28 +184,21 @@ class BoundingBox extends ObjectToDraw {
         this.shader.uIsOpaque = gl.getUniformLocation(this.shader, "uIsOpaque");
         this.shader.uAspectRatio = gl.getUniformLocation(this.shader, "uAspectRatio");
         this.shader.uFOV = gl.getUniformLocation(this.shader, "uFOV");
-        this.shader.uImageWidth = gl.getUniformLocation(this.shader, "uImageWidth");
-        this.shader.uImageHeight = gl.getUniformLocation(this.shader, "uImageHeight");
+
     }
 
     setUniforms() {
+        this.#switchStringBorderType();
 
         // We send the Bounding Box Size factor.
         gl.uniform1f(this.shader.uBBSize, this.boundingBoxSize);
         this.checkGlError();
 
-        // We send the image width.
-        gl.uniform1f(this.shader.uImageWidth, 512.);
+
+        gl.uniform1i(this.shader.uIsWireFrame, this.isWireFrameBorderType);
         this.checkGlError();
 
-        // We send the image height.
-        gl.uniform1f(this.shader.uImageHeight, 512.);
-        this.checkGlError();
-
-        gl.uniform1i(this.shader.uIsWireFrame, isWireFrameActiveBoundingBox);
-        this.checkGlError();
-
-        gl.uniform1i(this.shader.uIsOpaque, isOpaqueActiveBoundingBox);
+        gl.uniform1i(this.shader.uIsOpaque, this.isOpaqueBorderType);
         this.checkGlError();
 
         // We send the image aspect ratio.
@@ -241,6 +237,30 @@ class BoundingBox extends ObjectToDraw {
 
     setBoundingBoxSize(value) {
         this.boundingBoxSize = value;
+    }
+
+    setBoundingBoxBorderType(value) {
+        this.borderType = value;
+    }
+
+    #switchStringBorderType() {
+        switch (this.borderType) {
+            case BoundingBoxBorderTypes.NONE:
+                this.isWireFrameBorderType = 0;
+                this.isOpaqueBorderType = 0;
+                break;
+            case BoundingBoxBorderTypes.WIREFRAME:
+                this.isWireFrameBorderType = 1;
+                this.isOpaqueBorderType = 0;
+                break;
+            case BoundingBoxBorderTypes.OPAQUE:
+                this.isWireFrameBorderType = 0;
+                this.isOpaqueBorderType = 1;
+                break;
+            default:
+                this.isWireFrameBorderType = 0;
+                this.isOpaqueBorderType = 0;
+        }
     }
 
 }
