@@ -18,48 +18,6 @@ const boundingBoxRMElements = {
     heightMapFlattenValueDisplay: doc.getElementById('boundingBoxRM_heightMap_flatten_value'),
 };
 
-/**
- * @type {BoundingBoxRM|null}
- */
-let theRMBoundingBox = null;
-
-/**
- * @type {boolean}
- */
-let isThereRMBoundingBox = false;
-
-
-/****************************************************/
-/*         BOUNDING BOX GENERAL FUNCTIONS           */
-/****************************************************/
-
-/**
- * Creates or deletes bounding box objects based on the current state.
- * Filters out existing bounding box objects from the main objects to draw,
- * then creates new bounding box objects if necessary.
- *
- * @returns {Promise<void>} A promise that resolves when the bounding box objects have been created or deleted.
- */
-async function handleCreateOrDeleteBoundingBoxRMObjects() {
-    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof BoundingBoxRM) );
-    theRMBoundingBox = null;
-    if (isThereRMBoundingBox) {
-        theRMBoundingBox = new BoundingBoxRM();
-        await handleUpdateBoundingBoxSize(theRMBoundingBox, boundingBoxRMElements.sizeSlider.value);
-        theRMBoundingBox.setBoundingBoxHeightMapFlattenFactor(boundingBoxRMElements.heightMapFlattenSlider.value);
-        main_objectsToDraw.push(theRMBoundingBox);
-        if(isTherePlane){
-            setPlaneState(false);
-        }
-    } else {
-        const isThereAnObjectBoundingBox = main_objectsToDraw.some(obj => obj instanceof BoundingBox);
-        if(!isTherePlane && !isThereAnObjectBoundingBox){
-            setPlaneState(true);
-        }
-    }
-}
-
-
 /****************************************************/
 /*            BOUNDING BOX RM VARIABLES             */
 /****************************************************/
@@ -109,9 +67,37 @@ const boundingBoxHeightMapTypeLoader = [
 const boundingBoxHeightMapTextureLoader = ['poolWater.png', 'seaWater.jpg', 'circle.png',
     "bumpWater.jpg", "brickWall.jpg", "waterReel.jpg"];
 
+/**
+ * @type {BoundingBoxRM|null}
+ */
+let theRMBoundingBox = null;
+
+/**
+ * @type {boolean}
+ */
+let isThereRMBoundingBox = false;
+
+
 /****************************************************/
 /*            BOUNDING BOX RM FUNCTIONS             */
 /****************************************************/
+
+/**
+ * Creates or deletes bounding box objects based on the current state.
+ * Filters out existing bounding box objects from the main objects to draw,
+ * then creates new bounding box objects if necessary.
+ *
+ * @returns {Promise<void>} A promise that resolves when the bounding box objects have been created or deleted.
+ */
+async function handleCreateOrDeleteBoundingBoxRMObjects() {
+    const updateFunctions = {
+        updateSize: handleUpdateBoundingBoxSize,
+        updateSpecificProperties: (boundingBox, elements) => {
+            boundingBox.setBoundingBoxHeightMapFlattenFactor(elements.heightMapFlattenSlider.value);
+        }
+    };
+    theRMBoundingBox = await handleCreateOrDeleteBoundingBoxObjects(isThereRMBoundingBox, BoundingBoxRM, boundingBoxRMElements, updateFunctions);
+}
 
 /**
  * Handles the bounding box height map selection.
@@ -160,11 +146,11 @@ function resetBoundingBoxHeightMapSelection(selectionType) {
 
 function initBoundingBoxRMUIComponents() {
 
-    /***************BOUNDING BOX GENERAL INITS***************/
     initToggle(boundingBoxRMElements.toggle, isThereRMBoundingBox, async function () {
         isThereRMBoundingBox = this.checked;
-        await handleCreateOrDeleteBoundingBoxRMObjects();
-        handleUpdateBoundingBoxBorderType(theRMBoundingBox, boundingBoxRMElements.borderSelector.value);
+        await handleCreateOrDeleteBoundingBoxRMObjects().then(() => {
+            handleUpdateBoundingBoxBorderType(theRMBoundingBox, boundingBoxRMElements.borderSelector.value);
+        });
     });
 
     initSelector(boundingBoxRMElements.borderSelector, boundingBoxBorderLoader, function () {
@@ -197,7 +183,6 @@ function initBoundingBoxRMUIComponents() {
         { isColor: 'isColor' } // Additional data attributes
     );
 
-    /***************BOUNDING BOX RM INITS***************/
     initSlider(boundingBoxRMElements.heightMapFlattenSlider, function () {
         if(theRMBoundingBox !== null){
             theRMBoundingBox.setBoundingBoxHeightMapFlattenFactor(this.value);
@@ -210,28 +195,9 @@ function initBoundingBoxRMUIComponents() {
     });
 
 
-
-    /***************BOUNDING BOX GENERAL UPDATES***************/
-
-    const boundingBoxRMWrapper = boundingBoxRMElements.toggle.closest('.row').parentElement.parentElement.parentElement;
-    const boundingBoxRMHeader = boundingBoxRMWrapper.querySelector('div.header');
-    const boundingBoxRMSpan = boundingBoxRMHeader.querySelector('span');
-
-    if (boundingBoxRMSpan) {
-        boundingBoxRMSpan.style.top = '40px'; // Set the initial style
-        const observer = new MutationObserver(() => {
-            if (!boundingBoxRMSpan.classList.contains('cart') && !boundingBoxRMSpan.classList.contains('up')) {
-                boundingBoxRMSpan.style.top = '40px';
-            } else {
-                boundingBoxRMSpan.style.top = ''; // Reset the style if the class is present
-            }
-        });
-
-        observer.observe(boundingBoxRMSpan, { attributes: true, attributeFilter: ['class'] });
-    }
+    initStyleCaretBoundingBoxComponents(boundingBoxRMElements);
 
     handleDisplayHTMLSelectorElement(boundingBoxRMElements.heightMapTextureSelector,'none');
-
 }
 
 initBoundingBoxRMUIComponents();

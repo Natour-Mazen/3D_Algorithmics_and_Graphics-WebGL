@@ -36,3 +36,56 @@ function handleUpdateBoundingBoxBorderType(boundingBoxObject, value) {
         boundingBoxObject.setBoundingBoxBorderType(value);
     }
 }
+
+/**
+ * Creates or deletes bounding box objects based on the current state.
+ * Filters out existing bounding box objects from the main objects to draw,
+ * then creates new bounding box objects if necessary.
+ * @param {boolean} isThereBoundingBox - Whether there is a bounding box.
+ * @param {BoundingBox|BoundingBoxVRC} BoundingBoxClass - The bounding box class to create.
+ * @param {Object} elements - The bounding box elements.
+ * @param {Object} updateFunctions - The bounding box update functions.
+ * @returns {Promise<BoundingBox|BoundingBoxVRC|null>} - A promise that resolves with the created bounding box object.
+ */
+async function handleCreateOrDeleteBoundingBoxObjects(isThereBoundingBox, BoundingBoxClass, elements, updateFunctions) {
+    main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof BoundingBoxClass));
+    let boundingBox = null;
+    if (isThereBoundingBox) {
+        boundingBox = new BoundingBoxClass();
+        await updateFunctions.updateSize(boundingBox, elements.sizeSlider.value);
+        updateFunctions.updateSpecificProperties(boundingBox, elements);
+        main_objectsToDraw.push(boundingBox);
+        if (isTherePlane) {
+            setPlaneState(false);
+        }
+    } else {
+        const isThereAnObjectBoundingBox = main_objectsToDraw.some(obj => obj instanceof BoundingBox);
+        if (!isTherePlane && !isThereAnObjectBoundingBox) {
+            setPlaneState(true);
+        }
+    }
+    return boundingBox;
+}
+
+/**
+ * Initializes the bounding box UI components, By setting the initial style and observing the class changes.
+ * @param elements - The bounding box elements.
+ */
+function initStyleCaretBoundingBoxComponents(elements) {
+    const wrapper = elements.toggle.closest('.row').parentElement.parentElement.parentElement;
+    const header = wrapper.querySelector('div.header');
+    const span = header.querySelector('span');
+
+    if (span) {
+        span.style.top = '40px'; // Set the initial style
+        const observer = new MutationObserver(() => {
+            if (!span.classList.contains('cart') && !span.classList.contains('up')) {
+                span.style.top = '40px';
+            } else {
+                span.style.top = ''; // Reset the style if the class is present
+            }
+        });
+
+        observer.observe(span, { attributes: true, attributeFilter: ['class'] });
+    }
+}
