@@ -13,7 +13,9 @@ const boundingBoxVRCElements = {
     sizeSlider: doc.getElementById('boundingBoxVRC_size_slider'),
     sizeValueDisplay: doc.getElementById('boundingBoxVRC_size_value'),
 
-    voxelMapTransferFuncCustomModalButton: doc.getElementById('boundingBoxVRC_transferFuncCustom_modalButton'),
+    voxelMapTransferFuncCustomModal: doc.getElementById('boundingBoxVRC_transferFuncCustom_modal'),
+    voxelMapTransferFuncCustomModalBody: doc.getElementById('boundingBoxVRC_transferFuncCustom_modalBody'),
+
     voxelMapTransferFuncSelector: doc.getElementById('boundingBoxVRC_voxelMap_transferFunc_selector'),
     voxelMapRayDepthSlider: doc.getElementById('boundingBoxVRC_voxelMap_ray_depth_slider'),
     voxelMapRayDepthValueDisplay: doc.getElementById('boundingBoxVRC_voxelMap_ray_depth_value')
@@ -177,10 +179,11 @@ function initBoundingBoxVRCUIComponents() {
         boundingBoxVoxelMapTransferFuncLoader,
         function () {
             if(Number(this.value) === -1){
-                handleDisplayHTMLSelectorElement(boundingBoxVRCElements.voxelMapTransferFuncCustomModalButton, 'block');
+                openModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
             }else {
-                handleDisplayHTMLSelectorElement(boundingBoxVRCElements.voxelMapTransferFuncCustomModalButton, 'none');
+                closeModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
             }
+
             if(theVRCBoundingBox !== null){
                 theVRCBoundingBox.setBoundingBoxVoxelMapTransfertFunc(this.value);
             }
@@ -200,7 +203,6 @@ function initBoundingBoxVRCUIComponents() {
 
 
     initStyleCaretBoundingBoxComponents(boundingBoxVRCElements);
-    handleDisplayHTMLSelectorElement(boundingBoxVRCElements.voxelMapTransferFuncCustomModalButton, 'none');
 }
 
 initBoundingBoxVRCUIComponents();

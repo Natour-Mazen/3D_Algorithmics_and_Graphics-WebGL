@@ -57,7 +57,7 @@ const dropdowns = [
             { type: 'select', label: 'Type', id: 'boundingBoxVRC_type_selector', options: ['None'] },
             //{ type: 'switch', label1: 'Predefined', label2: 'Custom', id: 'boundingBoxVRC_switch_transferFunc' },
             { type: 'select', label: 'Transfer Func', id: 'boundingBoxVRC_voxelMap_transferFunc_selector', options: [] },
-            { type: 'modalButton', label: 'Open Custom Transfer Func Modal', id: 'boundingBoxVRC_transferFuncCustom_modalButton', modalId: 'exampleModal' },
+            { type: 'modal', id: 'boundingBoxVRC_transferFuncCustom_modal', idBody: 'boundingBoxVRC_transferFuncCustom_modalBody' },
             { type: 'slider', label: 'Ray Depth:', id: 'boundingBoxVRC_voxelMap_ray_depth_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBoxVRC_voxelMap_ray_depth_value' }
         ]
     },

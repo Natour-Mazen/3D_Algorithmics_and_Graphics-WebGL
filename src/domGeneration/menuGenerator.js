@@ -89,26 +89,16 @@ function createItemElement(item) {
             </label>
             <span class="switch__label2">${item.label2}</span>
         `;
-    }else if (item.type === 'modalButton') {
+    }else if (item.type === 'modal') {
         row.innerHTML = `
-        <button 
-            class="open_modal_btn" 
-            id="${item.id}" >
-            ${item.label}
-        </button>`;
-
-        // Remove the hover effect from the parent element
-        row.style.pointerEvents = 'auto'; // Ensure pointer events are allowed
-        row.style.transition = 'none'; // Disable transition effects (if needed)
-
-        // Apply custom hover styles to cancel any effects
-        row.addEventListener('mouseenter', () => {
-            row.style.background = 'inherit'; // Reset background or remove hover styles
-            row.style.cursor = 'default'; // Prevent pointer cursor change, if necessary
-        });
-
-        // Ensure child elements retain their hover functionality
-        row.children[0].style.pointerEvents = 'auto';
+        <div class="modal" id="${item.id}">
+            <div class="modal-content" id="${item.idBody}">
+               <!-- Modal content should be added by each specific UI component/File, each modal should have a unique id -->
+            </div>
+        </div>
+        `;
+        row.style.height = "0px";
+        row.style.overflow = "hidden";
     }
 
     itemElement.appendChild(row);
@@ -151,4 +141,5 @@ function toggleDropdown(evt) {
 
     updateCollapseButtonVisibility();
 }
+
 

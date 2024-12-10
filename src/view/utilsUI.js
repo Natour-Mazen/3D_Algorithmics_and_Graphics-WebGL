@@ -162,3 +162,19 @@ function removeAllEventListeners(element) {
     element.parentNode.replaceChild(clone, element);
     return clone; // return the new element without event listeners
 }
+
+/**
+ * Opens a modal with the specified ID.
+ * @param modal - The modal to open.
+ */
+function openModal(modal) {
+    modal.style.display = 'block';
+}
+
+/**
+ * Closes a modal with the specified ID.
+ * @param modal - The modal to close.
+ */
+function closeModal(modal) {
+    modal.style.display = 'none';
+}
