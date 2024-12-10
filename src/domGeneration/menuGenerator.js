@@ -89,6 +89,26 @@ function createItemElement(item) {
             </label>
             <span class="switch__label2">${item.label2}</span>
         `;
+    }else if (item.type === 'modalButton') {
+        row.innerHTML = `
+        <button 
+            class="open_modal_btn" 
+            id="${item.id}" >
+            ${item.label}
+        </button>`;
+
+        // Remove the hover effect from the parent element
+        row.style.pointerEvents = 'auto'; // Ensure pointer events are allowed
+        row.style.transition = 'none'; // Disable transition effects (if needed)
+
+        // Apply custom hover styles to cancel any effects
+        row.addEventListener('mouseenter', () => {
+            row.style.background = 'inherit'; // Reset background or remove hover styles
+            row.style.cursor = 'default'; // Prevent pointer cursor change, if necessary
+        });
+
+        // Ensure child elements retain their hover functionality
+        row.children[0].style.pointerEvents = 'auto';
     }
 
     itemElement.appendChild(row);
@@ -131,6 +151,4 @@ function toggleDropdown(evt) {
 
     updateCollapseButtonVisibility();
 }
-
-
 
