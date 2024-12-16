@@ -50,7 +50,7 @@ vec4 getVoxcelInPos(vec3 position)
 
     vec3 positionOnImage = positionN * uVoxelMapSize;
 
-    float sliceIndex = floor(positionOnImage.z); // L'indice de tranche en profondeur
+    float sliceIndex = floor(positionOnImage.z / 2.); // L'indice de tranche en profondeur
     float x = mod(sliceIndex, uNbImageWidth);          // Colonne de la tranche dans la grille
     float y = floor(sliceIndex / uNbImageWidth);       // Ligne de la tranche dans la grille
 
@@ -285,7 +285,7 @@ void main(void)
             break;
 
         // If we are under the map, outside of the box or if we haven't found a valid position.
-        if(position.z < -0.1 || position.z > uBBSize || position.x > uBBSize || position.x < -uBBSize
+        if(position.z < -0.1 || position.z > uBBSize * 2. || position.x > uBBSize || position.x < -uBBSize
         || position.y > uBBSize || position.y < -uBBSize)
         {
             // We have not found a color along the ray.
@@ -297,8 +297,8 @@ void main(void)
             // If we are in opaque or wireframe mode.
             else if(uIsOpaque || uIsWireFrame) {
                 // Yellow color.
-                if(position.z >= uBBSize) {
-                    if(uIsWireFrame && position.z >= uBBSize + BORDER_SIZE) {
+                if(position.z >= uBBSize * 2.) {
+                    if(uIsWireFrame && position.z >= uBBSize * 2. + BORDER_SIZE) {
                         //discard;
                     }
                     else{
@@ -308,7 +308,7 @@ void main(void)
                 // Red color.
                 else if(position.x > uBBSize && position.y <= uBBSize && position.y >= -uBBSize) {
                     if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
-                    !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
+                    !(position.z >= uBBSize * 2. - BORDER_SIZE) && !(position.z <= -uBBSize * 2. + BORDER_SIZE)) {
                         //discard;
                     }
                     else{
@@ -318,7 +318,7 @@ void main(void)
                 // Green color.
                 else if( position.x < -uBBSize && position.y <= uBBSize && position.y >= -uBBSize) {
                     if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
-                    !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
+                    !(position.z >= uBBSize * 2. - BORDER_SIZE) && !(position.z <= -uBBSize * 2. + BORDER_SIZE)) {
                         //discard;
                     }
                     else {
@@ -328,7 +328,7 @@ void main(void)
                 // Blue color.
                 else if(position.y > uBBSize && position.x <= uBBSize && position.x >= -uBBSize) {
                     if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
-                    !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
+                    !(position.z >= uBBSize * 2. - BORDER_SIZE) && !(position.z <= -uBBSize * 2. + BORDER_SIZE)) {
                         //discard;
                     }
                     else{
@@ -338,7 +338,7 @@ void main(void)
                 // Pink color.
                 else if(position.y < -uBBSize && position.x <= uBBSize && position.x >= -uBBSize) {
                     if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
-                    !(position.z >= uBBSize - BORDER_SIZE) && !(position.z <= -uBBSize + BORDER_SIZE)) {
+                    !(position.z >= uBBSize * 2. - BORDER_SIZE) && !(position.z <= -uBBSize * 2. + BORDER_SIZE)) {
                         //discard;
                     }
                     else {
