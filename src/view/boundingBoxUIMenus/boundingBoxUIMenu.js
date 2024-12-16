@@ -42,10 +42,10 @@ function handleUpdateBoundingBoxBorderType(boundingBoxObject, value) {
  * Filters out existing bounding box objects from the main objects to draw,
  * then creates new bounding box objects if necessary.
  * @param {boolean} isThereBoundingBox - Whether there is a bounding box.
- * @param {BoundingBox|BoundingBoxVRC} BoundingBoxClass - The bounding box class to create.
+ * @param {BoundingBoxRM|BoundingBoxVRC} BoundingBoxClass - The bounding box class to create.
  * @param {Object} elements - The bounding box elements.
  * @param {Object} updateFunctions - The bounding box update functions.
- * @returns {Promise<BoundingBox|BoundingBoxVRC|null>} - A promise that resolves with the created bounding box object.
+ * @returns {Promise<BoundingBoxRM|BoundingBoxVRC|null>} - A promise that resolves with the created bounding box object.
  */
 async function handleCreateOrDeleteBoundingBoxObjects(isThereBoundingBox, BoundingBoxClass, elements, updateFunctions) {
     main_objectsToDraw = main_objectsToDraw.filter(obj => !(obj instanceof BoundingBoxClass));
