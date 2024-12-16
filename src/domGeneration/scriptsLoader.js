@@ -36,9 +36,9 @@ doc.addEventListener('DOMContentLoaded', () => {
         'src/view/bumpMapUIMenu.js',
         'src/view/heightMapUIMenu.js',
         'src/view/lightUIMenu.js',
-        'src/view/boundingBoxUIMenu.js',
-        'src/view/boundingBoxRMUIMenu.js',
-        'src/view/boundingBoxVRCUIMenu.js',
+        'src/view/boundingBoxUIMenus/boundingBoxUIMenu.js',
+        'src/view/boundingBoxUIMenus/boundingBoxRMUIMenu.js',
+        'src/view/boundingBoxUIMenus/boundingBoxVRCUIMenu.js',
         // ============== MAIN ==============
         'src/main.js'
     ];
