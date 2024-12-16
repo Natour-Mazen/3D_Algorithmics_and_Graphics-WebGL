@@ -2,7 +2,7 @@
 class BoundingBoxVRC extends BoundingBox {
     // --------------------------------------------
     constructor() {
-        super('glsl/boundingBoxVRC', -1, null);
+        super('glsl/boundingBoxVRC', -1, null, true);
         this.boundingBoxVoxelMapRayDepth = 1;
         this.boundingBoxVoxelMapTransfertFunc = -1;
         this.boundingBoxVoxelMapSize = -1;

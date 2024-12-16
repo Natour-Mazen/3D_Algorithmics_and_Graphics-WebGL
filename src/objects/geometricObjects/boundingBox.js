@@ -1,6 +1,6 @@
 class BoundingBox extends ObjectToDraw {
     // --------------------------------------------
-    constructor(shaderName, loaded, shader ) {
+    constructor(shaderName, loaded, shader, isCubic = false) {
         super(shaderName, loaded, shader);
         if (new.target === BoundingBox) {
             throw new TypeError("Cannot construct BoundingBox instances directly");
@@ -9,11 +9,16 @@ class BoundingBox extends ObjectToDraw {
         this.borderType = 'None';
         this.isWireFrameBorderType = 0; // 0: false, 1: true
         this.isOpaqueBorderType = 0; // 0: false, 1: true
+        this.isCubic = isCubic;
     }
 
     // --------------------------------------------
     async initAll() {
         const size = this.boundingBoxSize ? this.boundingBoxSize : 1;
+        let sizeMultiplier = 1;
+        if(this.isCubic){
+            sizeMultiplier = 2;
+        }
         const vertices = [
             // 4 sommets sur le plan z=0
             -size, -size, 0.0, // 0
@@ -21,10 +26,10 @@ class BoundingBox extends ObjectToDraw {
             size, size, 0.0, // 2
             -size, size, 0.0, // 3
             // 4 sommets sur le plan z=1
-            -size, -size, size, // 4
-            size, -size, size, // 5
-            size, size, size, // 6
-            -size, size, size // 7
+            -size, -size, size * sizeMultiplier, // 4
+            size, -size, size * sizeMultiplier, // 5
+            size, size, size * sizeMultiplier, // 6
+            -size, size, size * sizeMultiplier // 7
         ];
 
         const trianglesPink = [

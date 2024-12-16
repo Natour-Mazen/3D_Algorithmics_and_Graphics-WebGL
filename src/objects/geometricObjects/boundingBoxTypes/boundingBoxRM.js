@@ -2,7 +2,7 @@
 class BoundingBoxRM extends BoundingBox {
     // --------------------------------------------
     constructor() {
-        super('glsl/boundingBoxRM', -1,null );
+        super('glsl/boundingBoxRM', -1, null, false);
         this.boundingBoxHeightMapflattenFactor = 1;
     }
 
