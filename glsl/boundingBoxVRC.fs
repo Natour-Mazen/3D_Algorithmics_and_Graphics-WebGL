@@ -29,7 +29,6 @@ float uBBSizeCarre = uBBSize * uBBSize;
 float DIAGO = sqrt(sqrt(uBBSizeCarre + uBBSizeCarre) * sqrt(uBBSizeCarre + uBBSizeCarre) + uBBSizeCarre);
 float PAS = DIAGO / sqrt(uVoxelMapSize * uVoxelMapSize + uVoxelMapSize * uVoxelMapSize) * 2.;
 
-
 varying vec3 vVertexPosition;        // Reel vertex position.
 varying vec4 vVertexPositionSpace;   // Vertex position project on the sreen.
 varying mat4 viMVMatrix;             // Inverse MVMatrix.
@@ -69,9 +68,29 @@ vec4 transformationBlackToWhite(vec4 color)
     if(color.a <= 0.1 / uVoxelMapRayDepth){
         color.a = 0.;
     }
+    else if(color.a >= 0.6){
+        color.a = 1.;
+    }
     else{
         // Remove to do VRC
         //color.a = 1.;
+    }
+    return color;
+}
+
+vec4 transformationRedJeely(vec4 color)
+{
+    color.a = color.r;
+    if(color.a <= 0.1 / uVoxelMapRayDepth){
+        color.a = 0.;
+    }
+    if(color.a >= 0.6){
+        color.a = 1.;
+    }
+    if(color.a <= 0.01)
+    {
+        color.a = 0.01;
+        color.rgb = vec3(0.5, 0., 0.);
     }
     return color;
 }
@@ -216,6 +235,8 @@ vec4 transformationFunction(vec4 color)
         color = transformationThermal(color);
     }else if (uVoxelMapTransfertFunc == 8) {
         color = transformationRainbow(color);
+    }else if (uVoxelMapTransfertFunc == 9) {
+        color = transformationRedJeely(color);
     } else {
         color = transformationBlackToWhite(color);
     }
@@ -352,6 +373,9 @@ void main(void)
             }
             // If we don't have a mode.
             else {
+                color += vec4(vec3(0.7, 0.7, 0.7) * (1. - color.a), 1. - color.a);
+                //color += vec4(vec3(0.7, 0.7, 0.7), 1. - color.a);
+                //color = vec4(color.rgb, 1.);
                 break;
             }
         }

@@ -60,6 +60,7 @@ const boundingBoxVoxelMapTransferFuncLoader = [
     { name: 'Heart Beat', value: 6 },
     { name: 'Thermal', value: 7 },
     { name: 'Rainbow', value: 8 },
+    { name: 'Red Jelly', value: 9 },
 ];
 
 /**
