@@ -118,6 +118,80 @@ function handleBoundingBoxVoxelMapSelection(selectedVoxelMap) {
     }
 }
 
+function addColorAlphaRows() {
+    const modalContent = boundingBoxVRCElements.voxelMapTransferFuncCustomModalBody;
+    modalContent.innerHTML = ''; // Clear existing content
+
+    const header = document.createElement('div');
+    header.className = 'modal-header';
+
+    const title = document.createElement('h3');
+    title.innerText = 'Customize Transfer Function';
+
+    const closeButton = document.createElement('span');
+    closeButton.className = 'modal-close';
+    closeButton.innerHTML = '&times;';
+    closeButton.onclick = function() {
+        closeModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
+    };
+
+    header.appendChild(title);
+    header.appendChild(closeButton);
+    modalContent.appendChild(header);
+
+    const body = document.createElement('div');
+    body.className = 'modal-body';
+
+    for (let i = 0; i < 5; i++) {
+        const row = document.createElement('div');
+        row.className = 'modal-row';
+
+        const colorInput = document.createElement('input');
+        colorInput.type = 'color';
+        colorInput.className = 'color-selector';
+
+        const labelAlpha = document.createElement('span');
+        labelAlpha.innerText = 'Alpha : ';
+        labelAlpha.className = 'modal-label';
+
+
+        const alphaInput = document.createElement('input');
+        alphaInput.type = 'number';
+        alphaInput.className = 'alpha-input';
+        alphaInput.min = 0;
+        alphaInput.max = 1;
+        alphaInput.step = 0.01;
+
+        row.appendChild(colorInput);
+        row.appendChild(labelAlpha);
+        row.appendChild(alphaInput);
+        body.appendChild(row);
+    }
+
+    modalContent.appendChild(body);
+
+    const footer = document.createElement('div');
+    footer.className = 'modal-footer';
+
+    const validateButton = document.createElement('button');
+    validateButton.innerText = 'Validate';
+    validateButton.onclick = function() {
+        // Add your validation logic here
+        const colorAlphaValues = [];
+        const rows = body.getElementsByClassName('modal-row');
+        for (let row of rows) {
+            const color = row.querySelector('.color-selector').value;
+            const alpha = row.querySelector('.alpha-input').value;
+            colorAlphaValues.push({ color, alpha });
+        }
+        console.log(colorAlphaValues);
+        closeModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
+    };
+
+    footer.appendChild(validateButton);
+    modalContent.appendChild(footer);
+}
+
 /****************************************************/
 /*             BOUNDING BOX UI VRC INIT             */
 /****************************************************/
@@ -179,12 +253,9 @@ function initBoundingBoxVRCUIComponents() {
         boundingBoxVoxelMapTransferFuncLoader,
         function () {
             if(Number(this.value) === -1){
+                console.log('Custom transfer function selected');
                 openModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
-            }else {
-                closeModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
-            }
-
-            if(theVRCBoundingBox !== null){
+            } else if(theVRCBoundingBox !== null){
                 theVRCBoundingBox.setBoundingBoxVoxelMapTransfertFunc(this.value);
             }
         },
@@ -201,8 +272,13 @@ function initBoundingBoxVRCUIComponents() {
     });
 
 
-
+    addColorAlphaRows();
     initStyleCaretBoundingBoxComponents(boundingBoxVRCElements);
+
+    const customOption = boundingBoxVRCElements.voxelMapTransferFuncSelector.querySelector('option[value="-1"]');
+    customOption.addEventListener('click', function (e) {
+        openModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
+    });
 }
 
 initBoundingBoxVRCUIComponents();
