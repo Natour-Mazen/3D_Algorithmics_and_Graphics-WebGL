@@ -9,7 +9,7 @@ class BoundingBoxVRC extends BoundingBox {
         this.boundingBoxVoxelMapNbImageWidth = -1;
         this.boundingBoxVoxelMapNbImageHeight = -1;
         this.boundingBoxVoxelMapStartTime = Date.now();
-        this.boundingBoxTrasnferFuncCustomValues = [[]];
+        this.boundingBoxTrasnferFuncCustomValues = [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.];
     }
 
     // --------------------------------------------
@@ -55,7 +55,7 @@ class BoundingBoxVRC extends BoundingBox {
         this.checkGlError();
 
         // The custom values for the transfer function, if any.
-        gl.uniform1fv(this.shader.uTransferFuncCustomValues, this.boundingBoxTrasnferFuncCustomValues);
+        gl.uniform4fv(this.shader.uTransferFuncCustomValues, this.boundingBoxTrasnferFuncCustomValues);
         this.checkGlError();
 
         gl.activeTexture(gl.TEXTURE0);

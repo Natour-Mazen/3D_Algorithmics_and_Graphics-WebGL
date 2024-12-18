@@ -20,6 +20,7 @@ uniform float uVoxelMapSize; // The size of the images inside the uVoxelMapTypeS
 uniform float uNbImageWidth; // The number of images along the width.
 uniform float uNbImageHeight; // The number of images along the height.
 uniform float uHeartBeatFactor; // The heart factor.
+uniform vec4 uTransferFuncCustomValues[5]; // The values for the custom transfer function.
 
 const int MAX_ITERATIONS = 700; // For the ray marching.
 float BORDER_SIZE = 0.005 * uBBSize; // The border size of the wireframe.
@@ -60,6 +61,40 @@ vec4 getVoxcelInPos(vec3 position)
 
     vec4 texImage = texture2D(uVoxelMapTypeSampler, goodTexCoord(positionTexture));
     return texImage;
+}
+
+vec4 transformationCustom(vec4 color)
+{
+    vec4 color1 = uTransferFuncCustomValues[0];
+    vec4 color2 = uTransferFuncCustomValues[1];
+    vec4 color3 = uTransferFuncCustomValues[2];
+    vec4 color4 = uTransferFuncCustomValues[3];
+    vec4 color5 = uTransferFuncCustomValues[4];
+
+    if(color1.a > 0.5){
+        color.a = 1.;
+        return color;
+    }
+
+    float colorAlpha = color.r;
+
+    if(colorAlpha <= 1. / 6.){
+        color.a = mix(0., color1.a, colorAlpha);
+    }
+    else if(colorAlpha <= 2. / 6.){
+        color.a = mix(color1.a, color2.a, colorAlpha);
+    }
+    else if(colorAlpha <= 3. / 6.){
+        color.a = mix(color2.a, color3.a, colorAlpha);
+    }
+    else if(colorAlpha <= 4. / 6.){
+        color.a = mix(color3.a, color4.a, colorAlpha);
+    }
+    else if(colorAlpha <= 5. / 6.){
+        color.a = mix(color4.a, color5.a, colorAlpha);
+    }
+
+    return color;
 }
 
 vec4 transformationBlackToWhite(vec4 color)
@@ -217,25 +252,27 @@ vec4 transformationFunction(vec4 color)
 {
 
     int v = uVoxelMapTransfertFunc;
-    if(uVoxelMapTransfertFunc == 0){
+    if (v == -1) {
+        color = transformationCustom(color);
+    }else if(v == 0){
         color = transformationBlackToWhite(color);
-    } else if(uVoxelMapTransfertFunc == 1){
+    } else if(v == 1){
         color = transformationRed(color);
-    } else if(uVoxelMapTransfertFunc == 2){
+    } else if(v == 2){
         color = transformationBlueToGreen(color);
-    } else if(uVoxelMapTransfertFunc == 3){
+    } else if(v == 3){
         color = transformationSepia(color);
-    }  else if (uVoxelMapTransfertFunc == 4) {
+    }  else if (v == 4) {
         color = transformationGlitch(color);
-    } else if (uVoxelMapTransfertFunc == 5) {
+    } else if (v == 5) {
         color = transformationInvert(color);
-    } else if (uVoxelMapTransfertFunc == 6) {
+    } else if (v == 6) {
         color = transformationHeartBeat(color);
-    } else if (uVoxelMapTransfertFunc == 7) {
+    } else if (v == 7) {
         color = transformationThermal(color);
-    }else if (uVoxelMapTransfertFunc == 8) {
+    }else if (v == 8) {
         color = transformationRainbow(color);
-    }else if (uVoxelMapTransfertFunc == 9) {
+    }else if (v == 9) {
         color = transformationRedJeely(color);
     } else {
         color = transformationBlackToWhite(color);
