@@ -55,7 +55,7 @@
 
 .modal-close:hover,
 .modal-close:focus {
-    color: black;
+    opacity: 0.8;
     text-decoration: none;
     cursor: pointer;
 }
@@ -75,4 +75,31 @@
 
 .open_modal_btn:hover {
     opacity: 0.8;
+}
+
+
+.modal-color-selector, .modal-alpha-input {
+    height: 28px;
+    top: 5%;
+    background-color: #b6b6b6;
+    color: white;
+    border-radius: 5px;
+    width: 29%;
+    font-size: 14px;
+}
+
+.modal-validate-button{
+    background-color: rgb(169, 159, 159);
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 80%;
+    border-radius: 10px;
+    padding: 5px;
+    transition: ease-in-out 0.4s;
+}
+
+.modal-validate-button:hover {
+    opacity: 0.8;
+    transition: ease-in-out 0.4s;
 }
