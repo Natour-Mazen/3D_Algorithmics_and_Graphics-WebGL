@@ -78,6 +78,16 @@ let theVRCBoundingBox = null;
  */
 let isThereVRCBoundingBox = false;
 
+/**
+ * @type {Number[]}
+ */
+let boundingBoxTransferFuncCustomValues = [
+    1., 0., 0., 0.3,
+    0., 1., 0., 0.4,
+    0., 1., 0., 0.5,
+    1., 0., 1., 0.7,
+    1., 1., 0., 0.8
+];
 
 
 /****************************************************/
@@ -194,10 +204,9 @@ function addColorAlphaRows() {
             colorRGB[3] = numericAlpha;
             colorAlphaValues.push(colorRGB);
         }
-        colorAlphaValues = colorAlphaValues.flat();
-        console.log(colorAlphaValues);
+        boundingBoxTransferFuncCustomValues = colorAlphaValues.flat();
         if(theVRCBoundingBox !== null){
-            theVRCBoundingBox.setBoundingBoxVoxelMapTransferFuncCustomValues(colorAlphaValues);
+            theVRCBoundingBox.setBoundingBoxVoxelMapTransferFuncCustomValues(boundingBoxTransferFuncCustomValues);
         }
         closeModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
     };
@@ -225,6 +234,9 @@ function initBoundingBoxVRCUIComponents() {
                 theVRCBoundingBox.setBoundingBoxVoxelMapNbImageWidth(selectedTypeOption.dataset.width);
                 theVRCBoundingBox.setBoundingBoxVoxelMapNbImageHeight(selectedTypeOption.dataset.height);
                 theVRCBoundingBox.setBoundingBoxVoxelMapTransfertFunc(selectedTransferFuncOption.value);
+                // if the transfer function is custom, set the custom values to the bounding box by default
+                theVRCBoundingBox.setBoundingBoxVoxelMapTransferFuncCustomValues(boundingBoxTransferFuncCustomValues);
+
             }
         });
     });
