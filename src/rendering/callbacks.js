@@ -95,6 +95,13 @@ function handleKeyDown(event) {
 	const moveSpeed = 1;
 
 	switch (key) {
+		// Move up if space is pressed
+		case ' ':
+			distCENTER[1] += moveSpeed;
+			break;
+		case 'shift': // Move down
+			distCENTER[1] -= moveSpeed;
+			break;
 		case 'z': // Move forward
 			distCENTER[2] += moveSpeed;
 			distCENTER[2] = Math.min(distCENTER[2], DEFAULT_MAX_Z); // Ensure distCENTER[2] -2
@@ -122,7 +129,7 @@ function updateCoordinates() {
 	doc.getElementById('coordinate__content__data__y').innerText = `Y: ${distCENTER[1].toFixed(2)}`;
 	doc.getElementById('coordinate__content__data__z').innerText = `Z: ${distCENTER[2].toFixed(2)}`;
 }
-let DEFAULT_DISTCENTER = [0, -1, -35];
+let DEFAULT_DISTCENTER = [0, -3, -38];
 
 function resetCoordinates() {
 	distCENTER = vec3.create(DEFAULT_DISTCENTER)
