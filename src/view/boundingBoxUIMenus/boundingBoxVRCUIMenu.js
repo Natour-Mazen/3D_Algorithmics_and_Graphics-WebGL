@@ -129,40 +129,76 @@ function handleBoundingBoxVoxelMapSelection(selectedVoxelMap) {
     }
 }
 
-// Fonction principale pour ajouter les rangées de couleurs et alpha
+/***************************************/
+/*       MODAL CUSTOM TRANSFER FUNC    */
+/***************************************/
+
 function handleCreateModalBody() {
     const modalContent = boundingBoxVRCElements.voxelMapTransferFuncCustomModalBody;
+    modalContent.innerHTML = ''; // Clear existing content
 
-    modalContent.innerHTML = ''; // Nettoyer le contenu existant
+    // Create modal header
+    modalContent.appendChild(createModalHeader());
 
-    modalContent.appendChild(createModalHeader('Customize Transfer Function'));
-
+    // Create modal body
     const body = document.createElement('div');
     body.className = 'modal-body';
 
-    // Récupérer et ajuster les valeurs par défaut
-    const defaultValues = getDefaultValues(boundingBoxTransferFuncCustomValues);
-
+    // Set default values from boundingBoxTransferFuncCustomValues
+    const defaultValues = getDefaultValues();
     defaultValues.forEach(({ color, alpha }) => {
-        body.appendChild(createColorAlphaRow(color, alpha));
+        body.appendChild(createModalRow(color, alpha));
     });
 
     modalContent.appendChild(body);
-    modalContent.appendChild(createModalFooter(() => validateModalValues(body)));
+
+    // Create modal footer
+    const footer = document.createElement('div');
+    footer.className = 'modal-footer';
+
+    const validateButton = document.createElement('button');
+    validateButton.className = 'modal-validate-button';
+    validateButton.innerText = 'Validate';
+    validateButton.onclick = function () {
+        let colorAlphaValues = [];
+        const rows = body.getElementsByClassName('modal-row');
+        for (let row of rows) {
+            const color = row.querySelector('.modal-color-selector').value;
+            const alpha = row.querySelector('.modal-alpha-input').value;
+            const colorRGB = Color.hextoRGB(color).toArray();
+            
+            colorRGB[3] = Number(alpha) || 0.0;
+            colorAlphaValues.push(colorRGB);
+        }
+
+        // Replace global variable entirely with the new values
+        boundingBoxTransferFuncCustomValues = colorAlphaValues.flat();
+        console.log(boundingBoxTransferFuncCustomValues);
+
+        // Apply the new values to the VRCBoundingBox
+        if (theVRCBoundingBox !== null) {
+            theVRCBoundingBox.setBoundingBoxVoxelMapTransferFuncCustomValues(boundingBoxTransferFuncCustomValues);
+        }
+
+        // Close the modal
+        closeModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
+    };
+
+    footer.appendChild(validateButton);
+    modalContent.appendChild(footer);
 }
 
-// Créer l'en-tête du modal
-function createModalHeader(titleText) {
+function createModalHeader() {
     const header = document.createElement('div');
     header.className = 'modal-header';
 
     const title = document.createElement('h3');
-    title.innerText = titleText;
+    title.innerText = 'Customize Transfer Function';
 
     const closeButton = document.createElement('span');
     closeButton.className = 'modal-close';
     closeButton.innerHTML = '&times;';
-    closeButton.onclick = function() {
+    closeButton.onclick = function () {
         closeModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
     };
 
@@ -171,20 +207,7 @@ function createModalHeader(titleText) {
     return header;
 }
 
-// Obtenir les valeurs par défaut ajustées
-function getDefaultValues(values) {
-    const defaults = [];
-    for (let i = 0; i < values.length; i += 4) {
-        defaults.push({
-            color: adjustLuminance(values[i], values[i + 1], values[i + 2]),
-            alpha: values[i + 3]
-        });
-    }
-    return defaults;
-}
-
-// Créer une rangée pour les sélecteurs de couleur et alpha
-function createColorAlphaRow(color, alpha) {
+function createModalRow(color, alpha) {
     const row = document.createElement('div');
     row.className = 'modal-row';
 
@@ -211,46 +234,30 @@ function createColorAlphaRow(color, alpha) {
     return row;
 }
 
-// Créer le pied de page du modal
-function createModalFooter(onValidate) {
-    const footer = document.createElement('div');
-    footer.className = 'modal-footer';
-
-    const validateButton = document.createElement('button');
-    validateButton.className = 'modal-validate-button';
-    validateButton.innerText = 'Validate';
-    validateButton.onclick = onValidate;
-
-    footer.appendChild(validateButton);
-    return footer;
-}
-
-// Valider les valeurs du modal
-function validateModalValues(body) {
-    const rows = body.getElementsByClassName('modal-row');
-    boundingBoxTransferFuncCustomValues = Array.from(rows).flatMap((row) => {
-        const color = row.querySelector('.modal-color-selector').value;
-        const alpha = parseFloat(row.querySelector('.modal-alpha-input').value) || 0.5;
-        const colorRGB = Color.hextoRGB(color).toArray();
-        colorRGB[3] = alpha;
-        return colorRGB;
-    });
-    if (theVRCBoundingBox !== null) {
-        theVRCBoundingBox.setBoundingBoxVoxelMapTransferFuncCustomValues(boundingBoxTransferFuncCustomValues);
+function getDefaultValues() {
+    const defaultValues = [];
+    for (let i = 0; i < boundingBoxTransferFuncCustomValues.length; i += 4) {
+        const adjustedColor = adjustLuminance(
+            boundingBoxTransferFuncCustomValues[i],
+            boundingBoxTransferFuncCustomValues[i + 1],
+            boundingBoxTransferFuncCustomValues[i + 2]
+        );
+        defaultValues.push({
+            color: adjustedColor,
+            alpha: boundingBoxTransferFuncCustomValues[i + 3]
+        });
     }
-    closeModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
+    return defaultValues;
 }
 
-// Ajuster la luminance d'une couleur
 function adjustLuminance(r, g, b, factor = 1.5) {
     const adjust = (value) => Math.min(255, Math.floor(value * factor));
     const hex = (value) => value.toString(16).padStart(2, '0');
-    const adjustedR = adjust(r * 255); // Convertir en échelle 0-255
+    const adjustedR = adjust(r * 255); // Convert to 0-255 scale
     const adjustedG = adjust(g * 255);
     const adjustedB = adjust(b * 255);
     return `#${hex(adjustedR)}${hex(adjustedG)}${hex(adjustedB)}`;
 }
-
 
 
 /****************************************************/
