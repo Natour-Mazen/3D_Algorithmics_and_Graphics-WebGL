@@ -10,6 +10,7 @@ class BoundingBoxVRC extends BoundingBox {
         this.boundingBoxVoxelMapNbImageHeight = -1;
         this.boundingBoxVoxelMapStartTime = Date.now();
         this.boundingBoxTrasnferFuncCustomValues = [];
+        this.boundingBoxVoxelMapVoxelIntensity = 1;
     }
 
     // --------------------------------------------
@@ -25,6 +26,7 @@ class BoundingBoxVRC extends BoundingBox {
         this.shader.uNbImageHeight = gl.getUniformLocation(this.shader, "uNbImageHeight");
         this.shader.uHeartBeatFactor = gl.getUniformLocation(this.shader, "uHeartBeatFactor");
         this.shader.uTransferFuncCustomValues = gl.getUniformLocation(this.shader, "uTransferFuncCustomValues");
+        this.shader.uVoxelMapVoxelIntensity = gl.getUniformLocation(this.shader, "uVoxelMapVoxelIntensity");
     }
 
     setUniforms() {
@@ -58,6 +60,10 @@ class BoundingBoxVRC extends BoundingBox {
         gl.uniform4fv(this.shader.uTransferFuncCustomValues, this.boundingBoxTrasnferFuncCustomValues);
         this.checkGlError();
 
+        // The voxel intensity of the voxel map.
+        gl.uniform1f(this.shader.uVoxelMapVoxelIntensity, this.boundingBoxVoxelMapVoxelIntensity);
+        this.checkGlError();
+
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, boundingBoxVoxelMapType);
         gl.uniform1i(this.shader.uVoxelMapTypeSampler, 0);
@@ -89,6 +95,10 @@ class BoundingBoxVRC extends BoundingBox {
 
     setBoundingBoxVoxelMapTransferFuncCustomValues(value) {
         this.boundingBoxTrasnferFuncCustomValues = value;
+    }
+
+    setBoundingBoxVoxelMapVoxelIntensity(value) {
+        this.boundingBoxVoxelMapVoxelIntensity = value;
     }
 
 }

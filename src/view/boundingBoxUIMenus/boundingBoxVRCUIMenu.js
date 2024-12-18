@@ -17,8 +17,12 @@ const boundingBoxVRCElements = {
     voxelMapTransferFuncCustomModalBody: doc.getElementById('boundingBoxVRC_transferFuncCustom_modalBody'),
 
     voxelMapTransferFuncSelector: doc.getElementById('boundingBoxVRC_voxelMap_transferFunc_selector'),
+
     voxelMapRayDepthSlider: doc.getElementById('boundingBoxVRC_voxelMap_ray_depth_slider'),
-    voxelMapRayDepthValueDisplay: doc.getElementById('boundingBoxVRC_voxelMap_ray_depth_value')
+    voxelMapRayDepthValueDisplay: doc.getElementById('boundingBoxVRC_voxelMap_ray_depth_value'),
+
+    voxelMapVoxelIntensitySlider: doc.getElementById('boundingBoxVRC_voxelMap_voxel-intensity'),
+    voxelMapVoxelIntensityValueDisplay: doc.getElementById('boundingBoxVRC_voxelMap_voxel-intensity_value')
 };
 
 /****************************************************/
@@ -281,6 +285,7 @@ function initBoundingBoxVRCUIComponents() {
                 theVRCBoundingBox.setBoundingBoxVoxelMapTransfertFunc(selectedTransferFuncOption.value);
                 // if the transfer function is custom, set the custom values to the bounding box by default
                 theVRCBoundingBox.setBoundingBoxVoxelMapTransferFuncCustomValues(boundingBoxTransferFuncCustomValues);
+                theVRCBoundingBox.setBoundingBoxVoxelMapVoxelIntensity(boundingBoxVRCElements.voxelMapVoxelIntensitySlider.value);
 
             }
         });
@@ -316,6 +321,13 @@ function initBoundingBoxVRCUIComponents() {
     initSlider(boundingBoxVRCElements.sizeSlider, async function () {
         await handleUpdateBoundingBoxSize(theVRCBoundingBox, this.value);
         boundingBoxVRCElements.sizeValueDisplay.innerHTML = this.value;
+    });
+
+    initSlider(boundingBoxVRCElements.voxelMapVoxelIntensitySlider, function () {
+        if(theVRCBoundingBox !== null){
+            theVRCBoundingBox.setBoundingBoxVoxelMapVoxelIntensity(this.value);
+            boundingBoxVRCElements.voxelMapVoxelIntensityValueDisplay.innerHTML = this.value;
+        }
     });
 
 

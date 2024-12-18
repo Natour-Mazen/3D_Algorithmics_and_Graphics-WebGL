@@ -21,6 +21,7 @@ uniform float uNbImageWidth; // The number of images along the width.
 uniform float uNbImageHeight; // The number of images along the height.
 uniform float uHeartBeatFactor; // The heart factor.
 uniform vec4 uTransferFuncCustomValues[5]; // The values for the custom transfer function.
+uniform float uVoxelMapVoxelIntensity; // The intensity of the voxel.
 
 const int MAX_ITERATIONS = 700; // For the ray marching.
 float BORDER_SIZE = 0.005 * uBBSize; // The border size of the wireframe.
@@ -238,7 +239,7 @@ vec4 transformationCustom(vec4 color)
     vec4 color4 = uTransferFuncCustomValues[3].rbga;
     vec4 color5 = uTransferFuncCustomValues[4].rbga;
 
-    color *= uVoxelMapRayDepth / 2.; // TODO : To change with another slider.
+    color *= uVoxelMapVoxelIntensity / 2.; // TODO : To change with another slider.
     float colorAlpha = color.r;
 
     // To remove the artifacts.
