@@ -97,7 +97,7 @@ vec4 transformationCustom(vec4 color)
     return color;
 }
 
-vec4 transformationBlackToWhite(vec4 color)
+vec4 transformationDefault(vec4 color)
 {
     color.a = color.r;
     if(color.a <= 0.1 / uVoxelMapRayDepth){
@@ -252,30 +252,30 @@ vec4 transformationFunction(vec4 color)
 {
 
     int v = uVoxelMapTransfertFunc;
-    if (v == -1) {
+    if (v == 0) {
+        color = transformationDefault(color);
+    }else if(v == 1){
         color = transformationCustom(color);
-    }else if(v == 0){
-        color = transformationBlackToWhite(color);
-    } else if(v == 1){
-        color = transformationRed(color);
     } else if(v == 2){
-        color = transformationBlueToGreen(color);
+        color = transformationRed(color);
     } else if(v == 3){
+        color = transformationBlueToGreen(color);
+    } else if(v == 4){
         color = transformationSepia(color);
-    }  else if (v == 4) {
+    }  else if (v == 5) {
         color = transformationGlitch(color);
-    } else if (v == 5) {
-        color = transformationInvert(color);
     } else if (v == 6) {
-        color = transformationHeartBeat(color);
+        color = transformationInvert(color);
     } else if (v == 7) {
+        color = transformationHeartBeat(color);
+    } else if (v == 8) {
         color = transformationThermal(color);
-    }else if (v == 8) {
-        color = transformationRainbow(color);
     }else if (v == 9) {
+        color = transformationRainbow(color);
+    }else if (v == 10) {
         color = transformationRedJeely(color);
     } else {
-        color = transformationBlackToWhite(color);
+        color = transformationDefault(color);
     }
 
     return color;
