@@ -65,38 +65,42 @@ vec4 getVoxcelInPos(vec3 position)
 
 vec4 transformationCustom(vec4 color)
 {
-    vec4 color1 = uTransferFuncCustomValues[0];
-    vec4 color2 = uTransferFuncCustomValues[1];
-    vec4 color3 = uTransferFuncCustomValues[2];
-    vec4 color4 = uTransferFuncCustomValues[3];
-    vec4 color5 = uTransferFuncCustomValues[4];
+    // The values are in (r,b,g), why we don't know because in the js it's (r,g,b).
+    vec4 color1 = uTransferFuncCustomValues[0].rbga;
+    vec4 color2 = uTransferFuncCustomValues[1].rbga;
+    vec4 color3 = uTransferFuncCustomValues[2].rbga;
+    vec4 color4 = uTransferFuncCustomValues[3].rbga;
+    vec4 color5 = uTransferFuncCustomValues[4].rbga;
 
+    color *= uVoxelMapRayDepth / 2.; // TODO : To change with another slider. 
     float colorAlpha = color.r;
 
-    if(colorAlpha <= 0.01 / uVoxelMapRayDepth){
+    if(colorAlpha <= 0.1 / uVoxelMapRayDepth){
         color.a = 0.;
         return color;
     }
 
-    if(colorAlpha <= 1. / 6.){
-        color.a = mix(0., color1.a, (colorAlpha) * (1. / 6.));
-        //color.rgb = vec3(color1.r / colorAlpha, color1.g / colorAlpha, color1.b / colorAlpha);
+    if(colorAlpha <= 1. / 4.){
+        float mixValue = colorAlpha * (1. / 4.);
+        color.a = mix(color1.a, color2.a, (colorAlpha) * (1. / 4.));
+        //color.rgb = vec3(color1.r, color1.g, color1.b);
+        color.rgb = mix(color1.rgb, color2.rgb, (colorAlpha) * (1. / 4.));
     }
-    else if(colorAlpha <= 2. / 6.){
-        color.a = mix(color1.a, color2.a, (colorAlpha - 1. / 6.) * (2. / 6. - 1. / 6.));
-        //color.rgb = vec3(color2.r / colorAlpha, color2.g / colorAlpha, color2.b / colorAlpha);
+    else if(colorAlpha <= 2. / 4.){
+        float mixValue = (colorAlpha - 1. / 4.) * (2. / 4. - 1. / 4.);
+        color.a = mix(color2.a, color3.a, mixValue);
+        //color.rgb = vec3(color2.r, color2.g, color2.b);
+        color.rgb = mix(color2.rgb, color3.rgb, mixValue);
     }
-    else if(colorAlpha <= 3. / 6.){
-        color.a = mix(color2.a, color3.a, (colorAlpha - 2. / 6.) * (3. / 6. - 2. / 6.));
-        //color.rgb = vec3(color3.r / colorAlpha, color3.g / colorAlpha, color3.b / colorAlpha);
+    else if(colorAlpha <= 3. / 4.){
+        float mixValue = (colorAlpha - 2. / 4.) * (3. / 4. - 2. / 4.);
+        color.a = mix(color3.a, color4.a, mixValue);
+        color.rgb = mix(color3.rgb, color4.rgb, mixValue);
     }
-    else if(colorAlpha <= 4. / 6.){
-        color.a = mix(color3.a, color4.a, (colorAlpha - 3. / 6.) * (4. / 6. - 3. / 6.));
-        //color.rgb = vec3(color4.r / colorAlpha, color4.g / colorAlpha, color4.b / colorAlpha);
-    }
-    else if(colorAlpha <= 5. / 6.){
-        color.a = mix(color4.a, color5.a, (colorAlpha - 4. / 6.) * (5. / 6. - 4. / 6.));
-        //color.rgb = vec3(color5.r / colorAlpha, color5.g / colorAlpha, color5.b / colorAlpha);
+    else{ // colorAlpha <= 1.
+        float mixValue = (colorAlpha - 3. / 4.) * (4. / 4. - 3. / 4.);
+        color.a = mix(color4.a, color5.a, mixValue);
+        color.rgb = mix(color4.rgb, color5.rgb, mixValue);
     }
 
     return color;
