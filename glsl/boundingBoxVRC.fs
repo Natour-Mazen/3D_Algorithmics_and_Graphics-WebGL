@@ -260,7 +260,7 @@ vec4 transformationCustom(vec4 color)
     ///    |  2     4  |
     ///    |   \   /   |
     ///    |    \ /    |
-    ///    |     3     |
+    ///    |     3     |  >>> The position on 'x' of the points are fixed but alpha change the 'y' position.
     ///    |___________|
 
     // In function of the color of the pixel (here the red component), we select the point on the curve that is returned.
