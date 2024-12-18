@@ -9,7 +9,11 @@ class BoundingBoxVRC extends BoundingBox {
         this.boundingBoxVoxelMapNbImageWidth = -1;
         this.boundingBoxVoxelMapNbImageHeight = -1;
         this.boundingBoxVoxelMapStartTime = Date.now();
-        this.boundingBoxTrasnferFuncCustomValues = [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.];
+        this.boundingBoxTrasnferFuncCustomValues = [1., 0., 0., 0.3,
+            0., 1., 0., 0.4,
+            0., 1., 0., 0.5,
+            1., 0., 1., 0.7,
+            1., 1., 0., 0.8];
     }
 
     // --------------------------------------------
