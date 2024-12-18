@@ -149,7 +149,7 @@ function addColorAlphaRows() {
 
         const colorInput = document.createElement('input');
         colorInput.type = 'color';
-        colorInput.className = 'color-selector';
+        colorInput.className = 'modal-color-selector';
 
         const labelAlpha = document.createElement('span');
         labelAlpha.innerText = 'Alpha : ';
@@ -158,7 +158,7 @@ function addColorAlphaRows() {
 
         const alphaInput = document.createElement('input');
         alphaInput.type = 'number';
-        alphaInput.className = 'alpha-input';
+        alphaInput.className = 'modal-alpha-input';
         alphaInput.min = 0;
         alphaInput.max = 1;
         alphaInput.step = 0.01;
@@ -175,17 +175,29 @@ function addColorAlphaRows() {
     footer.className = 'modal-footer';
 
     const validateButton = document.createElement('button');
+    validateButton.className = 'modal-validate-button';
     validateButton.innerText = 'Validate';
     validateButton.onclick = function() {
-        // Add your validation logic here
-        const colorAlphaValues = [];
+        let colorAlphaValues = [];
         const rows = body.getElementsByClassName('modal-row');
         for (let row of rows) {
-            const color = row.querySelector('.color-selector').value;
-            const alpha = row.querySelector('.alpha-input').value;
-            colorAlphaValues.push({ color, alpha });
+            const color = row.querySelector('.modal-color-selector').value;
+            const alpha = row.querySelector('.modal-alpha-input').value;
+            const colorRGB = Color.hextoRGB(color).toArray();
+            // replace the third value of the color with the alpha value
+            let numericAlpha = 0.5;
+            try {
+                numericAlpha = Number(alpha);
+            } catch (e) {
+                console.error(e);
+            }
+            colorRGB[3] = numericAlpha;
+            colorAlphaValues.push(colorRGB);
         }
         console.log(colorAlphaValues);
+        if(theVRCBoundingBox !== null){
+            theVRCBoundingBox.setBoundingBoxVoxelMapTransferFuncCustomValues(colorAlphaValues);
+        }
         closeModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
     };
 
@@ -256,7 +268,8 @@ function initBoundingBoxVRCUIComponents() {
             if(Number(this.value) === -1){
                 console.log('Custom transfer function selected');
                 openModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
-            } else if(theVRCBoundingBox !== null){
+            }
+            if(theVRCBoundingBox !== null){
                 theVRCBoundingBox.setBoundingBoxVoxelMapTransfertFunc(this.value);
             }
         },
