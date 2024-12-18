@@ -57,54 +57,6 @@ class BoundingBox extends ObjectToDraw {
             5, 6, 7
         ];
 
-        const normalPink = [
-            0.0, -1.0, 0.0, // 0
-            0.0, -1.0, 0.0, // 1
-            0.0, -1.0, 0.0, // 2
-            0.0, -1.0, 0.0, // 3
-            0.0, -1.0, 0.0, // 4
-            0.0, -1.0, 0.0, // 5
-            0.0, -1.0, 0.0, // 6
-        ];
-
-        const normalYellow = [
-            1.0, 0.0, 0.0, // 0
-            1.0, 0.0, 0.0, // 1
-            1.0, 0.0, 0.0, // 2
-            1.0, 0.0, 0.0, // 3
-            1.0, 0.0, 0.0, // 4
-            1.0, 0.0, 0.0, // 5
-            1.0, 0.0, 0.0, // 6
-        ];
-        const normalBlue = [
-            0.0, 1.0, 0.0, // 0
-            0.0, 1.0, 0.0, // 1
-            0.0, 1.0, 0.0, // 2
-            0.0, 1.0, 0.0, // 3
-            0.0, 1.0, 0.0, // 4
-            0.0, 1.0, 0.0, // 5
-            0.0, 1.0, 0.0, // 6
-        ];
-        const normalGreen = [
-            -1.0, 0.0, 0.0, // 0
-            -1.0, 0.0, 0.0, // 1
-            -1.0, 0.0, 0.0, // 2
-            -1.0, 0.0, 0.0, // 3
-            -1.0, 0.0, 0.0, // 4
-            -1.0, 0.0, 0.0, // 5
-            -1.0, 0.0, 0.0, // 6
-        ];
-        const normalRed = [
-            0.0, 0.0, 1.0, // 0
-            0.0, 0.0, 1.0, // 1
-            0.0, 0.0, 1.0, // 2
-            0.0, 0.0, 1.0, // 3
-            0.0, 0.0, 1.0, // 4
-            0.0, 0.0, 1.0, // 5
-            0.0, 0.0, 1.0, // 6
-        ];
-
-
         // Vertex
         this.vBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
@@ -142,48 +94,15 @@ class BoundingBox extends ObjectToDraw {
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(trianglesRed), gl.STATIC_DRAW);
         this.tRedBuffer.itemSize = 1;
         this.tRedBuffer.numItems = 6;
-
-        // NORMALS
-        this.nPinkBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.nPinkBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalPink), gl.STATIC_DRAW);
-        this.nPinkBuffer.itemSize = 3;
-        this.nPinkBuffer.numItems = 6;
-
-        this.nYellowBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.nYellowBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalYellow), gl.STATIC_DRAW);
-        this.nYellowBuffer.itemSize = 3;
-        this.nYellowBuffer.numItems = 6;
-
-        this.nBlueBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.nBlueBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalBlue), gl.STATIC_DRAW);
-        this.nBlueBuffer.itemSize = 3;
-        this.nBlueBuffer.numItems = 6;
-
-        this.nGreenBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.nGreenBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalGreen), gl.STATIC_DRAW);
-        this.nGreenBuffer.itemSize = 3;
-        this.nGreenBuffer.numItems = 6;
-
-        this.nRedBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.nRedBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalRed), gl.STATIC_DRAW);
-        this.nRedBuffer.itemSize = 3;
-        this.nRedBuffer.numItems = 6;
     }
 
     // --------------------------------------------
     setShadersParams() {
         this.setShaderAttributes([
             { attribName: "aVertexPosition", buffer: this.vBuffer, itemSize: this.vBuffer.itemSize },
-            { attribName: "aVertexNormal", buffer: this.nRedBuffer, itemSize: this.nRedBuffer.itemSize },
         ]);
 
         this.shader.uBBSize = gl.getUniformLocation(this.shader, "uBBSize");
-
 
         this.shader.uIsWireFrame = gl.getUniformLocation(this.shader, "uIsWireFrame");
         this.shader.uIsOpaque = gl.getUniformLocation(this.shader, "uIsOpaque");
@@ -217,22 +136,15 @@ class BoundingBox extends ObjectToDraw {
 
     // --------------------------------------------
     drawAux() {
-        this.setUniformColor(Color.PINK);
-        this.drawTriangles(this.tPinkBuffer, this.nPinkBuffer);
-        this.setUniformColor(Color.YELLOW);
-        this.drawTriangles(this.tYellowBuffer, this.nYellowBuffer);
-        this.setUniformColor(Color.BLUE);
-        this.drawTriangles(this.tBlueBuffer, this.nBlueBuffer);
-        this.setUniformColor(Color.GREEN);
-        this.drawTriangles(this.tGreenBuffer, this.nGreenBuffer);
-        this.setUniformColor(Color.RED);
-        this.drawTriangles(this.tRedBuffer, this.nRedBuffer);
+        this.drawTriangles(this.tPinkBuffer);
+        this.drawTriangles(this.tYellowBuffer);
+        this.drawTriangles(this.tBlueBuffer);
+        this.drawTriangles(this.tGreenBuffer);
+        this.drawTriangles(this.tRedBuffer);
     }
 
-    drawTriangles(tBuffer, nBuffer)
+    drawTriangles(tBuffer)
     {
-        this.setShaderAttributes([{ attribName: "aVertexNormal", buffer: nBuffer, itemSize: nBuffer.itemSize }]);
-
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, tBuffer);
 
         gl.drawElements(gl.TRIANGLES, tBuffer.numItems, gl.UNSIGNED_INT, 0);
