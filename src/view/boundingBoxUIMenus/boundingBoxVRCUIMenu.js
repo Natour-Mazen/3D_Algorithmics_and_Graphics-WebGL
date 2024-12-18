@@ -51,16 +51,16 @@ const boundingBoxVoxelMapTypeLoader = [
  */
 const boundingBoxVoxelMapTransferFuncLoader = [
     { name: 'Default', value: 0 },
-    { name: 'Custom', value: -1 },
-    { name: 'Red', value: 1 },
-    { name: 'BleuToGreen', value: 2 },
-    { name: 'Sepia', value: 3 },
-    { name: 'Glitch', value: 4 },
-    { name: 'Invert', value: 5 },
-    { name: 'Heart Beat', value: 6 },
-    { name: 'Thermal', value: 7 },
-    { name: 'Rainbow', value: 8 },
-    { name: 'Red Jelly', value: 9 },
+    { name: 'Custom', value: 1 },
+    { name: 'Red', value: 2 },
+    { name: 'BleuToGreen', value: 3 },
+    { name: 'Sepia', value: 4 },
+    { name: 'Glitch', value: 5 },
+    { name: 'Invert', value: 6 },
+    { name: 'Heart Beat', value: 7 },
+    { name: 'Thermal', value: 8},
+    { name: 'Rainbow', value: 9 },
+    { name: 'Red Jelly', value: 10 },
 ];
 
 /**
@@ -82,11 +82,11 @@ let isThereVRCBoundingBox = false;
  * @type {Number[]}
  */
 let boundingBoxTransferFuncCustomValues = [
-    1., 0., 0., 0.3,
-    0., 1., 0., 0.4,
-    0., 1., 0., 0.5,
-    1., 0., 1., 0.7,
-    1., 1., 0., 0.8
+    1., 0., 0., 0.3, // Red
+    0., 1., 0., 0.4, // Green
+    0., 1., 0., 0.5, // Green
+    1., 0., 1., 0.7, // Purple
+    1., 1., 0., 0.8 // Yellow
 ];
 
 
@@ -129,15 +129,35 @@ function handleBoundingBoxVoxelMapSelection(selectedVoxelMap) {
     }
 }
 
-function addColorAlphaRows() {
+// Fonction principale pour ajouter les rangées de couleurs et alpha
+function handleCreateModalBody() {
     const modalContent = boundingBoxVRCElements.voxelMapTransferFuncCustomModalBody;
-    modalContent.innerHTML = ''; // Clear existing content
 
+    modalContent.innerHTML = ''; // Nettoyer le contenu existant
+
+    modalContent.appendChild(createModalHeader('Customize Transfer Function'));
+
+    const body = document.createElement('div');
+    body.className = 'modal-body';
+
+    // Récupérer et ajuster les valeurs par défaut
+    const defaultValues = getDefaultValues(boundingBoxTransferFuncCustomValues);
+
+    defaultValues.forEach(({ color, alpha }) => {
+        body.appendChild(createColorAlphaRow(color, alpha));
+    });
+
+    modalContent.appendChild(body);
+    modalContent.appendChild(createModalFooter(() => validateModalValues(body)));
+}
+
+// Créer l'en-tête du modal
+function createModalHeader(titleText) {
     const header = document.createElement('div');
     header.className = 'modal-header';
 
     const title = document.createElement('h3');
-    title.innerText = 'Customize Transfer Function';
+    title.innerText = titleText;
 
     const closeButton = document.createElement('span');
     closeButton.className = 'modal-close';
@@ -148,72 +168,90 @@ function addColorAlphaRows() {
 
     header.appendChild(title);
     header.appendChild(closeButton);
-    modalContent.appendChild(header);
+    return header;
+}
 
-    const body = document.createElement('div');
-    body.className = 'modal-body';
-
-    for (let i = 0; i < 5; i++) {
-        const row = document.createElement('div');
-        row.className = 'modal-row';
-
-        const colorInput = document.createElement('input');
-        colorInput.type = 'color';
-        colorInput.className = 'modal-color-selector';
-
-        const labelAlpha = document.createElement('span');
-        labelAlpha.innerText = 'Alpha : ';
-        labelAlpha.className = 'modal-label';
-
-
-        const alphaInput = document.createElement('input');
-        alphaInput.type = 'number';
-        alphaInput.className = 'modal-alpha-input';
-        alphaInput.min = 0;
-        alphaInput.max = 1;
-        alphaInput.step = 0.01;
-
-        row.appendChild(colorInput);
-        row.appendChild(labelAlpha);
-        row.appendChild(alphaInput);
-        body.appendChild(row);
+// Obtenir les valeurs par défaut ajustées
+function getDefaultValues(values) {
+    const defaults = [];
+    for (let i = 0; i < values.length; i += 4) {
+        defaults.push({
+            color: adjustLuminance(values[i], values[i + 1], values[i + 2]),
+            alpha: values[i + 3]
+        });
     }
+    return defaults;
+}
 
-    modalContent.appendChild(body);
+// Créer une rangée pour les sélecteurs de couleur et alpha
+function createColorAlphaRow(color, alpha) {
+    const row = document.createElement('div');
+    row.className = 'modal-row';
 
+    const colorInput = document.createElement('input');
+    colorInput.type = 'color';
+    colorInput.className = 'modal-color-selector';
+    colorInput.value = color;
+
+    const labelAlpha = document.createElement('span');
+    labelAlpha.innerText = 'Alpha : ';
+    labelAlpha.className = 'modal-label';
+
+    const alphaInput = document.createElement('input');
+    alphaInput.type = 'number';
+    alphaInput.className = 'modal-alpha-input';
+    alphaInput.min = 0;
+    alphaInput.max = 1;
+    alphaInput.step = 0.01;
+    alphaInput.value = alpha;
+
+    row.appendChild(colorInput);
+    row.appendChild(labelAlpha);
+    row.appendChild(alphaInput);
+    return row;
+}
+
+// Créer le pied de page du modal
+function createModalFooter(onValidate) {
     const footer = document.createElement('div');
     footer.className = 'modal-footer';
 
     const validateButton = document.createElement('button');
     validateButton.className = 'modal-validate-button';
     validateButton.innerText = 'Validate';
-    validateButton.onclick = function() {
-        let colorAlphaValues = [];
-        const rows = body.getElementsByClassName('modal-row');
-        for (let row of rows) {
-            const color = row.querySelector('.modal-color-selector').value;
-            const alpha = row.querySelector('.modal-alpha-input').value;
-            const colorRGB = Color.hextoRGB(color).toArray();
-            // replace the third value of the color with the alpha value
-            let numericAlpha = 0.5;
-            try {
-                numericAlpha = Number(alpha);
-            } catch (e) {
-                console.error(e);
-            }
-            colorRGB[3] = numericAlpha;
-            colorAlphaValues.push(colorRGB);
-        }
-        boundingBoxTransferFuncCustomValues = colorAlphaValues.flat();
-        if(theVRCBoundingBox !== null){
-            theVRCBoundingBox.setBoundingBoxVoxelMapTransferFuncCustomValues(boundingBoxTransferFuncCustomValues);
-        }
-        closeModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
-    };
+    validateButton.onclick = onValidate;
 
     footer.appendChild(validateButton);
-    modalContent.appendChild(footer);
+    return footer;
 }
+
+// Valider les valeurs du modal
+function validateModalValues(body) {
+    const rows = body.getElementsByClassName('modal-row');
+    boundingBoxTransferFuncCustomValues = Array.from(rows).flatMap((row) => {
+        const color = row.querySelector('.modal-color-selector').value;
+        const alpha = parseFloat(row.querySelector('.modal-alpha-input').value) || 0.5;
+        const colorRGB = Color.hextoRGB(color).toArray();
+        colorRGB[3] = alpha;
+        return colorRGB;
+    });
+    if (theVRCBoundingBox !== null) {
+        theVRCBoundingBox.setBoundingBoxVoxelMapTransferFuncCustomValues(boundingBoxTransferFuncCustomValues);
+    }
+    closeModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
+}
+
+// Ajuster la luminance d'une couleur
+function adjustLuminance(r, g, b, factor = 1.5) {
+    const adjust = (value) => Math.min(255, Math.floor(value * factor));
+    const hex = (value) => value.toString(16).padStart(2, '0');
+    const adjustedR = adjust(r * 255); // Convertir en échelle 0-255
+    const adjustedG = adjust(g * 255);
+    const adjustedB = adjust(b * 255);
+    return `#${hex(adjustedR)}${hex(adjustedG)}${hex(adjustedB)}`;
+}
+
+
 
 /****************************************************/
 /*             BOUNDING BOX UI VRC INIT             */
@@ -299,10 +337,10 @@ function initBoundingBoxVRCUIComponents() {
     });
 
 
-    addColorAlphaRows();
+    handleCreateModalBody();
     initStyleCaretBoundingBoxComponents(boundingBoxVRCElements);
 
-    const customOption = boundingBoxVRCElements.voxelMapTransferFuncSelector.querySelector('option[value="-1"]');
+    const customOption = boundingBoxVRCElements.voxelMapTransferFuncSelector.querySelector('option[value="1"]');
     customOption.addEventListener('click', function (e) {
         openModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
     });
