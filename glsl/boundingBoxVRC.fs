@@ -73,25 +73,30 @@ vec4 transformationCustom(vec4 color)
 
     float colorAlpha = color.r;
 
+    if(colorAlpha <= 0.01 / uVoxelMapRayDepth){
+        color.a = 0.;
+        return color;
+    }
+
     if(colorAlpha <= 1. / 6.){
-        color.a = mix(0., color1.a, colorAlpha);
-        color.rgb = vec3(color1.r / colorAlpha, color1.g / colorAlpha, color1.b / colorAlpha);
+        color.a = mix(0., color1.a, (colorAlpha) * (1. / 6.));
+        //color.rgb = vec3(color1.r / colorAlpha, color1.g / colorAlpha, color1.b / colorAlpha);
     }
     else if(colorAlpha <= 2. / 6.){
-        color.a = mix(color1.a, color2.a, colorAlpha);
-        color.rgb = vec3(color2.r / colorAlpha, color2.g / colorAlpha, color2.b / colorAlpha);
+        color.a = mix(color1.a, color2.a, (colorAlpha - 1. / 6.) * (2. / 6. - 1. / 6.));
+        //color.rgb = vec3(color2.r / colorAlpha, color2.g / colorAlpha, color2.b / colorAlpha);
     }
     else if(colorAlpha <= 3. / 6.){
-        color.a = mix(color2.a, color3.a, colorAlpha);
-        color.rgb = vec3(color3.r / colorAlpha, color3.g / colorAlpha, color3.b / colorAlpha);
+        color.a = mix(color2.a, color3.a, (colorAlpha - 2. / 6.) * (3. / 6. - 2. / 6.));
+        //color.rgb = vec3(color3.r / colorAlpha, color3.g / colorAlpha, color3.b / colorAlpha);
     }
     else if(colorAlpha <= 4. / 6.){
-        color.a = mix(color3.a, color4.a, colorAlpha);
-        color.rgb = vec3(color4.r / colorAlpha, color4.g / colorAlpha, color4.b / colorAlpha);
+        color.a = mix(color3.a, color4.a, (colorAlpha - 3. / 6.) * (4. / 6. - 3. / 6.));
+        //color.rgb = vec3(color4.r / colorAlpha, color4.g / colorAlpha, color4.b / colorAlpha);
     }
     else if(colorAlpha <= 5. / 6.){
-        color.a = mix(color4.a, color5.a, colorAlpha);
-        color.rgb = vec3(color5.r / colorAlpha, color5.g / colorAlpha, color5.b / colorAlpha);
+        color.a = mix(color4.a, color5.a, (colorAlpha - 4. / 6.) * (5. / 6. - 4. / 6.));
+        //color.rgb = vec3(color5.r / colorAlpha, color5.g / colorAlpha, color5.b / colorAlpha);
     }
 
     return color;
