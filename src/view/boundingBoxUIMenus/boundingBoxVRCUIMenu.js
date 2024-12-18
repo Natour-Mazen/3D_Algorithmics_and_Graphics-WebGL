@@ -194,6 +194,7 @@ function addColorAlphaRows() {
             colorRGB[3] = numericAlpha;
             colorAlphaValues.push(colorRGB);
         }
+        colorAlphaValues = colorAlphaValues.flat();
         console.log(colorAlphaValues);
         if(theVRCBoundingBox !== null){
             theVRCBoundingBox.setBoundingBoxVoxelMapTransferFuncCustomValues(colorAlphaValues);
