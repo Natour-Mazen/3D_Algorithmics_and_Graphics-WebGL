@@ -99,6 +99,11 @@ function createItemElement(item) {
         `;
         row.style.height = "0px";
         row.style.overflow = "hidden";
+    } else if(item.type === 'button') {
+        row.innerHTML = `
+        <label for="${item.id}">${item.label}</label>
+        <button id="${item.id}" class="button-custom">${item.labelButton}</button>
+        `;
     }
 
     itemElement.appendChild(row);
