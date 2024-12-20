@@ -11,6 +11,8 @@ class BoundingBoxVRC extends BoundingBox {
         this.boundingBoxVoxelMapStartTime = Date.now();
         this.boundingBoxTrasnferFuncCustomValues = [];
         this.boundingBoxVoxelMapVoxelIntensity = 1;
+        this.boundingBoxVoxelMapDisplaySlicesCubes = false;
+        this.boundingBoxVoxelMapSlicesToDisplay = [];
     }
 
     // --------------------------------------------
@@ -27,6 +29,8 @@ class BoundingBoxVRC extends BoundingBox {
         this.shader.uHeartBeatFactor = gl.getUniformLocation(this.shader, "uHeartBeatFactor");
         this.shader.uTransferFuncCustomValues = gl.getUniformLocation(this.shader, "uTransferFuncCustomValues");
         this.shader.uVoxelMapVoxelIntensity = gl.getUniformLocation(this.shader, "uVoxelMapVoxelIntensity");
+        this.shader.uDisplaySlicesCubes = gl.getUniformLocation(this.shader, "uDisplaySlicesCubes");
+        this.shader.uSlicesToDisplay = gl.getUniformLocation(this.shader, "uSlicesToDisplay");
     }
 
     setUniforms() {
@@ -57,11 +61,19 @@ class BoundingBoxVRC extends BoundingBox {
         this.checkGlError();
 
         // The custom values for the transfer function, if any.
-        gl.uniform4fv(this.shader.uTransferFuncCustomValues, this.boundingBoxTrasnferFuncCustomValues);
+        gl.uniform4fv(this.shader.uTransferFuncCustomValues,new Float32Array(this.boundingBoxTrasnferFuncCustomValues) );
         this.checkGlError();
 
         // The voxel intensity of the voxel map.
         gl.uniform1f(this.shader.uVoxelMapVoxelIntensity, this.boundingBoxVoxelMapVoxelIntensity);
+        this.checkGlError();
+
+        // The slice modification active.
+        gl.uniform1i(this.shader.uDisplaySlicesCubes, this.boundingBoxVoxelMapDisplaySlicesCubes);
+        this.checkGlError();
+
+        // The slices to display.
+        gl.uniform1fv(this.shader.uSlicesToDisplay,new Float32Array(this.boundingBoxVoxelMapSlicesToDisplay) );
         this.checkGlError();
 
         gl.activeTexture(gl.TEXTURE0);
@@ -101,4 +113,11 @@ class BoundingBoxVRC extends BoundingBox {
         this.boundingBoxVoxelMapVoxelIntensity = value;
     }
 
+    setBoundingBoxVoxelMapDisplaySlicesCubes(value) {
+        this.boundingBoxVoxelMapDisplaySlicesCubes = value;
+    }
+
+    setBoundingBoxVoxelMapSlicesToDisplay(value) {
+        this.boundingBoxVoxelMapSlicesToDisplay = value;
+    }
 }
