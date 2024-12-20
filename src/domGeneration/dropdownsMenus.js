@@ -57,6 +57,7 @@ const dropdowns = [
             { type: 'select', label: 'Type', id: 'boundingBoxVRC_type_selector', options: ['None'] },
             { type: 'select', label: 'Transfer Func', id: 'boundingBoxVRC_voxelMap_transferFunc_selector', options: [] },
             { type: 'modal', id: 'boundingBoxVRC_transferFuncCustom_modal', idBody: 'boundingBoxVRC_transferFuncCustom_modalBody' },
+            { type: 'button', label: 'Slices display', labelButton : 'modify', id: 'boundingBoxVRC_slicesDisplay' },
             { type: 'slider', label: 'Voxel intensity:', id: 'boundingBoxVRC_voxelMap_voxel-intensity', min: 1, max: 100, step: 1, value: 1, displayId: 'boundingBoxVRC_voxelMap_voxel-intensity_value' },
             { type: 'slider', label: 'Ray Depth:', id: 'boundingBoxVRC_voxelMap_ray_depth_slider', min: 1, max: 50, step: 1, value: 1, displayId: 'boundingBoxVRC_voxelMap_ray_depth_value' }
         ]
