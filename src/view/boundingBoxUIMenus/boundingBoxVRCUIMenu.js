@@ -94,6 +94,15 @@ let boundingBoxTransferFuncCustomValues = [
 ];
 
 
+/**
+ * @type {Number[]}
+ */
+let boundingBoxVRCSlicesToDisplay = [
+    1., 1., 1., 1., 1., 1., 1., 1.
+//Rouge,Vert,Bleu,Jaune,Rose,Cyan,Blanc,Gris
+];
+
+
 /****************************************************/
 /*            BOUNDING BOX VRC FUNCTIONS            */
 /****************************************************/
@@ -286,7 +295,7 @@ function initBoundingBoxVRCUIComponents() {
                 // if the transfer function is custom, set the custom values to the bounding box by default
                 theVRCBoundingBox.setBoundingBoxVoxelMapTransferFuncCustomValues(boundingBoxTransferFuncCustomValues);
                 theVRCBoundingBox.setBoundingBoxVoxelMapVoxelIntensity(boundingBoxVRCElements.voxelMapVoxelIntensitySlider.value);
-
+                theVRCBoundingBox.setBoundingBoxVoxelMapSlicesToDisplay(boundingBoxVRCSlicesToDisplay);
             }
         });
     });
