@@ -11,6 +11,22 @@
     transform: translateY(-50%);
 }
 
+.button-custom {
+    position: absolute;
+    right: 5%;
+    border-radius: 10%;
+    color: white;
+    background-color: rgb(63, 63, 63);
+    height: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.button-custom:hover {
+    opacity: 0.8;
+}
+
 /* Checkboxes toggles */
 .checkbox input[type=checkbox] {
     position: relative;
