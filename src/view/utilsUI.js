@@ -113,10 +113,14 @@ function initColorPicker(colorPicker, onInput) {
  * @param {HTMLElement} slider - The slider element.
  * @param {Function} onInput - The event listener for the input event.
  * @param {number} defaultValue - The default value for the slider.
+ * @param {HTMLElement} [displayElem] - The element that display the slider value.
  */
-function initSlider(slider, onInput, defaultValue = 0) {
+function initSlider(slider, onInput, defaultValue = 0 , displayElem = null) {
     slider.addEventListener('input', onInput);
     slider.value = defaultValue;
+    if(displayElem !== null){
+        displayElem.textContent = String(defaultValue);
+    }
 }
 
 /**
@@ -139,6 +143,15 @@ function initToggle(toggleElement, initialState, onChange) {
 function initSwitch(switchElement, initialState, onChange) {
    switchElement.checked = initialState;
    switchElement.addEventListener('change', onChange);
+}
+
+/**
+ * initialize a button with an event listener
+ * @param button - The button element
+ * @param onClick - The event listener for the click event
+ */
+function initButton(button, onClick) {
+    button.addEventListener('click', onClick);
 }
 
 
@@ -177,4 +190,86 @@ function openModal(modal) {
  */
 function closeModal(modal) {
     modal.style.display = 'none';
+}
+
+/**
+ * Creates and initializes a modal with the specified content, title, default values, row creator, validation, and close handlers.
+ *
+ * @param {HTMLElement} modalContent - The content element of the modal.
+ * @param {string} titleText - The title text to display in the modal header.
+ * @param {Array} defaultValues - An array of default values to populate the modal body.
+ * @param {Function} rowCreator - A function to create a row element for each default value.
+ * @param {Function} onValidate - The event handler for the validate button click event.
+ * @param {Function} onClose - The event handler for the close button click event.
+ */
+function createAndInitModal(modalContent, titleText, defaultValues, rowCreator, onValidate, onClose = null) {
+    modalContent.innerHTML = '';
+
+    const header = createModalHeader(titleText, modalContent.parentElement, onClose);
+    const body = createModalBodyWithRows(defaultValues, rowCreator);
+
+    modalContent.appendChild(header);
+    modalContent.appendChild(body);
+    modalContent.appendChild(createModalFooter(onValidate));
+}
+
+/**
+ * Creates a modal header with a title and a close button.
+ *
+ * @param {string} titleText - The text to display as the title of the modal.
+ * @param {HTMLElement} modalElement - The modal element that this header belongs to.
+ * @param {Function} [onClose] - Optional. A callback function to execute when the close button is clicked.
+ * @returns {HTMLElement} - The created modal header element.
+ */
+function createModalHeader(titleText, modalElement, onClose) {
+    const header = document.createElement('div');
+    header.className = 'modal-header';
+
+    const title = document.createElement('h3');
+    title.innerText = titleText;
+
+    const closeButton = document.createElement('span');
+    closeButton.className = 'modal-close';
+    closeButton.innerHTML = '&times;';
+    closeButton.onclick = () => {
+        closeModal(modalElement);
+        if (onClose) onClose();
+    };
+
+    header.appendChild(title);
+    header.appendChild(closeButton);
+    return header;
+}
+
+/**
+ * Creates a modal body with rows generated from default values.
+ *
+ * @param {Array} defaultValues - An array of default values to populate the modal body.
+ * @param {Function} rowCreator - A function to create a row element for each default value.
+ * @returns {HTMLElement} - The created modal body element with rows.
+ */
+function createModalBodyWithRows(defaultValues, rowCreator) {
+    const body = document.createElement('div');
+    body.className = 'modal-body';
+    defaultValues.forEach(value => body.appendChild(rowCreator(value)));
+    return body;
+}
+
+/**
+ * Creates a modal footer with a validate button.
+ *
+ * @param {Function} onValidate - The event handler for the validate button click event.
+ * @returns {HTMLElement} - The created modal footer element.
+ */
+function createModalFooter(onValidate) {
+    const footer = document.createElement('div');
+    footer.className = 'modal-footer';
+
+    const validateButton = document.createElement('button');
+    validateButton.className = 'modal-validate-button';
+    validateButton.innerText = 'Validate';
+    validateButton.onclick = onValidate;
+
+    footer.appendChild(validateButton);
+    return footer;
 }
