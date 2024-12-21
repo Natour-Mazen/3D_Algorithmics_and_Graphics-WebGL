@@ -4,23 +4,20 @@ precision mediump float;
 uniform float uBBSize; // The bounding box size factor.
 uniform bool uIsWireFrame; // If the wireframe is displayed.
 uniform bool uIsOpaque; // If the object is opaque.
-uniform bool uDisplaySlicesCubes; // If the slice modification is active.
 uniform float uAspectRatio; // The image aspect ratio.
 uniform float uFOV; // FOV.
-uniform float uImageWidth; // The image width.
-uniform float uImageHeight; // The image height.
-uniform float uSlicesToDisplay[8]; // The slices to display.
 
 uniform sampler2D uVoxelMapTypeSampler; // The voxel map.
-uniform float uVoxelMapRayDepth; // The ray depth.
-uniform int uVoxelMapTransfertFunc; // The choice of the transfer function.
-uniform float uVoxelMapSize; // The size of the images inside the uVoxelMapTypeSampler.
+uniform float uVoxelNoise; // The voxel noise.
+uniform float uVoxelIntensity; // The intensity of the voxel.
+uniform float uNbImageDepth; // The size of the images inside the uVoxelMapTypeSampler.
 uniform float uNbImageWidth; // The number of images along the width.
 uniform float uNbImageHeight; // The number of images along the height.
-uniform float uHeartBeatFactor; // The heart factor.
+uniform int uTransferFunc; // The choice of the transfer function.
 uniform vec4 uTransferFuncCustomValues[5]; // The values for the custom transfer function.
-uniform float uVoxelMapVoxelIntensity; // The intensity of the voxel.
-
+uniform float uHeartBeatFactor; // The heart factor.
+uniform bool uDisplaySlicesCubes; // If the slice modification is active.
+uniform float uSlicesToDisplay[8]; // The slices to display.
 
 const int MAX_ITERATIONS = 700; // For the ray marching.
 float BORDER_SIZE = 0.005 * uBBSize; // The border size of the wireframe.
@@ -28,7 +25,7 @@ float BORDER_SIZE = 0.005 * uBBSize; // The border size of the wireframe.
 // Nyquist–Shannon sampling to have the best step.
 float uBBSizeCarre = uBBSize * uBBSize;
 float DIAGO = sqrt(sqrt(uBBSizeCarre + uBBSizeCarre) * sqrt(uBBSizeCarre + uBBSizeCarre) + uBBSizeCarre);
-float PAS = DIAGO / sqrt(uVoxelMapSize * uVoxelMapSize + uVoxelMapSize * uVoxelMapSize) * 2.;
+float PAS = DIAGO / sqrt(uNbImageDepth * uNbImageDepth + uNbImageDepth * uNbImageDepth) * 2.;
 
 varying vec3 vVertexPosition;        // Reel vertex position.
 varying vec4 vVertexPositionSpace;   // Vertex position project on the sreen.
@@ -102,15 +99,11 @@ void main(void)
         // To get the color of the pixel in the current position.
         vec4 texImage = getVoxcelInPos(position);
 
-
         if(uDisplaySlicesCubes){
             texImage = displaySlicesCubes(texImage, position);
         }else{
             texImage = transformationFunction(texImage, position);
         }
-
-
-
 
         texImage.r *= texImage.a;
         texImage.g *= texImage.a;
@@ -212,15 +205,15 @@ vec4 getVoxcelInPos(vec3 position)
     positionN.xy /= 2.;
     // positionN x: 0 to 1, y: 0 to 1, z: 0 to 1
 
-    vec3 positionOnImage = positionN * uVoxelMapSize;
+    vec3 positionOnImage = positionN * uNbImageDepth;
 
     float sliceIndex = floor(positionOnImage.z / 2.); // L'indice de tranche en profondeur
     float x = mod(sliceIndex, uNbImageWidth);          // Colonne de la tranche dans la grille
     float y = floor(sliceIndex / uNbImageWidth);       // Ligne de la tranche dans la grille
 
     vec2 positionTexture = vec2(
-    (x * uVoxelMapSize + positionOnImage.x) / (uNbImageWidth * uVoxelMapSize), // Position x en prenant en compte la colonne
-    (y * uVoxelMapSize + positionOnImage.y) / (uNbImageHeight * uVoxelMapSize)  // Position y en prenant en compte la ligne
+    (x * uNbImageDepth + positionOnImage.x) / (uNbImageWidth * uNbImageDepth), // Position x en prenant en compte la colonne
+    (y * uNbImageDepth + positionOnImage.y) / (uNbImageHeight * uNbImageDepth)  // Position y en prenant en compte la ligne
     );
 
     vec4 texImage = texture2D(uVoxelMapTypeSampler, goodTexCoord(positionTexture));
@@ -230,7 +223,7 @@ vec4 getVoxcelInPos(vec3 position)
 vec4 transformationDefault(vec4 color)
 {
     color.a = color.r;
-    if(color.a <= 0.1 / uVoxelMapRayDepth){
+    if(color.a <= 0.1 / uVoxelNoise){
         color.a = 0.;
     }
     else if(color.a >= 0.6){
@@ -248,11 +241,11 @@ vec4 transformationCustom(vec4 color)
     vec4 color4 = uTransferFuncCustomValues[3].rbga;
     vec4 color5 = uTransferFuncCustomValues[4].rbga;
 
-    color *= uVoxelMapVoxelIntensity / 2.; // TODO : To change with another slider.
+
     float colorAlpha = color.r;
 
     // To remove the artifacts.
-    if(colorAlpha <= 0.1 / uVoxelMapRayDepth){
+    if(colorAlpha <= 0.1 / uVoxelNoise){
         color.a = 0.;
         return color;
     }
@@ -303,7 +296,7 @@ vec4 transformationCustom(vec4 color)
 vec4 transformationRed(vec4 color)
 {
     color.a = color.r;
-    if(color.a <= 0.1 / uVoxelMapRayDepth){
+    if(color.a <= 0.1 / uVoxelNoise){
         color.a = 0.;
     }
     color.g = 0.;
@@ -314,7 +307,7 @@ vec4 transformationRed(vec4 color)
 vec4 transformationBlueToGreen(vec4 color)
 {
     color.a = color.r;
-    if(color.a <= 0.1 / uVoxelMapRayDepth){
+    if(color.a <= 0.1 / uVoxelNoise){
         color.a = 0.;
     }
     color.r = 0.;
@@ -326,7 +319,7 @@ vec4 transformationBlueToGreen(vec4 color)
 vec4 transformationSepia(vec4 color)
 {
     color.a = color.r;
-    if (color.a <= 0.1 / uVoxelMapRayDepth) {
+    if (color.a <= 0.1 / uVoxelNoise) {
         color.a = 0.;
     }
     float r = color.r;
@@ -341,7 +334,7 @@ vec4 transformationSepia(vec4 color)
 vec4 transformationInvert(vec4 color)
 {
     color.a = color.r;
-    if (color.a <= 0.1 / uVoxelMapRayDepth) {
+    if (color.a <= 0.1 / uVoxelNoise) {
         color.a = 0.;
     }
     color.rgb = vec3(1.0) - color.rgb;
@@ -351,7 +344,7 @@ vec4 transformationInvert(vec4 color)
 vec4 transformationGlitch(vec4 color)
 {
     color.a = color.r;
-    if (color.a <= 0.1 / uVoxelMapRayDepth) {
+    if (color.a <= 0.1 / uVoxelNoise) {
         color.a = 0.;
     }
     float glitchIntensity = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
@@ -369,7 +362,7 @@ vec4 transformationGlitch(vec4 color)
 
 vec4 transformationHeartBeat(vec4 color) {
     color.a = color.r;
-    if (color.a <= 0.1 / uVoxelMapRayDepth) {
+    if (color.a <= 0.1 / uVoxelNoise) {
         color.a = 0.;
     }
     float glitchFactor = sin(color.a * 10.0 + uHeartBeatFactor) * 0.5 + 0.5;
@@ -380,7 +373,7 @@ vec4 transformationHeartBeat(vec4 color) {
 vec4 transformationThermal(vec4 color)
 {
     color.a = color.r;
-    if (color.a <= 0.1 / uVoxelMapRayDepth) {
+    if (color.a <= 0.1 / uVoxelNoise) {
         color.a = 0.;
     }
     float intensity = dot(color.rgb, vec3(0.299, 0.587, 0.114));
@@ -401,7 +394,7 @@ vec4 transformationThermal(vec4 color)
 vec4 transformationRainbow(vec4 color)
 {
     color.a = color.r;
-    if (color.a <= 0.1 / uVoxelMapRayDepth) {
+    if (color.a <= 0.1 / uVoxelNoise) {
         color.a = 0.;
     }
     float intensity = dot(color.rgb, vec3(0.299, 0.587, 0.114));
@@ -425,7 +418,7 @@ vec4 transformationRainbow(vec4 color)
 vec4 transformationRedJeely(vec4 color)
 {
     color.a = color.r;
-    if(color.a <= 0.1 / uVoxelMapRayDepth){
+    if(color.a <= 0.1 / uVoxelNoise){
         color.a = 0.;
     }
     if(color.a >= 0.6){
@@ -439,79 +432,87 @@ vec4 transformationRedJeely(vec4 color)
     return color;
 }
 
+int getColorSliceIndex(vec3 position){
+    if (position.x >= 0.0  && position.z >= 1.0 * uBBSize && position.y >= 0.0 ) { // Position du cube Rouge
+        return 0;
+    }else if (position.x <= 0.0  && position.z >= 1.0 * uBBSize && position.y <= 0.0 ) { // Position du cube Vert
+        return 1;
+    }else if (position.x >= 0.0  && position.z >= 1.0 * uBBSize && position.y <= 0.0 ) { // Position du cube Bleu
+        return 2;
+    }else if (position.x <= 0.0  && position.z >= 1.0 * uBBSize && position.y >= 0.0 ) { // Position du cube Jaune
+        return 3;
+    }else if (position.x >= 0.0  && position.z <= 1.0 * uBBSize && position.y >= 0.0 ) { // Position du cube Rose
+        return 4;
+    }else if (position.x <= 0.0  && position.z <= 1.0 * uBBSize && position.y <= 0.0 ) { // Position du cube Cyan
+        return 5;
+    }else if (position.x >= 0.0  && position.z <= 1.0 * uBBSize && position.y <= 0.0 ) { // Position du cube Blanc
+        return 6;
+    }else if (position.x <= 0.0  && position.z <= 1.0 * uBBSize && position.y >= 0.0 ) { // Position du cube Gris
+        return 7;
+    }
+    return -1;
+
+}
+
+vec4 cutSlicesCubes(vec4 color,vec3 position){
+    int index = getColorSliceIndex(position);
+    bool isSlice = false;
+    if (index == 0 && uSlicesToDisplay[0] == 0.) {
+        isSlice = true;
+    } else if (index == 1 && uSlicesToDisplay[1] == 0.) {
+        isSlice = true;
+    } else if (index == 2 && uSlicesToDisplay[2] == 0.) {
+        isSlice = true;
+    } else if (index == 3 && uSlicesToDisplay[3] == 0.) {
+        isSlice = true;
+    } else if (index == 4 && uSlicesToDisplay[4] == 0.) {
+        isSlice = true;
+    } else if (index == 5 && uSlicesToDisplay[5] == 0.) {
+        isSlice = true;
+    } else if (index == 6 && uSlicesToDisplay[6] == 0.) {
+        isSlice = true;
+    } else if (index == 7 && uSlicesToDisplay[7] == 0.) {
+        isSlice = true;
+    }
+
+    if(isSlice){
+        return vec4(0.0, 0.0, 0.0, 0.0);
+    }
+
+    return color;
+}
+
 vec4 displaySlicesCubes(vec4 color,vec3 position)
 {
+    color = cutSlicesCubes(color, position);
+
     color.a = color.r;
-    if(color.a <= 0.1 / uVoxelMapRayDepth){
+    if(color.a <= 0.1 / uVoxelNoise){
         color.a = 0.;
     }
     if(color.a >= 0.6){
         color.a = 1.;
     }
-
     if(color.a <= 0.01)
     {
         color.a = 0.01;
-        if (position.x >= 0.0  && position.z >= 1.0 * uBBSize && position.y >= 0.0 ) {
+        int index = getColorSliceIndex(position);
+        if (index == 0) {
             color.rgb = vec3(1.0, 0.0, 0.0); // Rouge
-        }
-        if (position.x <= 0.0  && position.z >= 1.0 * uBBSize && position.y <= 0.0 ) {
+        } else if (index == 1) {
             color.rgb = vec3(0.0, 0.0, 1.0); // Vert
-        }
-        if (position.x >= 0.0  && position.z >= 1.0 * uBBSize && position.y <= 0.0 ) {
+        } else if (index == 2) {
             color.rgb = vec3(0.0, 1.0, 0.0); // Bleu
-        }
-        if (position.x <= 0.0  && position.z >= 1.0 * uBBSize && position.y >= 0.0 ) {
+        } else if (index == 3) {
             color.rgb = vec3(1.0, 0.0, 1.0); // Jaune
-        }
-        if (position.x >= 0.0  && position.z <= 1.0 * uBBSize && position.y >= 0.0 ) {
+        } else if (index == 4) {
             color.rgb = vec3(1.0, 1.0, 0.0); // Rose
-        }
-        if (position.x <= 0.0  && position.z <= 1.0 * uBBSize && position.y <= 0.0 ) {
+        } else if (index == 5) {
             color.rgb = vec3(0.0, 1.0, 1.0); // Cyan
-        }
-        if (position.x >= 0.0  && position.z <= 1.0 * uBBSize && position.y <= 0.0 ) {
+        } else if (index == 6) {
             color.rgb = vec3(1.0, 1.0, 1.0); // Blanc
-        }
-        if (position.x <= 0.0  && position.z <= 1.0 * uBBSize && position.y >= 0.0 ) {
+        } else if (index == 7) {
             color.rgb = vec3(0.5, 0.5, 0.5); // Gris
-        }
-    }
-    return color;
-}
-
-vec4 cutSlicesCubes(vec4 color,vec3 position){
-    if (position.x >= 0.0  && position.z >= 1.0 * uBBSize && position.y >= 0.0 ) {
-        if(uSlicesToDisplay[0] == 0.){
-            return color = vec4(0.0, 0.0, 0.0, 0.0);
-        }
-    } else if (position.x <= 0.0  && position.z >= 1.0 * uBBSize && position.y <= 0.0 ) {
-        if(uSlicesToDisplay[1] == 0.){
-            return color = vec4(0.0, 0.0, 0.0, 0.0);
-        }
-    }else if (position.x >= 0.0  && position.z >= 1.0 * uBBSize && position.y <= 0.0 ) {
-        if(uSlicesToDisplay[2] == 0.){
-            return color = vec4(0.0, 0.0, 0.0, 0.0);
-        }
-    }else if (position.x <= 0.0  && position.z >= 1.0 * uBBSize && position.y >= 0.0 ) {
-        if(uSlicesToDisplay[3] == 0.){
-            return color = vec4(0.0, 0.0, 0.0, 0.0);
-        }
-    }else if (position.x >= 0.0  && position.z <= 1.0 * uBBSize && position.y >= 0.0 ) {
-        if(uSlicesToDisplay[4] == 0.){
-            return color = vec4(0.0, 0.0, 0.0, 0.0);
-        }
-    }else if (position.x <= 0.0  && position.z <= 1.0 * uBBSize && position.y <= 0.0 ) {
-        if(uSlicesToDisplay[5] == 0.){
-            return color = vec4(0.0, 0.0, 0.0, 0.0);
-        }
-    }else if (position.x >= 0.0  && position.z <= 1.0 * uBBSize && position.y <= 0.0 ) {
-        if(uSlicesToDisplay[6] == 0.){
-            return color = vec4(0.0, 0.0, 0.0, 0.0);
-        }
-    }else if (position.x <= 0.0  && position.z <= 1.0 * uBBSize && position.y >= 0.0 ) {
-        if(uSlicesToDisplay[7] == 0.){
-            return color = vec4(0.0, 0.0, 0.0, 0.0);
         }
     }
     return color;
@@ -520,10 +521,8 @@ vec4 cutSlicesCubes(vec4 color,vec3 position){
 vec4 transformationFunction(vec4 color, vec3 position)
 {
     color = cutSlicesCubes(color, position);
-
-
-
-    int v = uVoxelMapTransfertFunc;
+    color *= uVoxelIntensity / 4.; // TODO : change the coefficient to have a better result.
+    int v = uTransferFunc;
     if (v == 0) {
         color = transformationDefault(color);
     }else if(v == 1){
