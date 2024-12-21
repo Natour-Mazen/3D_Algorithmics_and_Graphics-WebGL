@@ -93,7 +93,7 @@ async function handleCreateOrDeleteBoundingBoxRMObjects() {
     const updateFunctions = {
         updateSize: handleUpdateBoundingBoxSize,
         updateSpecificProperties: (boundingBox, elements) => {
-            boundingBox.setBoundingBoxHeightMapFlattenFactor(elements.heightMapFlattenSlider.value);
+            boundingBox.setFlattenFactor(elements.heightMapFlattenSlider.value);
         }
     };
     theRMBoundingBox = await handleCreateOrDeleteBoundingBoxObjects(isThereRMBoundingBox, BoundingBoxRM, boundingBoxRMElements, updateFunctions);
@@ -185,7 +185,7 @@ function initBoundingBoxRMUIComponents() {
 
     initSlider(boundingBoxRMElements.heightMapFlattenSlider, function () {
         if(theRMBoundingBox !== null){
-            theRMBoundingBox.setBoundingBoxHeightMapFlattenFactor(this.value);
+            theRMBoundingBox.setFlattenFactor(this.value);
             boundingBoxRMElements.heightMapFlattenValueDisplay.innerHTML = this.value;
         }
     });
