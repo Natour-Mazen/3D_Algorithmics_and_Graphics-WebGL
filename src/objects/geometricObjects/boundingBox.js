@@ -58,42 +58,12 @@ class BoundingBox extends ObjectToDraw {
         ];
 
         // Vertex
-        this.vBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-        this.vBuffer.itemSize = 3;
-        this.vBuffer.numItems = 8;
-
-        // TRIANGLES BUFFERS
-        this.tPinkBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.tPinkBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(trianglesPink), gl.STATIC_DRAW);
-        this.tPinkBuffer.itemSize = 1;
-        this.tPinkBuffer.numItems = 6;
-
-        this.tYellowBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.tYellowBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(trianglesYellow), gl.STATIC_DRAW);
-        this.tYellowBuffer.itemSize = 1;
-        this.tYellowBuffer.numItems = 6;
-
-        this.tBlueBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.tBlueBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(trianglesBlue), gl.STATIC_DRAW);
-        this.tBlueBuffer.itemSize = 1;
-        this.tBlueBuffer.numItems = 6;
-
-        this.tGreenBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.tGreenBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(trianglesGreen), gl.STATIC_DRAW);
-        this.tGreenBuffer.itemSize = 1;
-        this.tGreenBuffer.numItems = 6;
-
-        this.tRedBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.tRedBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(trianglesRed), gl.STATIC_DRAW);
-        this.tRedBuffer.itemSize = 1;
-        this.tRedBuffer.numItems = 6;
+        this.vBuffer = this.createBuffer(gl, gl.ARRAY_BUFFER, vertices, 3, 8);
+        this.tPinkBuffer = this.createBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, trianglesPink, 1, 6);
+        this.tYellowBuffer = this.createBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, trianglesYellow, 1, 6);
+        this.tBlueBuffer = this.createBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, trianglesBlue, 1, 6);
+        this.tGreenBuffer = this.createBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, trianglesGreen, 1, 6);
+        this.tRedBuffer = this.createBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, trianglesRed, 1, 6);
     }
 
     // --------------------------------------------
@@ -117,7 +87,6 @@ class BoundingBox extends ObjectToDraw {
         // We send the Bounding Box Size factor.
         gl.uniform1f(this.shader.uBBSize, this.boundingBoxSize);
         this.checkGlError();
-
 
         gl.uniform1i(this.shader.uIsWireFrame, this.isWireFrameBorderType);
         this.checkGlError();
@@ -178,6 +147,16 @@ class BoundingBox extends ObjectToDraw {
                 this.isWireFrameBorderType = 0;
                 this.isOpaqueBorderType = 0;
         }
+    }
+
+    createBuffer(gl, type, data, itemSize, numItems) {
+        const buffer = gl.createBuffer();
+        const arrayType = type === gl.ARRAY_BUFFER ? Float32Array : Uint32Array;
+        gl.bindBuffer(type, buffer);
+        gl.bufferData(type, new arrayType(data), gl.STATIC_DRAW);
+        buffer.itemSize = itemSize;
+        buffer.numItems = numItems;
+        return buffer;
     }
 
 }
