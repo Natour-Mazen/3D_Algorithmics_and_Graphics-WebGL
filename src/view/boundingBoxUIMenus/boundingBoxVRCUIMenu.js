@@ -8,21 +8,29 @@
  */
 const boundingBoxVRCElements = {
     toggle: doc.getElementById('boundingBoxVRC_checkbox'),
+
     borderSelector: doc.getElementById('boundingBoxVRC_border_selector'),
+
     typeSelector: doc.getElementById('boundingBoxVRC_type_selector'),
+
     sizeSlider: doc.getElementById('boundingBoxVRC_size_slider'),
     sizeValueDisplay: doc.getElementById('boundingBoxVRC_size_value'),
 
-    voxelMapTransferFuncCustomModal: doc.getElementById('boundingBoxVRC_transferFuncCustom_modal'),
-    voxelMapTransferFuncCustomModalBody: doc.getElementById('boundingBoxVRC_transferFuncCustom_modalBody'),
+    transferFuncCustomModal: doc.getElementById('boundingBoxVRC_transferFuncCustom_modal'),
+    transferFuncCustomModalBody: doc.getElementById('boundingBoxVRC_transferFuncCustom_modalBody'),
 
-    voxelMapTransferFuncSelector: doc.getElementById('boundingBoxVRC_voxelMap_transferFunc_selector'),
+    transferFuncSelector: doc.getElementById('boundingBoxVRC_voxelMap_transferFunc_selector'),
 
-    voxelMapRayDepthSlider: doc.getElementById('boundingBoxVRC_voxelMap_ray_depth_slider'),
-    voxelMapRayDepthValueDisplay: doc.getElementById('boundingBoxVRC_voxelMap_ray_depth_value'),
+    voxelNoiseSlider: doc.getElementById('boundingBoxVRC_voxelMap_voxel-noise_slider'),
+    voxelNoiseValueDisplay: doc.getElementById('boundingBoxVRC_voxelMap_voxel-noise_value'),
 
-    voxelMapVoxelIntensitySlider: doc.getElementById('boundingBoxVRC_voxelMap_voxel-intensity'),
-    voxelMapVoxelIntensityValueDisplay: doc.getElementById('boundingBoxVRC_voxelMap_voxel-intensity_value')
+    voxelIntensitySlider: doc.getElementById('boundingBoxVRC_voxelMap_voxel-intensity'),
+    voxelIntensityValueDisplay: doc.getElementById('boundingBoxVRC_voxelMap_voxel-intensity_value'),
+
+    slicesDisplayButton: doc.getElementById('boundingBoxVRC_slicesDisplay'),
+
+    slicesToDisplayCustomModal: doc.getElementById('boundingBoxVRC_slicesToDisplayCustom_modal'),
+    slicesToDisplayCustomModalBody: doc.getElementById('boundingBoxVRC_slicesToDisplayCustom_modalBody'),
 };
 
 /****************************************************/
@@ -85,7 +93,7 @@ let isThereVRCBoundingBox = false;
 /**
  * @type {Number[]}
  */
-let boundingBoxTransferFuncCustomValues = [
+let boundingBoxVRCTransferFuncCustomValues = [
     1., 0., 0., 0.010, // Red
     1., 1., 0., 0.015, // Green
     0., 1., 0., 0.020, // Green
@@ -101,6 +109,11 @@ let boundingBoxVRCSlicesToDisplay = [
     1., 1., 1., 1., 1., 1., 1., 1.
 //Rouge,Vert,Bleu,Jaune,Rose,Cyan,Blanc,Gris
 ];
+
+/**
+ * @type {number} - The default voxel intensity for the bounding box.
+ */
+const boundingBoxVRCDefaultVoxelIntensity = 10;
 
 
 /****************************************************/
@@ -119,7 +132,8 @@ async function handleCreateOrDeleteBoundingBoxVRCObjects() {
     const updateFunctions = {
         updateSize: handleUpdateBoundingBoxSize,
         updateSpecificProperties: (boundingBox, elements) => {
-            boundingBox.setBoundingBoxVoxelMapRayDepth(elements.voxelMapRayDepthSlider.value);
+            boundingBox.setVoxelNoise(elements.voxelNoiseSlider.value);
+            boundingBox.setVoxelIntensity(elements.voxelIntensitySlider.value);
         }
     };
     theVRCBoundingBox = await handleCreateOrDeleteBoundingBoxObjects(isThereVRCBoundingBox, BoundingBoxVRC, boundingBoxVRCElements, updateFunctions);
@@ -142,85 +156,36 @@ function handleBoundingBoxVoxelMapSelection(selectedVoxelMap) {
     }
 }
 
-/***************************************/
-/*       MODAL CUSTOM TRANSFER FUNC    */
-/***************************************/
+/*****************************/
+/*  BOUNDING BOX VRC MODALS  */
+/*****************************/
 
-function handleCreateModalBody() {
-    const modalContent = boundingBoxVRCElements.voxelMapTransferFuncCustomModalBody;
-    modalContent.innerHTML = ''; // Clear existing content
-
-    // Create modal header
-    modalContent.appendChild(createModalHeader());
-
-    // Create modal body
-    const body = document.createElement('div');
-    body.className = 'modal-body';
-
-    // Set default values from boundingBoxTransferFuncCustomValues
-    const defaultValues = getDefaultValues();
-    defaultValues.forEach(({ color, alpha }) => {
-        body.appendChild(createModalRow(color, alpha));
-    });
-
-    modalContent.appendChild(body);
-
-    // Create modal footer
-    const footer = document.createElement('div');
-    footer.className = 'modal-footer';
-
-    const validateButton = document.createElement('button');
-    validateButton.className = 'modal-validate-button';
-    validateButton.innerText = 'Validate';
-    validateButton.onclick = function () {
-        let colorAlphaValues = [];
-        const rows = body.getElementsByClassName('modal-row');
-        for (let row of rows) {
-            const color = row.querySelector('.modal-color-selector').value;
-            const alpha = row.querySelector('.modal-alpha-input').value;
-            const colorRGB = Color.hextoRGB(color).toArray();
-            
-            colorRGB[3] = Number(alpha) || 0.0;
-            colorAlphaValues.push(colorRGB);
-        }
-
-        // Replace global variable entirely with the new values
-        boundingBoxTransferFuncCustomValues = colorAlphaValues.flat();
-        console.log(boundingBoxTransferFuncCustomValues);
-
-        // Apply the new values to the VRCBoundingBox
-        if (theVRCBoundingBox !== null) {
-            theVRCBoundingBox.setBoundingBoxVoxelMapTransferFuncCustomValues(boundingBoxTransferFuncCustomValues);
-        }
-
-        // Close the modal
-        closeModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
-    };
-
-    footer.appendChild(validateButton);
-    modalContent.appendChild(footer);
+function handleCreateModalBodyCustomTransferFunc() {
+    createAndInitModal(
+        boundingBoxVRCElements.transferFuncCustomModalBody,
+        'Customize Transfer Function',
+        getDefaultValues(),
+        createModalRowCustomTransferFunc,
+        saveTransferFunctionValues
+    );
 }
 
-function createModalHeader() {
-    const header = document.createElement('div');
-    header.className = 'modal-header';
-
-    const title = document.createElement('h3');
-    title.innerText = 'Customize Transfer Function';
-
-    const closeButton = document.createElement('span');
-    closeButton.className = 'modal-close';
-    closeButton.innerHTML = '&times;';
-    closeButton.onclick = function () {
-        closeModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
-    };
-
-    header.appendChild(title);
-    header.appendChild(closeButton);
-    return header;
+function handleCreateModalBodySlices() {
+    createAndInitModal(
+        boundingBoxVRCElements.slicesToDisplayCustomModalBody,
+        'Check or uncheck the slices to display',
+        ['Red', 'Green', 'Blue', 'Yellow', 'Pink', 'Cyan', 'White', 'Grey'],
+        createModalRowSlicesCubes,
+        saveSliceDisplayValues,
+        () => {
+            if (theVRCBoundingBox) {
+                theVRCBoundingBox.setDisplaySlicesCubes(false);
+            }
+        }
+    );
 }
 
-function createModalRow(color, alpha) {
+function createModalRowCustomTransferFunc({ color, alpha }) {
     const row = document.createElement('div');
     row.className = 'modal-row';
 
@@ -247,31 +212,81 @@ function createModalRow(color, alpha) {
     return row;
 }
 
-function getDefaultValues() {
-    const defaultValues = [];
-    for (let i = 0; i < boundingBoxTransferFuncCustomValues.length; i += 4) {
-        const adjustedColor = adjustLuminance(
-            boundingBoxTransferFuncCustomValues[i],
-            boundingBoxTransferFuncCustomValues[i + 1],
-            boundingBoxTransferFuncCustomValues[i + 2]
-        );
-        defaultValues.push({
-            color: adjustedColor,
-            alpha: boundingBoxTransferFuncCustomValues[i + 3]
-        });
+function createModalRowSlicesCubes(labelText) {
+    const row = document.createElement('div');
+    row.className = 'modal-row';
+
+    const colorSquare = document.createElement('div');
+    colorSquare.className = 'modal-color-square';
+    colorSquare.style.width = '20px';
+    colorSquare.style.height = '20px';
+    colorSquare.style.backgroundColor = labelText.toLowerCase();
+    colorSquare.style.display = 'inline-block';
+    colorSquare.style.marginRight = '10px';
+
+    const label = document.createElement('span');
+    label.innerText = labelText;
+    label.className = 'modal-label';
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'modal-checkbox';
+    checkbox.checked = true;
+
+    row.appendChild(colorSquare);
+    row.appendChild(label);
+    row.appendChild(checkbox);
+    return row;
+}
+
+function saveTransferFunctionValues() {
+    const rows = boundingBoxVRCElements.transferFuncCustomModalBody.querySelectorAll('.modal-row');
+    boundingBoxVRCTransferFuncCustomValues = Array.from(rows).flatMap(row => {
+        const color = row.querySelector('.modal-color-selector').value;
+        const alpha = parseFloat(row.querySelector('.modal-alpha-input').value) || 0.0;
+        const colorRGB = Color.hextoRGB(color).toArray();
+        colorRGB[3] = alpha;
+        return colorRGB;
+    });
+
+    if (theVRCBoundingBox) {
+        theVRCBoundingBox.setTransferFuncCustomValues(boundingBoxVRCTransferFuncCustomValues);
     }
-    return defaultValues;
+    closeModal(boundingBoxVRCElements.transferFuncCustomModal);
+}
+
+function saveSliceDisplayValues() {
+    const rows = boundingBoxVRCElements.slicesToDisplayCustomModalBody.querySelectorAll('.modal-row');
+    boundingBoxVRCSlicesToDisplay = Array.from(rows).map(row => row.querySelector('.modal-checkbox').checked ? 1. : 0.);
+
+    if (theVRCBoundingBox) {
+        theVRCBoundingBox.setSlicesToDisplay(boundingBoxVRCSlicesToDisplay);
+        theVRCBoundingBox.setDisplaySlicesCubes(false);
+    }
+    closeModal(boundingBoxVRCElements.slicesToDisplayCustomModal);
+}
+
+function getDefaultValues() {
+    return boundingBoxVRCTransferFuncCustomValues.reduce((acc, _, i) => {
+        if (i % 4 === 0) {
+            acc.push({
+                color: adjustLuminance(
+                    boundingBoxVRCTransferFuncCustomValues[i],
+                    boundingBoxVRCTransferFuncCustomValues[i + 1],
+                    boundingBoxVRCTransferFuncCustomValues[i + 2]
+                ),
+                alpha: boundingBoxVRCTransferFuncCustomValues[i + 3]
+            });
+        }
+        return acc;
+    }, []);
 }
 
 function adjustLuminance(r, g, b, factor = 1.5) {
     const adjust = (value) => Math.min(255, Math.floor(value * factor));
     const hex = (value) => value.toString(16).padStart(2, '0');
-    const adjustedR = adjust(r * 255); // Convert to 0-255 scale
-    const adjustedG = adjust(g * 255);
-    const adjustedB = adjust(b * 255);
-    return `#${hex(adjustedR)}${hex(adjustedG)}${hex(adjustedB)}`;
+    return `#${hex(adjust(r * 255))}${hex(adjust(g * 255))}${hex(adjust(b * 255))}`;
 }
-
 
 /****************************************************/
 /*             BOUNDING BOX UI VRC INIT             */
@@ -286,18 +301,26 @@ function initBoundingBoxVRCUIComponents() {
             handleUpdateBoundingBoxBorderType(theVRCBoundingBox, boundingBoxVRCElements.borderSelector.value);
             if(theVRCBoundingBox !== null){
                 const selectedTypeOption = boundingBoxVRCElements.typeSelector.options[boundingBoxVRCElements.typeSelector.selectedIndex];
-                const selectedTransferFuncOption = boundingBoxVRCElements.voxelMapTransferFuncSelector.options[boundingBoxVRCElements.voxelMapTransferFuncSelector.selectedIndex];
+                const selectedTransferFuncOption = boundingBoxVRCElements.transferFuncSelector.options[boundingBoxVRCElements.transferFuncSelector.selectedIndex];
                 handleBoundingBoxVoxelMapSelection(selectedTypeOption.value);
-                theVRCBoundingBox.setBoundingBoxVoxelMapSize(selectedTypeOption.dataset.depth);
-                theVRCBoundingBox.setBoundingBoxVoxelMapNbImageWidth(selectedTypeOption.dataset.width);
-                theVRCBoundingBox.setBoundingBoxVoxelMapNbImageHeight(selectedTypeOption.dataset.height);
-                theVRCBoundingBox.setBoundingBoxVoxelMapTransfertFunc(selectedTransferFuncOption.value);
-                // if the transfer function is custom, set the custom values to the bounding box by default
-                theVRCBoundingBox.setBoundingBoxVoxelMapTransferFuncCustomValues(boundingBoxTransferFuncCustomValues);
-                theVRCBoundingBox.setBoundingBoxVoxelMapVoxelIntensity(boundingBoxVRCElements.voxelMapVoxelIntensitySlider.value);
-                theVRCBoundingBox.setBoundingBoxVoxelMapSlicesToDisplay(boundingBoxVRCSlicesToDisplay);
+                theVRCBoundingBox.setNbImageDepth(selectedTypeOption.dataset.depth);
+                theVRCBoundingBox.setNbImageWidth(selectedTypeOption.dataset.width);
+                theVRCBoundingBox.setNbImageHeight(selectedTypeOption.dataset.height);
+                theVRCBoundingBox.setTransferFunc(selectedTransferFuncOption.value);
+                theVRCBoundingBox.setTransferFuncCustomValues(boundingBoxVRCTransferFuncCustomValues);
+                theVRCBoundingBox.setVoxelIntensity(boundingBoxVRCDefaultVoxelIntensity);
+                theVRCBoundingBox.setSlicesToDisplay(boundingBoxVRCSlicesToDisplay);
             }
         });
+    });
+
+    initSelector(boundingBoxVRCElements.borderSelector, boundingBoxBorderLoader, function () {
+        handleUpdateBoundingBoxBorderType(theVRCBoundingBox, this.value);
+    });
+
+    initSlider(boundingBoxVRCElements.sizeSlider, async function () {
+        await handleUpdateBoundingBoxSize(theVRCBoundingBox, this.value);
+        boundingBoxVRCElements.sizeValueDisplay.innerHTML = this.value;
     });
 
     initGenericObjectSelector(
@@ -307,9 +330,9 @@ function initBoundingBoxVRCUIComponents() {
             handleBoundingBoxVoxelMapSelection(this.value);
             if(theVRCBoundingBox !== null){
                 const selectedOption = this.options[this.selectedIndex];
-                theVRCBoundingBox.setBoundingBoxVoxelMapSize(selectedOption.dataset.depth);
-                theVRCBoundingBox.setBoundingBoxVoxelMapNbImageWidth(selectedOption.dataset.width);
-                theVRCBoundingBox.setBoundingBoxVoxelMapNbImageHeight(selectedOption.dataset.height);
+                theVRCBoundingBox.setNbImageDepth(selectedOption.dataset.depth);
+                theVRCBoundingBox.setNbImageWidth(selectedOption.dataset.width);
+                theVRCBoundingBox.setNbImageHeight(selectedOption.dataset.height);
             }
         },
         'value', // Property to use for option value
@@ -321,35 +344,15 @@ function initBoundingBoxVRCUIComponents() {
         }
     );
 
-
-    initSelector(boundingBoxVRCElements.borderSelector, boundingBoxBorderLoader, function () {
-        handleUpdateBoundingBoxBorderType(theVRCBoundingBox, this.value);
-    });
-
-
-    initSlider(boundingBoxVRCElements.sizeSlider, async function () {
-        await handleUpdateBoundingBoxSize(theVRCBoundingBox, this.value);
-        boundingBoxVRCElements.sizeValueDisplay.innerHTML = this.value;
-    });
-
-    initSlider(boundingBoxVRCElements.voxelMapVoxelIntensitySlider, function () {
-        if(theVRCBoundingBox !== null){
-            theVRCBoundingBox.setBoundingBoxVoxelMapVoxelIntensity(this.value);
-            boundingBoxVRCElements.voxelMapVoxelIntensityValueDisplay.innerHTML = this.value;
-        }
-    });
-
-
     initGenericObjectSelector(
-        boundingBoxVRCElements.voxelMapTransferFuncSelector,
+        boundingBoxVRCElements.transferFuncSelector,
         boundingBoxVoxelMapTransferFuncLoader,
         function () {
             if(Number(this.value) === -1){
-                console.log('Custom transfer function selected');
-                openModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
+                openModal(boundingBoxVRCElements.transferFuncCustomModal);
             }
             if(theVRCBoundingBox !== null){
-                theVRCBoundingBox.setBoundingBoxVoxelMapTransfertFunc(this.value);
+                theVRCBoundingBox.setTransferFunc(this.value);
             }
         },
         'value',
@@ -357,20 +360,34 @@ function initBoundingBoxVRCUIComponents() {
         { }
     )
 
-    initSlider(boundingBoxVRCElements.voxelMapRayDepthSlider, function () {
+    initButton(boundingBoxVRCElements.slicesDisplayButton, function () {
+        openModal(boundingBoxVRCElements.slicesToDisplayCustomModal);
         if(theVRCBoundingBox !== null){
-            theVRCBoundingBox.setBoundingBoxVoxelMapRayDepth(this.value);
-            boundingBoxVRCElements.voxelMapRayDepthValueDisplay.innerHTML = this.value;
+            theVRCBoundingBox.setDisplaySlicesCubes(true);
         }
     });
 
+    initSlider(boundingBoxVRCElements.voxelIntensitySlider, function () {
+        if(theVRCBoundingBox !== null){
+            theVRCBoundingBox.setVoxelIntensity(this.value);
+            boundingBoxVRCElements.voxelIntensityValueDisplay.innerHTML = this.value;
+        }
+    }, boundingBoxVRCDefaultVoxelIntensity, boundingBoxVRCElements.voxelIntensityValueDisplay);
 
-    handleCreateModalBody();
+    initSlider(boundingBoxVRCElements.voxelNoiseSlider, function () {
+        if(theVRCBoundingBox !== null){
+            theVRCBoundingBox.setVoxelNoise(this.value);
+            boundingBoxVRCElements.voxelNoiseValueDisplay.innerHTML = this.value;
+        }
+    });
+
+    handleCreateModalBodyCustomTransferFunc();
+    handleCreateModalBodySlices();
     initStyleCaretBoundingBoxComponents(boundingBoxVRCElements);
 
-    const customOption = boundingBoxVRCElements.voxelMapTransferFuncSelector.querySelector('option[value="1"]');
+    const customOption = boundingBoxVRCElements.transferFuncSelector.querySelector('option[value="1"]');
     customOption.addEventListener('click', function (e) {
-        openModal(boundingBoxVRCElements.voxelMapTransferFuncCustomModal);
+        openModal(boundingBoxVRCElements.transferFuncCustomModal);
     });
 }
 
