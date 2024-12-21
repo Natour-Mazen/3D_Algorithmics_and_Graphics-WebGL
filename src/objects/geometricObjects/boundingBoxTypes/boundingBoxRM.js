@@ -3,7 +3,7 @@ class BoundingBoxRM extends BoundingBox {
     // --------------------------------------------
     constructor() {
         super('glsl/boundingBoxRM', -1, null, false);
-        this.boundingBoxHeightMapflattenFactor = 1;
+        this.flattenFactor = 1;
     }
 
 
@@ -24,7 +24,7 @@ class BoundingBoxRM extends BoundingBox {
         super.setUniforms();
 
         // We send the flattering factor (between 0.1 and 1.).
-        gl.uniform1f(this.shader.uHeightMapFlatten, 1.1 - this.boundingBoxHeightMapflattenFactor * 0.1);
+        gl.uniform1f(this.shader.uHeightMapFlatten, 1.1 - this.flattenFactor * 0.1);
         this.checkGlError();
 
         // We send the image width.
@@ -54,8 +54,8 @@ class BoundingBoxRM extends BoundingBox {
     }
 
     // --------------------------------------------
-    setBoundingBoxHeightMapFlattenFactor(value) {
-        this.boundingBoxHeightMapflattenFactor = value;
+    setFlattenFactor(value) {
+        this.flattenFactor = value;
     }
 
 }
