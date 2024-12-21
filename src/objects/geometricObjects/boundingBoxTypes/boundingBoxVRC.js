@@ -3,16 +3,16 @@ class BoundingBoxVRC extends BoundingBox {
     // --------------------------------------------
     constructor() {
         super('glsl/boundingBoxVRC', -1, null, true);
-        this.boundingBoxVoxelMapRayDepth = 1;
-        this.boundingBoxVoxelMapTransfertFunc = -1;
-        this.boundingBoxVoxelMapSize = -1;
-        this.boundingBoxVoxelMapNbImageWidth = -1;
-        this.boundingBoxVoxelMapNbImageHeight = -1;
-        this.boundingBoxVoxelMapStartTime = Date.now();
-        this.boundingBoxTrasnferFuncCustomValues = [];
-        this.boundingBoxVoxelMapVoxelIntensity = 1;
-        this.boundingBoxVoxelMapDisplaySlicesCubes = false;
-        this.boundingBoxVoxelMapSlicesToDisplay = [];
+        this.voxelNoise = 1;
+        this.transferFunc = -1;
+        this.nbImageDepth = -1;
+        this.nbImageWidth = -1;
+        this.nbImageHeight = -1;
+        this.instanceStartTime = Date.now();
+        this.transferFuncCustomValues = [];
+        this.voxelIntensity = 1;
+        this.displaySlicesCubes = false;
+        this.slicesToDisplay = [];
     }
 
     // --------------------------------------------
@@ -21,14 +21,14 @@ class BoundingBoxVRC extends BoundingBox {
     setShadersParams() {
         super.setShadersParams();
         this.shader.uVoxelMapTypeSampler = gl.getUniformLocation(this.shader, "uVoxelMapTypeSampler");
-        this.shader.uVoxelMapRayDepth = gl.getUniformLocation(this.shader, "uVoxelMapRayDepth");
-        this.shader.uVoxelMapTransfertFunc = gl.getUniformLocation(this.shader, "uVoxelMapTransfertFunc");
-        this.shader.uVoxelMapSize = gl.getUniformLocation(this.shader, "uVoxelMapSize");
+        this.shader.uVoxelNoise = gl.getUniformLocation(this.shader, "uVoxelNoise");
+        this.shader.uTransferFunc = gl.getUniformLocation(this.shader, "uTransferFunc");
+        this.shader.uNbImageDepth = gl.getUniformLocation(this.shader, "uNbImageDepth");
         this.shader.uNbImageWidth = gl.getUniformLocation(this.shader, "uNbImageWidth");
         this.shader.uNbImageHeight = gl.getUniformLocation(this.shader, "uNbImageHeight");
         this.shader.uHeartBeatFactor = gl.getUniformLocation(this.shader, "uHeartBeatFactor");
         this.shader.uTransferFuncCustomValues = gl.getUniformLocation(this.shader, "uTransferFuncCustomValues");
-        this.shader.uVoxelMapVoxelIntensity = gl.getUniformLocation(this.shader, "uVoxelMapVoxelIntensity");
+        this.shader.uVoxelIntensity = gl.getUniformLocation(this.shader, "uVoxelIntensity");
         this.shader.uDisplaySlicesCubes = gl.getUniformLocation(this.shader, "uDisplaySlicesCubes");
         this.shader.uSlicesToDisplay = gl.getUniformLocation(this.shader, "uSlicesToDisplay");
     }
@@ -37,43 +37,43 @@ class BoundingBoxVRC extends BoundingBox {
         super.setUniforms();
 
         // To modify the ray depth.
-        gl.uniform1f(this.shader.uVoxelMapRayDepth, this.boundingBoxVoxelMapRayDepth);
+        gl.uniform1f(this.shader.uVoxelNoise, this.voxelNoise);
         this.checkGlError();
 
         // To select the transfer function.
-        gl.uniform1i(this.shader.uVoxelMapTransfertFunc, this.boundingBoxVoxelMapTransfertFunc);
+        gl.uniform1i(this.shader.uTransferFunc, this.transferFunc);
         this.checkGlError();
 
         // The size of the images inside the voxel map.
-        gl.uniform1f(this.shader.uVoxelMapSize, this.boundingBoxVoxelMapSize);
+        gl.uniform1f(this.shader.uNbImageDepth, this.nbImageDepth);
         this.checkGlError();
 
         // The number of images along the width of the voxel map.
-        gl.uniform1f(this.shader.uNbImageWidth, this.boundingBoxVoxelMapNbImageWidth);
+        gl.uniform1f(this.shader.uNbImageWidth, this.nbImageWidth);
         this.checkGlError();
 
         // The number of images along the height of the voxel map.
-        gl.uniform1f(this.shader.uNbImageHeight, this.boundingBoxVoxelMapNbImageHeight);
+        gl.uniform1f(this.shader.uNbImageHeight, this.nbImageHeight);
         this.checkGlError();
 
         // The time since the start of the bounding box. Used to animate the voxel map. with a heartbeat effect.
-        gl.uniform1f(this.shader.uHeartBeatFactor, (Date.now() - this.boundingBoxVoxelMapStartTime) / 1000.0);
+        gl.uniform1f(this.shader.uHeartBeatFactor, (Date.now() - this.instanceStartTime) / 1000.0);
         this.checkGlError();
 
         // The custom values for the transfer function, if any.
-        gl.uniform4fv(this.shader.uTransferFuncCustomValues,new Float32Array(this.boundingBoxTrasnferFuncCustomValues) );
+        gl.uniform4fv(this.shader.uTransferFuncCustomValues,new Float32Array(this.transferFuncCustomValues) );
         this.checkGlError();
 
         // The voxel intensity of the voxel map.
-        gl.uniform1f(this.shader.uVoxelMapVoxelIntensity, this.boundingBoxVoxelMapVoxelIntensity);
+        gl.uniform1f(this.shader.uVoxelIntensity, this.voxelIntensity);
         this.checkGlError();
 
         // The slice modification active.
-        gl.uniform1i(this.shader.uDisplaySlicesCubes, this.boundingBoxVoxelMapDisplaySlicesCubes);
+        gl.uniform1i(this.shader.uDisplaySlicesCubes, this.displaySlicesCubes);
         this.checkGlError();
 
         // The slices to display.
-        gl.uniform1fv(this.shader.uSlicesToDisplay,new Float32Array(this.boundingBoxVoxelMapSlicesToDisplay) );
+        gl.uniform1fv(this.shader.uSlicesToDisplay,new Float32Array(this.slicesToDisplay) );
         this.checkGlError();
 
         gl.activeTexture(gl.TEXTURE0);
@@ -85,39 +85,39 @@ class BoundingBoxVRC extends BoundingBox {
 
     // --------------------------------------------
 
-    setBoundingBoxVoxelMapRayDepth(value) {
-        this.boundingBoxVoxelMapRayDepth = value;
+    setVoxelNoise(value) {
+        this.voxelNoise = value;
     }
 
-    setBoundingBoxVoxelMapTransfertFunc(value) {
-        this.boundingBoxVoxelMapTransfertFunc = value;
+    setTransferFunc(value) {
+        this.transferFunc = value;
     }
 
-    setBoundingBoxVoxelMapSize(value) {
-        this.boundingBoxVoxelMapSize = value;
+    setNbImageDepth(value) {
+        this.nbImageDepth = value;
     }
 
-    setBoundingBoxVoxelMapNbImageWidth(value) {
-        this.boundingBoxVoxelMapNbImageWidth = value;
+    setNbImageWidth(value) {
+        this.nbImageWidth = value;
     }
 
-    setBoundingBoxVoxelMapNbImageHeight(value) {
-        this.boundingBoxVoxelMapNbImageHeight = value;
+    setNbImageHeight(value) {
+        this.nbImageHeight = value;
     }
 
-    setBoundingBoxVoxelMapTransferFuncCustomValues(value) {
-        this.boundingBoxTrasnferFuncCustomValues = value;
+    setTransferFuncCustomValues(value) {
+        this.transferFuncCustomValues = value;
     }
 
-    setBoundingBoxVoxelMapVoxelIntensity(value) {
-        this.boundingBoxVoxelMapVoxelIntensity = value;
+    setVoxelIntensity(value) {
+        this.voxelIntensity = value;
     }
 
-    setBoundingBoxVoxelMapDisplaySlicesCubes(value) {
-        this.boundingBoxVoxelMapDisplaySlicesCubes = value;
+    setDisplaySlicesCubes(value) {
+        this.displaySlicesCubes = value;
     }
 
-    setBoundingBoxVoxelMapSlicesToDisplay(value) {
-        this.boundingBoxVoxelMapSlicesToDisplay = value;
+    setSlicesToDisplay(value) {
+        this.slicesToDisplay = value;
     }
 }
