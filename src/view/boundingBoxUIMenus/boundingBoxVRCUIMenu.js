@@ -113,7 +113,7 @@ let boundingBoxVRCSlicesToDisplay = [
 /**
  * @type {number} - The default voxel intensity for the bounding box.
  */
-const boundingBoxVRCDefaultVoxelIntensity = 10;
+const boundingBoxVRCDefaultVoxelIntensity = 5;
 
 
 /****************************************************/
