@@ -5,9 +5,9 @@ class BoundingBoxVRC extends BoundingBox {
         super('glsl/boundingBoxVRC', -1, null, true);
         this.voxelNoise = 1;
         this.transferFunc = -1;
-        this.nbImageDepth = -1;
-        this.nbImageWidth = -1;
-        this.nbImageHeight = -1;
+        this.nbImageDepth = 1;
+        this.nbImageWidth = 1;
+        this.nbImageHeight = 1;
         this.instanceStartTime = Date.now();
         this.transferFuncCustomValues = [];
         this.voxelIntensity = 1;

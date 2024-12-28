@@ -115,8 +115,8 @@ void main(void)
             break;
 
         // If we are under the map, outside of the box or if we haven't found a valid position.
-        if(position.z < -0.1 || position.z > uBBSize * 2. || position.x > uBBSize || position.x < -uBBSize
-        || position.y > uBBSize || position.y < -uBBSize)
+        if(position.z < -0.1 || position.z > uBBSize * 2.01 || position.x > uBBSize + 0.01 || position.x < -uBBSize - 0.01
+         || position.y > uBBSize + 0.01 || position.y < -uBBSize - 0.01)
         {
             // We have not found a color along the ray.
             if(color.a == 0.)
@@ -183,8 +183,6 @@ void main(void)
             // If we don't have a mode.
             else {
                 color += vec4(vec3(0.7, 0.7, 0.7) * (1. - color.a), 1. - color.a);
-                //color += vec4(vec3(0.7, 0.7, 0.7), 1. - color.a);
-                //color = vec4(color.rgb, 1.);
                 break;
             }
         }
