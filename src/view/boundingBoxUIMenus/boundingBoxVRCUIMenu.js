@@ -174,7 +174,7 @@ function handleCreateModalBodySlices() {
     createAndInitModal(
         boundingBoxVRCElements.slicesToDisplayCustomModalBody,
         'Check or uncheck the slices to display',
-        ['Red', 'Green', 'Blue', 'Yellow', 'Pink', 'Cyan', 'White', 'Grey'],
+        ['Red', 'Lime', 'Blue', 'Yellow', 'Magenta', 'Cyan', 'White', 'Grey'],
         createModalRowSlicesCubes,
         saveSliceDisplayValues,
         () => {
