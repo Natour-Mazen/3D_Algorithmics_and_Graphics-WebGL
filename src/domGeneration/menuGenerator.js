@@ -121,7 +121,10 @@ function toggleDropdown(evt) {
     const header = evt.target;
     const dropdown = header.closest('.dropdown');
     const caret = header.querySelector('.caret');
+    const dropdownConfig = dropdowns.find(d => d.title === header.textContent.trim());
+    const isLong = dropdownConfig.isLong;
 
+    // Close the current dropdown if it is active
     if (dropdown.classList.contains('active')) {
         dropdown.classList.remove('active');
         caret.classList.remove('up');
@@ -131,6 +134,7 @@ function toggleDropdown(evt) {
             openDropdowns.splice(index, 1);
         }
     } else {
+        // Close the oldest dropdown if more than two are open
         if (openDropdowns.length >= 2) {
             const dropdownToClose = openDropdowns.shift();
             const caretToClose = dropdownToClose.querySelector('.caret');
@@ -138,6 +142,22 @@ function toggleDropdown(evt) {
             caretToClose.classList.remove('up');
             caretToClose.classList.add('down');
         }
+
+        // Close other "isLong" dropdowns
+        if (isLong) {
+            openDropdowns.forEach(openDropdown => {
+                const openDropdownHeader = openDropdown.querySelector('.header');
+                const openDropdownConfig = dropdowns.find(d => d.title === openDropdownHeader.textContent.trim());
+                if (openDropdownConfig.isLong) {
+                    const openDropdownCaret = openDropdownHeader.querySelector('.caret');
+                    openDropdown.classList.remove('active');
+                    openDropdownCaret.classList.remove('up');
+                    openDropdownCaret.classList.add('down');
+                }
+            });
+        }
+
+        // Open the current dropdown
         dropdown.classList.add('active');
         caret.classList.remove('down');
         caret.classList.add('up');

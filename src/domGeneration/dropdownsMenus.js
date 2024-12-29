@@ -7,7 +7,8 @@ const dropdowns = [
             { type: 'color', label: 'Color:', id: 'light_color', value: '#ffffff' },
             { type: 'slider', label: 'Light Intensity:', id: 'lightIntensity_slider', min: 1, max: 6, step: 1, value: 1, displayId: 'lightIntensity_value' },
             { type: 'slider', label: 'Light Shininess:', id: 'lightShininess_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'lightShininess_value' },
-        ]
+        ],
+        isLong: false
     },
     {
         title: 'Objects',
@@ -27,7 +28,8 @@ const dropdowns = [
             { type: 'select', label: 'Texture', id: 'heightMap_texture_selector', options: ['None'] },
             { type: 'slider', label: 'Scale:', id: 'heightMap_scale_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'heightMap_scale_value' },
             { type: 'slider', label: 'Flatten Factor:', id: 'heightMap_flatten_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'heightMap_flatten_value' }
-        ]
+        ],
+        isLong: true
     },
     {
         title: 'Bump Map',
@@ -35,7 +37,8 @@ const dropdowns = [
 
             { type: 'select', label: 'Type', id: 'bump_map_selector', options: ['None'] },
             { type: 'select', label: 'Texture', id: 'bump_map_texture_selector', options: ['None'] },
-        ]
+        ],
+        isLong: false
     },
     {
         title: 'Bounding Box Ray Marching',
@@ -46,7 +49,8 @@ const dropdowns = [
             { type: 'select', label: 'Type', id: 'boundingBoxRM_type_selector', options: ['None'] },
             { type: 'select', label: 'Texture', id: 'boundingBoxRM_heightMap_texture_selector', options: ['None'] },
             { type: 'slider', label: 'Flatten Factor:', id: 'boundingBoxRM_heightMap_flatten_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBoxRM_heightMap_flatten_value' },
-        ]
+        ],
+        isLong: true
     },
     {
         title: 'Bounding Box Volume Ray Casting',
@@ -61,6 +65,7 @@ const dropdowns = [
             { type: 'modal', id: 'boundingBoxVRC_slicesToDisplayCustom_modal', idBody: 'boundingBoxVRC_slicesToDisplayCustom_modalBody' },
             { type: 'slider', label: 'Voxel intensity:', id: 'boundingBoxVRC_voxelMap_voxel-intensity', min: 1, max: 50, step: 0.5, value: 1, displayId: 'boundingBoxVRC_voxelMap_voxel-intensity_value' },
             { type: 'slider', label: 'Voxel noise:', id: 'boundingBoxVRC_voxelMap_voxel-noise_slider', min: 1, max: 10, step: 0.5, value: 1, displayId: 'boundingBoxVRC_voxelMap_voxel-noise_value' }
-        ]
+        ],
+        isLong: true
     },
 ];

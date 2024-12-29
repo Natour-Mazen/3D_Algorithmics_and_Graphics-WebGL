@@ -12,13 +12,13 @@ let main_FOV = 45;
 
 
 const canvasID = 'WebGL-canvas';
-
+const paddingCanvas = 18;
 // =====================================================
 function resizeCanvas() {
     const canvas = doc.getElementById(canvasID);
-    const padding = 18;
-    canvas.width = window.innerWidth - padding;
-    canvas.height = window.innerHeight - padding;
+
+    canvas.width = window.innerWidth - paddingCanvas;
+    canvas.height = window.innerHeight - paddingCanvas;
 
     gl.viewportWidth = canvas.width;
     gl.viewportHeight = canvas.height;
@@ -34,7 +34,17 @@ function resizeCanvas() {
 
 window.addEventListener('load', resizeCanvas);
 window.addEventListener('resize', resizeCanvas);
-window.addEventListener('scroll', resizeCanvas);
+
+window.addEventListener('scroll', () => {
+    const canvas = doc.getElementById(canvasID);
+    if(openDropdowns.length === 2){
+        canvas.height = window.innerHeight + window.scrollY * 2.05 - paddingCanvas;
+        canvas.maxHeight = '1080'
+    }else {
+        canvas.height = window.innerHeight - paddingCanvas;
+    }
+});
+
 
 // =====================================================
 
