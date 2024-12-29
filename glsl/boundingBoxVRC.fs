@@ -72,96 +72,87 @@ void main(void)
     // Transform the ray into object space
     vec3 dirPixelObj = normalize((viMVMatrix * vec4(dirCam, 1.0)).xyz);
 
-    // Calculation of the end point, when the ray is outside of the box (for Bresenham).
-    float tWhereZEgal0 = - (vVertexPosition.z / dirPixelObj.z);
-    if(vVertexPosition.z < 1. * uBBSize && dirPixelObj.z > 0.)
-    {
-        tWhereZEgal0 = vVertexPosition.z / dirPixelObj.z;
-    }
-    vec3 pointHitTheGround = vVertexPosition + tWhereZEgal0 * dirPixelObj;
-
     // The value that we increment during the ray marching.
-    float t = 0.0;
-    // The value of the height of the height map.
-    float heightMapL = 0.;
-    // To know if the last position was above.
-    bool above = false;
-    // The last position computed.
-    vec3 lastPosition = vVertexPosition + t * dirPixelObj;
-    // The last 'z' position calculated.
-    float fLastZ = 0.;
+    float t = 0.05;
 
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
         vec3 position = vVertexPosition + t * dirPixelObj;
         t += PAS;
 
-        // If we are under the map, outside of the box or if we haven't found a valid position.
-        if(position.z < 0. || position.z > uBBSize * 2.01 || position.x > uBBSize + 0.1 || position.x < -uBBSize - 0.1
-         || position.y > uBBSize + 0.1 || position.y < -uBBSize - 0.1)
-//        if(position.z < 0.0 || position.z > uBBSize * 2. || position.x > uBBSize || position.x < -uBBSize
-//        || position.y > uBBSize || position.y < -uBBSize)
+        // If we are under the map, outside of the box.
+        if(position.z < 0. || position.z > uBBSize * 2.01 || position.x > uBBSize || position.x < -uBBSize
+        || position.y > uBBSize || position.y < -uBBSize)
         {
-            // We have not found a color along the ray.
-            if(color.a == 0.)
-            {
-                discard;
-                break;
-            }
+            float BBSizeOffset = uBBSize + 0.1;
+            float nBBSizeOffset = -uBBSize - 0.1;
+            
             // If we are in opaque or wireframe mode.
-            else if(uIsOpaque || uIsWireFrame) {
+            if(uIsOpaque || uIsWireFrame) {
                 // Yellow color.
-                if(position.z >= uBBSize * 2.) {
-                    if(uIsWireFrame && position.z >= uBBSize * 2. + BORDER_SIZE) {
-                        //discard;
-                    }
-                    else{
-                        color = vec4(1., 1., 0., 0.);
+                if(position.z >= uBBSize * 2.01) {
+                    if(position.z >= uBBSize * 2. + BORDER_SIZE){
+                        //color = vec4(1., 1., 0., 0.);
+                        color += vec4(vec3(1., 1., 0.) * (1. - color.a), 1. - color.a);
                     }
                 }
                 // Red color.
-                else if(position.x > uBBSize && position.y <= uBBSize && position.y >= -uBBSize) {
-                    if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
-                    !(position.z >= uBBSize * 2. - BORDER_SIZE) && !(position.z <= -uBBSize * 2. + BORDER_SIZE)) {
-                        //discard;
-                    }
-                    else{
-                        color = vec4(1., 0., 0., 0.);
-                    }
+                else if(position.x > uBBSize && position.y <= BBSizeOffset && position.y >= nBBSizeOffset) {
+                    //color = vec4(1., 0., 0., 0.);
+                    color += vec4(vec3(1., 0., 0.) * (1. - color.a), 1. - color.a);
+//                    if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
+//                    !(position.z >= uBBSize * 2. - BORDER_SIZE) && !(position.z <= -uBBSize * 2. + BORDER_SIZE)) {
+//                        //discard;
+//                    }
+//                    else{
+//
+//                    }
                 }
                 // Green color.
-                else if( position.x < -uBBSize && position.y <= uBBSize && position.y >= -uBBSize) {
-                    if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
-                    !(position.z >= uBBSize * 2. - BORDER_SIZE) && !(position.z <= -uBBSize * 2. + BORDER_SIZE)) {
-                        //discard;
-                    }
-                    else {
-                        color = vec4(0., 1., 0., 0.);
-                    }
+                else if( position.x < -uBBSize && position.y <= BBSizeOffset && position.y >= nBBSizeOffset) {
+                    //color = vec4(0., 1., 0., 0.);
+                    color += vec4(vec3(0., 1., 0.) * (1. - color.a), 1. - color.a);
+//                    if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
+//                    !(position.z >= uBBSize * 2. - BORDER_SIZE) && !(position.z <= -uBBSize * 2. + BORDER_SIZE)) {
+//                        //discard;
+//                    }
+//                    else {
+//
+//                    }
                 }
                 // Blue color.
-                else if(position.y > uBBSize && position.x <= uBBSize && position.x >= -uBBSize) {
-                    if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
-                    !(position.z >= uBBSize * 2. - BORDER_SIZE) && !(position.z <= -uBBSize * 2. + BORDER_SIZE)) {
-                        //discard;
-                    }
-                    else{
-                        color = vec4(0., 0., 1., 0.);
-                    }
+                else if(position.y > uBBSize && position.x <= BBSizeOffset && position.x >= nBBSizeOffset) {
+                    //color = vec4(0., 0., 1., 0.);
+                    color += vec4(vec3(0., 0., 1.) * (1. - color.a), 1. - color.a);
+//                    if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
+//                    !(position.z >= uBBSize * 2. - BORDER_SIZE) && !(position.z <= -uBBSize * 2. + BORDER_SIZE)) {
+//                        //discard;
+//                    }
+//                    else{
+//
+//                    }
                 }
                 // Pink color.
-                else if(position.y < -uBBSize && position.x <= uBBSize && position.x >= -uBBSize) {
-                    if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
-                    !(position.z >= uBBSize * 2. - BORDER_SIZE) && !(position.z <= -uBBSize * 2. + BORDER_SIZE)) {
-                        //discard;
-                    }
-                    else {
-                        color = vec4(1., 0., 1., 0.);
-                    }
+                else if(position.y < -uBBSize && position.x <= BBSizeOffset && position.x >= nBBSizeOffset) {
+                    //color = vec4(1., 0., 1., 0.);
+                    color += vec4(vec3(1., 0., 1.) * (1. - color.a), 1. - color.a);
+//                    if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
+//                    !(position.z >= uBBSize * 2. - BORDER_SIZE) && !(position.z <= -uBBSize * 2. + BORDER_SIZE)) {
+//                        //discard;
+//                    }
+//                    else {
+//
+//                    }
                 }
                 else {
-                    discard;
+                    color += vec4(vec3(0.7, 0.7, 0.7) * (1. - color.a), 1. - color.a);
                 }
+                break;
+            }
+            // We have not found a color along the ray.
+            else if(color.a == 0.)
+            {
+                discard;
                 break;
             }
             // If we don't have a mode.
