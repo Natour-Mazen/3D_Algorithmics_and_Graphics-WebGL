@@ -6,7 +6,6 @@
 }
 
 body, html {
-    /*max-height: 100%;*/
     height: 100%;
     margin: 0;
     display: flex;
