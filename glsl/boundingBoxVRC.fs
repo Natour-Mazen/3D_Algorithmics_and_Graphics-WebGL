@@ -96,27 +96,11 @@ void main(void)
         vec3 position = vVertexPosition + t * dirPixelObj;
         t += PAS;
 
-        // To get the color of the pixel in the current position.
-        vec4 texImage = getVoxcelInPos(position);
-
-        if(uDisplaySlicesCubes){
-            texImage = displaySlicesCubes(texImage, position);
-        }else{
-            texImage = transformationFunction(texImage, position);
-        }
-
-        texImage.r *= texImage.a;
-        texImage.g *= texImage.a;
-        texImage.b *= texImage.a;
-
-        color += texImage * (1. - color.a);
-
-        if(color.a > 0.99)
-            break;
-
         // If we are under the map, outside of the box or if we haven't found a valid position.
-        if(position.z < -0.1 || position.z > uBBSize * 2.01 || position.x > uBBSize + 0.01 || position.x < -uBBSize - 0.01
-         || position.y > uBBSize + 0.01 || position.y < -uBBSize - 0.01)
+        if(position.z < 0. || position.z > uBBSize * 2.01 || position.x > uBBSize + 0.1 || position.x < -uBBSize - 0.1
+         || position.y > uBBSize + 0.1 || position.y < -uBBSize - 0.1)
+//        if(position.z < 0.0 || position.z > uBBSize * 2. || position.x > uBBSize || position.x < -uBBSize
+//        || position.y > uBBSize || position.y < -uBBSize)
         {
             // We have not found a color along the ray.
             if(color.a == 0.)
@@ -186,6 +170,24 @@ void main(void)
                 break;
             }
         }
+
+        // To get the color of the pixel in the current position.
+        vec4 texImage = getVoxcelInPos(position);
+
+        if(uDisplaySlicesCubes){
+            texImage = displaySlicesCubes(texImage, position);
+        }else{
+            texImage = transformationFunction(texImage, position);
+        }
+
+        texImage.r *= texImage.a;
+        texImage.g *= texImage.a;
+        texImage.b *= texImage.a;
+
+        color += texImage * (1. - color.a);
+
+        if(color.a > 0.99)
+        break;
     }
 
     gl_FragColor = vec4(color.rbg, 1.0);
@@ -196,26 +198,37 @@ void main(void)
 //                      Functions                        //
 // ===================================================== //
 
+/** @breif Find the color on the 2D texture associted with the 3D position on the cube.
+*   @param position (vec3) The position where we need a color.
+    @return (vec4) The color found with the position.
+*/
 vec4 getVoxcelInPos(vec3 position)
 {
     vec3 positionN = position / uBBSize;
     positionN.xy += 1.;
     positionN.xy /= 2.;
+    positionN.z /= 2.;
     // positionN x: 0 to 1, y: 0 to 1, z: 0 to 1
 
-    vec3 positionOnImage = positionN * uNbImageDepth;
+    // Index for the depth.
+    float sliceIndex = max(0., min(floor(positionN.z * (uNbImageDepth)), uNbImageDepth - 1.));
 
-    float sliceIndex = floor(positionOnImage.z / 2.); // L'indice de tranche en profondeur
-    float x = mod(sliceIndex, uNbImageWidth);          // Colonne de la tranche dans la grille
-    float y = floor(sliceIndex / uNbImageWidth);       // Ligne de la tranche dans la grille
+    // Index of the image to display (x, y).
+    float x = mod(sliceIndex, uNbImageWidth);
+    float y = floor(sliceIndex / uNbImageWidth);
 
+    // Because sometime mod is not working correctly. 11.99 mod 12 = 12 ????????????
+    if(x >= uNbImageWidth){
+        x = uNbImageWidth - 1.;
+    }
+
+    // The position of the pixel on the texture.
     vec2 positionTexture = vec2(
-    (x * uNbImageDepth + positionOnImage.x) / (uNbImageWidth * uNbImageDepth), // Position x en prenant en compte la colonne
-    (y * uNbImageDepth + positionOnImage.y) / (uNbImageHeight * uNbImageDepth)  // Position y en prenant en compte la ligne
+    ((x + positionN.x) / uNbImageWidth),
+    ((y + positionN.y) / uNbImageHeight)
     );
 
-    vec4 texImage = texture2D(uVoxelMapTypeSampler, goodTexCoord(positionTexture));
-    return texImage;
+    return texture2D(uVoxelMapTypeSampler, positionTexture);
 }
 
 vec4 transformationDefault(vec4 color)
