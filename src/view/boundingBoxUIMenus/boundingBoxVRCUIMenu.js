@@ -113,7 +113,12 @@ let boundingBoxVRCSlicesToDisplay = [
 /**
  * @type {number} - The default voxel intensity for the bounding box.
  */
-const boundingBoxVRCDefaultVoxelIntensity = 5;
+const boundingBoxVRCDefaultVoxelIntensity = 1;
+
+/**
+* @type {number} - The default voxel noise for the bounding box.
+*/
+const boundingBoxVRCDefaultVoxelNoise = 1;
 
 
 /****************************************************/
@@ -310,6 +315,7 @@ function initBoundingBoxVRCUIComponents() {
                 theVRCBoundingBox.setTransferFuncCustomValues(boundingBoxVRCTransferFuncCustomValues);
                 theVRCBoundingBox.setVoxelIntensity(boundingBoxVRCDefaultVoxelIntensity);
                 theVRCBoundingBox.setSlicesToDisplay(boundingBoxVRCSlicesToDisplay);
+                theVRCBoundingBox.setVoxelNoise(boundingBoxVRCDefaultVoxelNoise);
             }
         });
     });

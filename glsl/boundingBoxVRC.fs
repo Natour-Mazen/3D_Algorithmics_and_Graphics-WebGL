@@ -237,11 +237,7 @@ vec4 getVoxcelInPos(vec3 position)
 
 vec4 transformationDefault(vec4 color)
 {
-    color.a = color.r;
-    if(color.a <= 0.1 / uVoxelNoise){
-        color.a = 0.;
-    }
-    else if(color.a >= 0.6){
+    if(color.a >= 0.6){
         color.a = 1.;
     }
     return color;
@@ -258,12 +254,6 @@ vec4 transformationCustom(vec4 color)
 
 
     float colorAlpha = color.r;
-
-    // To remove the artifacts.
-    if(colorAlpha <= 0.1 / uVoxelNoise){
-        color.a = 0.;
-        return color;
-    }
 
     // Exemple of what could be a custom transfer function.
     // With color1 = [1., 0., 0., 1.0]
@@ -310,10 +300,6 @@ vec4 transformationCustom(vec4 color)
 
 vec4 transformationRed(vec4 color)
 {
-    color.a = color.r;
-    if(color.a <= 0.1 / uVoxelNoise){
-        color.a = 0.;
-    }
     color.g = 0.;
     color.b = 0.;
     return color;
@@ -321,10 +307,6 @@ vec4 transformationRed(vec4 color)
 
 vec4 transformationBlueToGreen(vec4 color)
 {
-    color.a = color.r;
-    if(color.a <= 0.1 / uVoxelNoise){
-        color.a = 0.;
-    }
     color.r = 0.;
     color.g = mix(1., 0., color.a);
     color.b = mix(0., 1., color.a);
@@ -333,10 +315,6 @@ vec4 transformationBlueToGreen(vec4 color)
 
 vec4 transformationSepia(vec4 color)
 {
-    color.a = color.r;
-    if (color.a <= 0.1 / uVoxelNoise) {
-        color.a = 0.;
-    }
     float r = color.r;
     float g = color.g;
     float b = color.b;
@@ -348,20 +326,12 @@ vec4 transformationSepia(vec4 color)
 
 vec4 transformationInvert(vec4 color)
 {
-    color.a = color.r;
-    if (color.a <= 0.1 / uVoxelNoise) {
-        color.a = 0.;
-    }
     color.rgb = vec3(1.0) - color.rgb;
     return color;
 }
 
 vec4 transformationGlitch(vec4 color)
 {
-    color.a = color.r;
-    if (color.a <= 0.1 / uVoxelNoise) {
-        color.a = 0.;
-    }
     float glitchIntensity = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
     if (glitchIntensity > 0.9) {
         color.rgb = vec3(1.0, 0.0, 0.0); // Red glitch
@@ -375,11 +345,8 @@ vec4 transformationGlitch(vec4 color)
     return color;
 }
 
-vec4 transformationHeartBeat(vec4 color) {
-    color.a = color.r;
-    if (color.a <= 0.1 / uVoxelNoise) {
-        color.a = 0.;
-    }
+vec4 transformationHeartBeat(vec4 color)
+{
     float glitchFactor = sin(color.a * 10.0 + uHeartBeatFactor) * 0.5 + 0.5;
     color.rgb = mix(color.rgb, vec3(1.0, 0.0, 0.0), glitchFactor);
     return color;
@@ -387,10 +354,6 @@ vec4 transformationHeartBeat(vec4 color) {
 
 vec4 transformationThermal(vec4 color)
 {
-    color.a = color.r;
-    if (color.a <= 0.1 / uVoxelNoise) {
-        color.a = 0.;
-    }
     float intensity = dot(color.rgb, vec3(0.299, 0.587, 0.114));
     if (intensity > 0.8) {
         color.rgb = vec3(1.0, 0.0, 0.0); // Red
@@ -408,10 +371,6 @@ vec4 transformationThermal(vec4 color)
 
 vec4 transformationRainbow(vec4 color)
 {
-    color.a = color.r;
-    if (color.a <= 0.1 / uVoxelNoise) {
-        color.a = 0.;
-    }
     float intensity = dot(color.rgb, vec3(0.299, 0.587, 0.114));
     float hue = mod(intensity * 6.0, 6.0);
     if (hue < 1.0) {
@@ -432,10 +391,6 @@ vec4 transformationRainbow(vec4 color)
 
 vec4 transformationRedJeely(vec4 color)
 {
-    color.a = color.r;
-    if(color.a <= 0.1 / uVoxelNoise){
-        color.a = 0.;
-    }
     if(color.a >= 0.6){
         color.a = 1.;
     }
@@ -536,8 +491,19 @@ vec4 displaySlicesCubes(vec4 color,vec3 position)
 vec4 transformationFunction(vec4 color, vec3 position)
 {
     color = cutSlicesCubes(color, position);
-    color *= uVoxelIntensity / 4.; // TODO : change the coefficient to have a better result.
+    if(color.r != 0.){
+        color += (uVoxelIntensity * 0.001) - 0.001;
+    }
+    // The choice of the transfer function.
     int v = uTransferFunc;
+
+    // To remove the artifacts.
+    color.a = color.r;
+    if(color.a < uVoxelNoise * 0.01){
+        color.a = 0.;
+        return color;
+    }
+
     if (v == 0) {
         color = transformationDefault(color);
     }else if(v == 1){
