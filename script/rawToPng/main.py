@@ -35,8 +35,8 @@ def process_raw_to_image(dat_file, output_file, downscale_factor=2, slice_skip=2
     scaled_w, scaled_h = width // downscale_factor, height // downscale_factor
 
     # Compute scaling factor to maintain proportions
-    scaled_width = int(width * (width / depth) // downscale_factor // 2)
-    scaled_height = int(height * (height / depth) // downscale_factor // 2)
+    scaled_width = int(width * (width / depth) // downscale_factor)
+    scaled_height = int(height * (height / depth) // downscale_factor)
 
     if width == depth and height == depth:
         scaled_width = scaled_w
@@ -114,21 +114,21 @@ def process_raw_to_image(dat_file, output_file, downscale_factor=2, slice_skip=2
 
 # 512x512x512 -> hazelnuts/hnut_uint.dat
 # process_raw_to_image("hazelnuts/hnut_uint.dat", "hazelnut_slices", 1, 1) # High quality
-# process_raw_to_image("hazelnuts/hnut_uint.dat", "hazelnut_slices", 2, 2) # Normal quality
+process_raw_to_image("hazelnuts/hnut_uint.dat", "hazelnut_slices", 2, 2) # Normal quality
 # process_raw_to_image("hazelnuts/hnut_uint.dat", "hazelnut_slices", 4, 4) # Low quality
 
 # 1024x1024x1024 -> flower/flower_uint.dat
 # process_raw_to_image("flower/flower_uint.dat", "flower_slices", 2, 2) # High quality
-# process_raw_to_image("flower/flower_uint.dat", "flower_slices", 4, 4) # Normal quality
+process_raw_to_image("flower/flower_uint.dat", "flower_slices", 4, 4) # Normal quality
 # process_raw_to_image("flower/flower_uint.dat", "flower_slices", 8, 8) # Low quality
 
 # 1024x1024x1546 -> beechnut/beechnut_uint.dat
 # process_raw_to_image("beechnut/beechnut_uint.dat", "beechnut_slices", 2, 3, True, 50) # High quality
-# process_raw_to_image("beechnut/beechnut_uint.dat", "beechnut_slices", 4, 6, True, 50) # Normal quality
+process_raw_to_image("beechnut/beechnut_uint.dat", "beechnut_slices", 4, 6, True, 50) # Normal quality
 # process_raw_to_image("beechnut/beechnut_uint.dat", "beechnut_slices", 8, 12, True, 50) # Low quality
 
 # 2048x2048x2048 -> woodbranch/woodbranch_uint.dat
 # process_raw_to_image("woodbranch/woodbranch_uint.dat", "woodbranch_slices", 4, 4, True, 50, 5, 50) # High quality
-# process_raw_to_image("woodbranch/woodbranch_uint.dat", "woodbranch_slices", 8, 8, True, 50, 5, 50) # Normal quality
+process_raw_to_image("woodbranch/woodbranch_uint.dat", "woodbranch_slices", 8, 8, True, 50, 5, 50) # Normal quality
 # process_raw_to_image("woodbranch/woodbranch_uint.dat", "woodbranch_slices", 16, 16, True, 50, 5, 50) # Low quality
 
