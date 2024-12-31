@@ -77,7 +77,7 @@ function handleMouseMove(event) {
 		rotX += degToRad(deltaY / 5);
 
 		// Limit the rotation around the x-axis to the range -PI/2 to PI/2
-		rotX = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, rotX));
+		rotX = Math.max(-Math.PI / 1.91, Math.min(Math.PI / 1.91, rotX));
 
 		mat4.identity(rotMatrix);
 		mat4.rotate(rotMatrix, rotX, [1, 0, 0]);
