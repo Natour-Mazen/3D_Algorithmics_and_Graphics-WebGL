@@ -84,7 +84,7 @@ void main(void)
     }
     else // We use the texture color.
     {
-        vec4 textureColor = texture2D(uSampler, vTexCoord);
+        vec4 textureColor = texture2D(uSampler, vec2(vTexCoord.x, 1.- vTexCoord.y));
         finalColor = textureColor;
     }
 
