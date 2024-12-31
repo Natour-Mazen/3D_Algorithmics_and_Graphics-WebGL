@@ -20,12 +20,14 @@ uniform bool uDisplaySlicesCubes; // If the slice modification is active.
 uniform float uSlicesToDisplay[8]; // The slices to display.
 
 const int MAX_ITERATIONS = 700; // For the ray marching.
-float BORDER_SIZE = 0.005 * uBBSize; // The border size of the wireframe.
+float BORDER_SIZE = 0.01 * uBBSize; // The border size of the wireframe.
 
 // Nyquist–Shannon sampling to have the best step.
 float uBBSizeCarre = uBBSize * uBBSize;
 float DIAGO = sqrt(sqrt(uBBSizeCarre + uBBSizeCarre) * sqrt(uBBSizeCarre + uBBSizeCarre) + uBBSizeCarre);
 float PAS = DIAGO / sqrt(uNbImageDepth * uNbImageDepth + uNbImageDepth * uNbImageDepth) * 2.;
+
+const vec3 BACKGROUND_COLOR = vec3(0.7, 0.7, 0.7);
 
 varying vec3 vVertexPosition;        // Reel vertex position.
 varying vec4 vVertexPositionSpace;   // Vertex position project on the sreen.
@@ -57,7 +59,7 @@ void main(void)
 
     // The color of the border (wireframe).
     vec3 borderColor = borderColor(vVertexPosition);
-    if(borderColor.x != -1.)
+    if(borderColor.r != -1.)
     {
         gl_FragColor = vec4(borderColor, 1.0);
         return;
@@ -86,66 +88,77 @@ void main(void)
         {
             float BBSizeOffset = uBBSize + 0.1;
             float nBBSizeOffset = -uBBSize - 0.1;
-            
+            bool bBackgroundColor = true; // To add the background color to the current color.
+
             // If we are in opaque or wireframe mode.
             if(uIsOpaque || uIsWireFrame) {
-                // Yellow color.
+                // Top Yellow color.
                 if(position.z >= uBBSize * 2.01) {
-                    if(position.z >= uBBSize * 2. + BORDER_SIZE){
-                        //color = vec4(1., 1., 0., 0.);
-                        color += vec4(vec3(1., 1., 0.) * (1. - color.a), 1. - color.a);
+                    if(position.z >= uBBSize + BORDER_SIZE){
+                        // color = vec4(1., 1., 0., 0.); // Normal Yellow Color
+                        if(!uIsWireFrame || position.x >= uBBSize - BORDER_SIZE || position.x <= -uBBSize + BORDER_SIZE
+                            || position.y >= uBBSize - BORDER_SIZE || position.y <= -uBBSize + BORDER_SIZE)
+                        {
+                            color += vec4(vec3(1., 0., 1.) * (1. - color.a), 1. - color.a);
+                            bBackgroundColor = false;
+                        }
                     }
                 }
-                // Red color.
+                // Bottom White color.
+                if(position.z < 0.) {
+                    // color = vec4(1., 1., 0., 0.); // Normal Yellow Color
+                    if(!uIsWireFrame || position.x >= uBBSize - BORDER_SIZE || position.x <= -uBBSize + BORDER_SIZE
+                        || position.y >= uBBSize - BORDER_SIZE || position.y <= -uBBSize + BORDER_SIZE)
+                    {
+                        color += vec4(vec3(1., 1., 1.) * (1. - color.a), 1. - color.a);
+                        bBackgroundColor = false;
+                    }
+                }
+                // Right Red color.
                 else if(position.x > uBBSize && position.y <= BBSizeOffset && position.y >= nBBSizeOffset) {
-                    //color = vec4(1., 0., 0., 0.);
-                    color += vec4(vec3(1., 0., 0.) * (1. - color.a), 1. - color.a);
-//                    if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
-//                    !(position.z >= uBBSize * 2. - BORDER_SIZE) && !(position.z <= -uBBSize * 2. + BORDER_SIZE)) {
-//                        //discard;
-//                    }
-//                    else{
-//
-//                    }
+                    // color = vec4(1., 0., 0., 0.); // Normal Red Color
+                    if(!uIsWireFrame || position.y >= uBBSize - BORDER_SIZE || position.y <= -uBBSize + BORDER_SIZE
+                        || position.z >= uBBSize * 2. - BORDER_SIZE || position.z <= BORDER_SIZE)
+                    {
+                        color += vec4(vec3(1., 0., 0.) * (1. - color.a), 1. - color.a);
+                        bBackgroundColor = false;
+                    }
                 }
-                // Green color.
-                else if( position.x < -uBBSize && position.y <= BBSizeOffset && position.y >= nBBSizeOffset) {
-                    //color = vec4(0., 1., 0., 0.);
-                    color += vec4(vec3(0., 1., 0.) * (1. - color.a), 1. - color.a);
-//                    if(uIsWireFrame && !(position.y >= uBBSize - BORDER_SIZE) && !(position.y <= -uBBSize + BORDER_SIZE) &&
-//                    !(position.z >= uBBSize * 2. - BORDER_SIZE) && !(position.z <= -uBBSize * 2. + BORDER_SIZE)) {
-//                        //discard;
-//                    }
-//                    else {
-//
-//                    }
+                // Left Green color.
+                else if(position.x < -uBBSize && position.y <= BBSizeOffset && position.y >= nBBSizeOffset) {
+                    // color = vec4(0., 1., 0., 0.); // Normal Green Color
+                    if(!uIsWireFrame || position.y >= uBBSize - BORDER_SIZE || position.y <= -uBBSize + BORDER_SIZE
+                        || position.z >= uBBSize * 2. - BORDER_SIZE || position.z <= BORDER_SIZE)
+                    {
+                        color += vec4(vec3(0., 0., 1.) * (1. - color.a), 1. - color.a);
+                        bBackgroundColor = false;
+                    }
                 }
-                // Blue color.
+                // Front Blue color.
                 else if(position.y > uBBSize && position.x <= BBSizeOffset && position.x >= nBBSizeOffset) {
-                    //color = vec4(0., 0., 1., 0.);
-                    color += vec4(vec3(0., 0., 1.) * (1. - color.a), 1. - color.a);
-//                    if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
-//                    !(position.z >= uBBSize * 2. - BORDER_SIZE) && !(position.z <= -uBBSize * 2. + BORDER_SIZE)) {
-//                        //discard;
-//                    }
-//                    else{
-//
-//                    }
+                    // color = vec4(0., 0., 1., 0.); // Normal Blue Color
+                    if(!uIsWireFrame || position.x >= uBBSize - BORDER_SIZE || position.x <= -uBBSize + BORDER_SIZE
+                        || position.z >= uBBSize * 2. - BORDER_SIZE || position.z <= BORDER_SIZE)
+                    {
+                        color += vec4(vec3(0., 1., 0.) * (1. - color.a), 1. - color.a);
+                        bBackgroundColor = false;
+                    }
                 }
-                // Pink color.
+                // Back Pink color.
                 else if(position.y < -uBBSize && position.x <= BBSizeOffset && position.x >= nBBSizeOffset) {
-                    //color = vec4(1., 0., 1., 0.);
-                    color += vec4(vec3(1., 0., 1.) * (1. - color.a), 1. - color.a);
-//                    if(uIsWireFrame && !(position.x >= uBBSize - BORDER_SIZE) && !(position.x <= -uBBSize + BORDER_SIZE) &&
-//                    !(position.z >= uBBSize * 2. - BORDER_SIZE) && !(position.z <= -uBBSize * 2. + BORDER_SIZE)) {
-//                        //discard;
-//                    }
-//                    else {
-//
-//                    }
+                    //color = vec4(1., 0., 1., 0.); // Normal Pink Color
+                    if(!uIsWireFrame || position.x >= uBBSize - BORDER_SIZE || position.x <= -uBBSize + BORDER_SIZE
+                        || position.z >= uBBSize * 2. - BORDER_SIZE || position.z <= BORDER_SIZE)
+                    {
+                        color += vec4(vec3(1., 1., 0.) * (1. - color.a), 1. - color.a);
+                        bBackgroundColor = false;
+                    }
                 }
                 else {
-                    color += vec4(vec3(0.7, 0.7, 0.7) * (1. - color.a), 1. - color.a);
+                    bBackgroundColor = true;
+                }
+                if(bBackgroundColor){
+                    color += vec4(BACKGROUND_COLOR * (1. - color.a), 1. - color.a);
                 }
                 break;
             }
@@ -157,7 +170,7 @@ void main(void)
             }
             // If we don't have a mode.
             else {
-                color += vec4(vec3(0.7, 0.7, 0.7) * (1. - color.a), 1. - color.a);
+                color += vec4(BACKGROUND_COLOR * (1. - color.a), 1. - color.a);
                 break;
             }
         }
@@ -567,7 +580,7 @@ vec3 borderColor(vec3 position)
     if(uIsWireFrame)
     {
         // Top Yellow
-        if(position.z == uBBSize) {
+        if(position.z == uBBSize * 2.) {
             if(position.x >= uBBSize - BORDER_SIZE || position.x <= -uBBSize + BORDER_SIZE
             || position.y >= uBBSize - BORDER_SIZE || position.y <= -uBBSize + BORDER_SIZE) {
                 color = vec3(1., 1., 0.);
@@ -576,28 +589,28 @@ vec3 borderColor(vec3 position)
         // Right Red
         else if(position.x == uBBSize) {
             if(position.y >= uBBSize - BORDER_SIZE || position.y <= -uBBSize + BORDER_SIZE
-            || position.z >= uBBSize - BORDER_SIZE || position.z <= -uBBSize + BORDER_SIZE) {
+            || position.z >= uBBSize * 2. - BORDER_SIZE || position.z <= BORDER_SIZE) {
                 color = vec3(1., 0., 0.);
             }
         }
         // Left Green
-        else if( position.x == -uBBSize) {
+        else if(position.x == -uBBSize) {
             if(position.y >= uBBSize - BORDER_SIZE || position.y <= -uBBSize + BORDER_SIZE
-            || position.z >= uBBSize - BORDER_SIZE || position.z <= -uBBSize + BORDER_SIZE) {
+            || position.z >= uBBSize * 2. - BORDER_SIZE || position.z <=  BORDER_SIZE) {
                 color = vec3(0., 1., 0.);
             }
         }
         // Front Blue
         else if(position.y == uBBSize) {
             if(position.x >= uBBSize - BORDER_SIZE || position.x <= -uBBSize + BORDER_SIZE
-            || position.z >= uBBSize - BORDER_SIZE || position.z <= -uBBSize + BORDER_SIZE) {
+            || position.z >= uBBSize * 2. - BORDER_SIZE || position.z <= BORDER_SIZE) {
                 color = vec3(0., 0., 1.);
             }
         }
         // Back pink
         else if(position.y == -uBBSize) {
             if(position.x >= uBBSize - BORDER_SIZE || position.x <= -uBBSize + BORDER_SIZE
-            || position.z >= uBBSize - BORDER_SIZE || position.z <= -uBBSize + BORDER_SIZE) {
+            || position.z >= uBBSize * 2. - BORDER_SIZE || position.z <= BORDER_SIZE) {
                 color = vec3(1., 0., 1.);
             }
         }
