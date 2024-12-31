@@ -1,12 +1,13 @@
-# Deuxième Jalon - A3D2
+# Troisième Jalon - A3D2
 
 ## Auteurs
 - AL NATOUR Mazen
 - HERVOUET Léo
 
+
 ## Sommaire
-- [Deuxième Jalon - A3D2](#deuxième-jalon---a3d2)
-  - [Fonctionnalités Incluses (Jalon 2)](#fonctionnalités-incluses-jalon-2)
+- [Troisième Jalon - A3D2](#troisième-jalon---a3d2)
+  - [Fonctionnalités Incluses (Jalon 3)](#fonctionnalités-incluses-jalon-3)
   - [Structure des Fichiers](#structure-des-fichiers)
     <details>
 
@@ -43,21 +44,20 @@
     
     </details>
   - [Instructions pour Exécuter le Projet](#instructions-pour-exécuter-le-projet)
-  - [Explication des nouvelles fonctionnalités faite dans le Jalon 2](#explication-des-nouvelles-fonctionnalités-faite-dans-le-jalon-2)
+  - [Explication des nouvelles fonctionnalités faite dans le Jalon 3](#explication-des-nouvelles-fonctionnalités-faite-dans-le-jalon-3)
   - [Remarques](#remarques)
   
 
 
-## Fonctionnalités Incluses (Jalon 2)
+## Fonctionnalités Incluses (Jalon 3)
 
-- Empêcher la camera d'aller "en dessous"
-- Boite englobante, avec les options d'afficher juste la height map, les murs interieurs en opaque en couleur et avec en fils de fer de couleurs).
-- Lancer de rayon sur une carte de hauteur avec le ray marching
-- Choix entre différentes cartes de hauteur (avec la composante 'R' (RGB) ou la composante 'L' (LAB))
-- Application une seconde texture sur la carte de hauteur.
-- Utiliser une texture de couleur pour faire une carte de hauteur (pour avoir la hauteur et la couleur de la texture).
-- Dlider pour gérer la hauteur de la texture.
-- Optimisation du parcours avec le bon delta T.
+- Une seconde boîte englobante qui utilise un lancer de rayon volumique pour visualiser des objets.
+- Affichage de cette boîte sans options, avec les faces intérieures colorées (opaques) ou avec seulement les coins de 
+la boîte colorés (fils de fer).
+- Affichage variable avec différentes fonctions de transfert prédéfinies et une paramétrable (Custom).
+- Affichage de quatre objets : des noisettes, une fleur, une coque de châtaigne et un tronc d’arbre.
+- Possibilité de changer l’intensité des voxels des images (Slider Voxel Intensity).
+- Possibilité de changer le seuil des voxels selon leurs intensités de couleur (Slider Voxel Noise).
 
 ## Structure des Fichiers
 
@@ -189,37 +189,33 @@
    - Q : Aller à gauche
    - D : Aller à droite
 
-## Explication des nouvelles fonctionnalités faite dans le Jalon 2
-- Le Jalon 2 inclut toutes les fonctionnalités du Jalon 1 et ajoute les fonctionnalités suivantes :
-  - Empêcher la caméra d'aller "en dessous" en bloquant la caméra à une certaine hauteur dans le fichier callbacks.js.
-  - L'ajout du **choix de la luminosité entre Lambert et Phong** pour toutes les fonctionnalités qui utilisent la lumière (excepté la boite englobante)
-    cela a impliqué de changer les shaders en injectant le code de la luminosité donc nous avons ajouté une fonction dans le fichier shaders.js pour 
-    injecter le code de la luminosité dans les shaders pour pouvoir utiliser la luminosité de Phong ou Lambert.
-  - L'ajout de la **boite englobante**, avec les options d'afficher juste la height map, les murs intérieurs en couleur et avec en fils de fer de couleurs
-  - **Ray Marching (explication) :**  
-    Pour afficher notre height map en 3D, nous utilisons cette fois-ci le ray marching, qui consiste à lancer des rayons 
-    et à calculer l'intersection avec la map pour pouvoir afficher les points de couleur sur une boîte placée au-dessus 
-    de la height map. Pour obtenir l'intersection avec la map, nous parcourons notre rayon avec un pas régulier, et en 
-    fonction de la position x,y, nous pouvons déterminer la hauteur du rayon par rapport à la map.  
-    <br/>
-    Cette technique que nous utilisons n'est pas parfaite. En effet, nous pouvons voir que sur les textures où il y a des 
-    pics verticaux vers le bas ou le haut, la technique que nous utilisons avec un pas régulier n'est pas optimale car elle 
-    peut manquer des pixels sur la map, ce qui engendre un non-affichage de ces pics.
-    Une solution pour résoudre cela est d'utiliser l'algorithme de Bresenham pour passer par tous les pixels et donc 
-    éviter le problème précédent (utilisation d'un pas variable cette fois-ci).  
-    <br/>
-    Pour commencer, l'algorithme de Bresenham est un algorithme qui peut manquer des pixels. Il faut donc une version 
-    modifiée pour ne pas en manquer. Cette version modifiée permet d'obtenir tous les pixels par lesquels notre rayon 
-    passe. Ensuite, nous parcourons tous les pixels au fil du calcul pour savoir si notre rayon est en dessous ou 
-    au-dessus de la map. En fonction de cela, nous pouvons déterminer quand notre rayon intersecte avec la map.  
-    <br/>
-    Une fois que nous avons une intersection avec deux points en dessous et deux points au-dessus de la map 
-    (un point sur le rayon et un point dans le même axe que le rayon, mais avec le 'z' que nous récupérons de la map), 
-    nous pouvons utiliser ces quatre points pour former deux lignes : une qui est celle du rayon et l'autre entre les deux 
-    points récupérés de la map. Avec ces deux lignes, nous trouvons l'intersection qui nous donne notre point à afficher.  
-    <br/>
-    Cette technique fonctionne en théorie, mais nous n'avons pas réussi à l'implémenter complètement par manque de temps,
-      vous trouverez tout de même le code en commentaire dans le shader boundingBox.fs .  
+## Explication des nouvelles fonctionnalités faite dans le Jalon 3
+Le Jalon 3 inclut toutes les fonctionnalités du Jalon 2 et ajoute les fonctionnalités demandées
+
+### Explication du choix de stockage d’image
+Pour nous permettre de transmettre les images du JavaScript vers le shader (GLSL), nous avons choisi d’envoyer une seule 
+image vers le shader via une texture. Cette image est composée de plusieurs images, qui sont des tranches de l’objet 3D.
+L’objet est chargé, puis découpé en tranches sur l’axe vertical pour chaque pixel. Ensuite, nous disposons les images 
+les unes à côté des autres sous forme de grille.
+Une fois la texture importée dans le shader (avec la taille de la grille), nous pouvons savoir, pour chaque hauteur de 
+notre rayon, quelle texture utiliser pour afficher le bon voxel.
+
+Cette méthode permet de réduire l’espace mémoire du projet. En effet, les fichiers .raw fournis par 
+le site de référence étaient beaucoup trop volumineux (plusieurs gigaoctets). Cette technique permet donc de compresser 
+ces fichiers .raw en données plus faciles à charger pour le navigateur. Elle permet aussi de nettoyer les .raw, car pour 
+la coque de châtaigne et le tronc d’arbre, les données n’étaient pas affichables simplement.
+
+De plus, cela permet de gérer différentes qualités d’affichage :
+- LQ pour "Low Quality",
+- NQ pour "Normal Quality",
+- HQ pour "High Quality".
+
+L’utilisation de textures permet également d’interpoler les couleurs en fonction de la position sur la texture, ce qui 
+offre un rendu moins pixelisé, même si l’image est de moins bonne qualité que l’objet original contenu dans le fichier .raw.
+
+Pour la création de ces images, nous avons développé un script Python qui utilise les fichiers .raw et .dat fournis 
+par le site pour générer les images nécessaires. Ce script se trouve dans le dossier "script".
+
 
 ## Remarques
 - L'interface utilisateur est entièrement générée en JavaScript pour permettre une interaction dynamique.
