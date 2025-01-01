@@ -17,6 +17,7 @@ L'objectif est de réaliser un lancer de rayon volumique avec une fonction de tr
 intelligente les textures 2D pour stocker des séries d'images 3D. **Expliquez comment vous avez fait**.
 - Faire une fonction de transfert paramétrable.
 - Pouvoir choisir le modèle à visualiser.
+- Choisir quelles tranches de la texture 3D afficher.
 
 ## TODO (in English)
 
@@ -28,3 +29,4 @@ The goal is to implement volumetric ray casting with a transfer function to calc
 3D image slices. **Explain how you did this**.
 - Implement a configurable transfer function.
 - Allow selection of the model to visualize.
+- Choose which slices of the 3D texture to display.
