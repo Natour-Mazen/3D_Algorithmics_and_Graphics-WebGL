@@ -23,14 +23,21 @@
       - [`geometricObjects/plane.js`](#geometricobjectsplanejs)
       - [`entitiesObjects/bumpMap.js`](#entitiesobjectsbumpmapjs)
       - [`geometricObjects/heightMap.js`](#geometricobjectsheightmapjs)
-      - [`geometricObjects/boundingBoxRM.js`](#geometricobjectsboundingboxjs)
+      - [`geometricObjects/boundingBox`](#geometricobjectsboundingbox)
+        - [`boundingBox.js`](#boundingboxjs)
+        - [`boundingBoxBorderType.js`](#boundingboxbordertypejs)
+        - [`boundingBoxRM.js`](#boundingboxrmjs)
+        - [`boundingBoxVRC.js`](#boundingboxvrcjs)
     - [`src/view/`](#srcview)
       - [`utilsUI.js`](#utilsuijs)
       - [`objectsUIMenu.js`](#objectsuimenujs)
       - [`heightMapUIMenu.js`](#heightmapuimenujs)
       - [`bumpMapUIMenu.js`](#bumpmapuimenujs)
-      - [`boundingBoxUIMenu.js`](#boundingboxuimenujs)
       - [`lightUIMenu.js`](#lightuimenujs)
+      - [`view/boundingBoxUIMenus`](#viewboundingboxuimenus)
+        - [`boundingBoxUIMenu.js`](#boundingboxuimenujs)
+        - [`boundingBoxRMUIMenu.js`](#boundingboxrmuimenujs)
+        - [`boundingBoxVRCUIMenu.js`](#boundingboxvrcuimenujs)
     - [`utils/`](#utils)
       - [`color.js`](#colorjs)
       - [`light.js`](#lightjs)
@@ -58,6 +65,7 @@ la boîte colorés (fils de fer).
 - Affichage de quatre objets : des noisettes, une fleur, une coque de châtaigne et un tronc d’arbre.
 - Possibilité de changer l’intensité des voxels des images (Slider Voxel Intensity).
 - Possibilité de changer le seuil des voxels selon leurs intensités de couleur (Slider Voxel Noise).
+- Possibilité de choisir quelles tranches de la boîte englobante afficher (Slices Display).
 
 ## Structure des Fichiers
 
@@ -109,9 +117,24 @@ la boîte colorés (fils de fer).
   Cette classe est responsable de la génération et du rendu des terrains à partir de cartes de hauteur.
   Elle configure les paramètres des shaders, les uniformes et les buffers nécessaires pour dessiner les terrains.
 
-#### `geometricObjects/boundingBoxRM.js`
-- Ce fichier définit la classe BoundingBox, qui hérite de ObjectToDraw. Cette classe est responsable de la création et du rendu d'une boîte englobante.
+#### `geometricObjects/boundingBox`
+
+##### `boundingBox.js`
+- Ce fichier définit la classe abstraite BoundingBox, qui hérite de ObjectToDraw. Cette classe est responsable de la création et du rendu d'une boîte englobante générique.
   Elle configure les paramètres des shaders, les uniformes et les buffers nécessaires pour dessiner la boîte englobante.
+  Cette classe doit être étendue pour implémenter des méthodes spécifiques de rendu de boîte englobante.
+
+##### `boundingBoxBorderType.js`
+- Ce fichier définit l'énumération BoundingBoxBorderType, qui contient les différents types de rendu de boîte englobante.
+  Les types incluent les faces intérieures colorées (opaques), les faces extérieures colorées (fils de fer), etc.
+
+##### `boundingBoxRM.js`
+- Ce fichier définit la classe BoundingBoxRM qui effectue le ray marching, qui hérite de BoundingBox. Cette classe est responsable de la création et du rendu de la boîte englobante en mode ray marching.
+  Elle configure les paramètres des shaders, les uniformes, les buffers et les méthodes nécessaires pour dessiner la boîte englobante en ray marching.
+
+##### `boundingBoxVRC.js`
+- Ce fichier définit la classe BoundingBoxVRC qui effectue le volume rendering, qui hérite de BoundingBox. Cette classe est responsable de la création et du rendu de la boîte englobante volume ray rendering.
+  Elle configure les paramètres des shaders, les uniformes, les buffers et les méthodes nécessaires pour dessiner la boîte englobante en volume ray rendering.
 
 ### `src/view/`
 
@@ -135,15 +158,26 @@ la boîte colorés (fils de fer).
   réinitialiser les paramètres des bump maps, charger les textures, lier les shaders, mettre à jour la couleur de la lumière,
   et initialiser les composants UI pour les bump maps.
 
-#### `boundingBoxUIMenu.js`
-- Ce fichier gère les composants UI liés à la boîte englobante. Il inclut des fonctions pour gérer la visibilité de la boîte englobante,
-  la visibilité des différentes cartes de hauteurs, leurs tailles, textures, etc., l'initialisation des composants UI
-  pour la boîte englobante.
-
 #### `lightUIMenu.js`
 - Ce fichier gère les composants UI liés à la lumière. Il inclut des fonctions pour gérer la couleur de la lumière, l'intensité de la lumière,
   la position de la lumière, l'atténuation de la lumière, la visibilité de la lumière, le choix du type de lumiere utilisé (Lambert ou Phong) etc.,
   et l'initialisation des composants UI pour la lumière.
+
+#### `view/boundingBoxUIMenus`
+
+##### `boundingBoxUIMenu.js`
+- Ce fichier gère des méthodes génériques pour la boîte englobante. Afin qu'il soit utilise par les fichiers boundingBoxRMUIMenu.js et boundingBoxVRCUIMenu.js.
+  Cela pour éviter la redondance de code.
+
+##### `boundingBoxRMUIMenu.js`
+- Ce fichier gère les composants UI liés à la boîte englobante en mode ray marching. Il inclut des fonctions pour gérer la visibilité de la boîte englobante,
+  la visibilité des différentes cartes de hauteurs, leurs tailles, textures, etc., l'initialisation des composants UI
+  pour la boîte englobante en mode ray marching.
+
+##### `boundingBoxVRCUIMenu.js`
+- Ce fichier gère les composants UI liés à la boîte englobante en volume ray rendering. Il inclut des fonctions pour gérer la visibilité de la boîte englobante,
+  la visibilité des différentes voxelMap, affichage des tranches, intensité des voxel, leurs tailles, textures, etc., l'initialisation des composants UI
+  pour la boîte englobante en volume ray rendering.
 
 ### `utils/`
 
@@ -188,6 +222,8 @@ la boîte colorés (fils de fer).
    - S : Reculer
    - Q : Aller à gauche
    - D : Aller à droite
+   - Espace : Monter
+   - Shift : Descendre
 
 ## Explication des nouvelles fonctionnalités faite dans le Jalon 3
 Le Jalon 3 inclut toutes les fonctionnalités du Jalon 2 et ajoute les fonctionnalités demandées
