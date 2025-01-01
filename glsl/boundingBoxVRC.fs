@@ -335,9 +335,9 @@ vec4 transformationInvert(vec4 color)
     return color;
 }
 
-vec4 transformationGlitch(vec4 color)
+vec4 transformationGlitch(vec4 color, vec3 position)
 {
-    float glitchIntensity = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+    float glitchIntensity = fract(sin(dot(position.xy, vec2(12.9898, 78.233))) * 4758.5453);
     if (glitchIntensity > 0.9) {
         color.rgb = vec3(1.0, 0.0, 0.0); // Red glitch
     } else if (glitchIntensity > 0.8) {
@@ -345,7 +345,7 @@ vec4 transformationGlitch(vec4 color)
     } else if (glitchIntensity > 0.7) {
         color.rgb = vec3(0.0, 0.0, 1.0); // Blue glitch
     } else {
-        color.rgb = mix(color.rgb, vec3(0.0), glitchIntensity * 0.5); // Darken the color
+        color.rgb = mix(color.rgb, vec3(0.0), glitchIntensity * 2.8); // Darken the color
     }
     return color;
 }
@@ -520,7 +520,7 @@ vec4 transformationFunction(vec4 color, vec3 position)
     } else if(v == 4){
         color = transformationSepia(color);
     }  else if (v == 5) {
-        color = transformationGlitch(color);
+        color = transformationGlitch(color, position);
     } else if (v == 6) {
         color = transformationInvert(color);
     } else if (v == 7) {
