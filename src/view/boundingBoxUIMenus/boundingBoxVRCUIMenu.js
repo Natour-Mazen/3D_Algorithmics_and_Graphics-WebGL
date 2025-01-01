@@ -94,11 +94,11 @@ let isThereVRCBoundingBox = false;
  * @type {Number[]}
  */
 let boundingBoxVRCTransferFuncCustomValues = [
-    1., 0., 0., 0.010, // Red
-    1., 1., 0., 0.015, // Green
+    1., 0., 0., 0.001, // Red
+    1., 1., 0., 0.015, // Yellow
     0., 1., 0., 0.020, // Green
-    0., 0., 1., 0.025, // Purple
-    0., 0., 0., 0.030 // Yellow
+    0., 0., 1., 0.040, // Blue
+    0., 0., 0., 0.200  // Black
 ];
 
 

@@ -252,7 +252,6 @@ vec4 transformationCustom(vec4 color)
     vec4 color4 = uTransferFuncCustomValues[3].rbga;
     vec4 color5 = uTransferFuncCustomValues[4].rbga;
 
-
     float colorAlpha = color.r;
 
     // Exemple of what could be a custom transfer function.
@@ -276,8 +275,8 @@ vec4 transformationCustom(vec4 color)
 
     if(colorAlpha <= 1. / 4.){
         float mixValue = colorAlpha * (1. / 4.);
-        color.a = mix(color1.a, color2.a, (colorAlpha) * (1. / 4.));
-        color.rgb = mix(color1.rgb, color2.rgb, (colorAlpha) * (1. / 4.));
+        color.a = mix(color1.a, color2.a, mixValue);
+        color.rgb = mix(color1.rgb, color2.rgb, mixValue);
     }
     else if(colorAlpha <= 2. / 4.){
         float mixValue = (colorAlpha - 1. / 4.) * (2. / 4. - 1. / 4.);
@@ -457,7 +456,7 @@ vec4 displaySlicesCubes(vec4 color,vec3 position)
     color = cutSlicesCubes(color, position);
 
     color.a = color.r;
-    if(color.a <= 0.1 / uVoxelNoise){
+    if(color.a < (uVoxelNoise * 0.01) - 0.01){
         color.a = 0.;
     }
     if(color.a >= 0.6){
@@ -492,16 +491,15 @@ vec4 transformationFunction(vec4 color, vec3 position)
 {
     color = cutSlicesCubes(color, position);
     if(color.r != 0.){
-        color += (uVoxelIntensity * 0.001) - 0.001;
+        color *= (1. + (uVoxelIntensity * 0.1));
     }
     // The choice of the transfer function.
     int v = uTransferFunc;
 
     // To remove the artifacts.
     color.a = color.r;
-    if(color.a < uVoxelNoise * 0.01){
+    if(color.a < (uVoxelNoise * 0.01) - 0.01){
         color.a = 0.;
-        return color;
     }
 
     if (v == 0) {
