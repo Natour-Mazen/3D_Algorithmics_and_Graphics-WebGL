@@ -489,7 +489,6 @@ vec4 displaySlicesCubes(vec4 color,vec3 position)
 
 vec4 transformationFunction(vec4 color, vec3 position)
 {
-    color = cutSlicesCubes(color, position);
     if(color.r != 0.){
         color *= (1. + (uVoxelIntensity * 0.1));
     }
@@ -501,6 +500,8 @@ vec4 transformationFunction(vec4 color, vec3 position)
     if(color.a < (uVoxelNoise * 0.01) - 0.01){
         color.a = 0.;
     }
+
+    color = cutSlicesCubes(color, position);
 
     if (v == 0) {
         color = transformationDefault(color);

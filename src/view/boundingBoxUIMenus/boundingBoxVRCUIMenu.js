@@ -385,7 +385,7 @@ function initBoundingBoxVRCUIComponents() {
             theVRCBoundingBox.setVoxelNoise(this.value);
             boundingBoxVRCElements.voxelNoiseValueDisplay.innerHTML = this.value;
         }
-    });
+    }, boundingBoxVRCDefaultVoxelNoise, boundingBoxVRCElements.voxelNoiseValueDisplay);
 
     handleCreateModalBodyCustomTransferFunc();
     handleCreateModalBodySlices();
