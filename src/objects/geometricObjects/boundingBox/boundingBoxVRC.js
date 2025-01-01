@@ -21,6 +21,7 @@ class BoundingBoxVRC extends BoundingBox {
     setShadersParams() {
         super.setShadersParams();
         this.shader.uVoxelMapTypeSampler = gl.getUniformLocation(this.shader, "uVoxelMapTypeSampler");
+        this.shader.uIsVoxelMapEmpty = gl.getUniformLocation(this.shader, "uIsVoxelMapEmpty");
         this.shader.uVoxelNoise = gl.getUniformLocation(this.shader, "uVoxelNoise");
         this.shader.uTransferFunc = gl.getUniformLocation(this.shader, "uTransferFunc");
         this.shader.uNbImageDepth = gl.getUniformLocation(this.shader, "uNbImageDepth");
@@ -35,6 +36,10 @@ class BoundingBoxVRC extends BoundingBox {
 
     setUniforms() {
         super.setUniforms();
+
+        // To tell if the voxel map is loaded or not.
+        gl.uniform1i(this.shader.uIsVoxelMapEmpty, boundingBoxVoxelMapType == null ? 0 : 1);
+        this.checkGlError();
 
         // To modify the ray depth.
         gl.uniform1f(this.shader.uVoxelNoise, this.voxelNoise);

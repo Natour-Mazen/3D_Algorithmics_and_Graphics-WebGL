@@ -8,6 +8,7 @@ uniform float uAspectRatio; // The image aspect ratio.
 uniform float uFOV; // FOV.
 
 uniform sampler2D uVoxelMapTypeSampler; // The voxel map.
+uniform bool uIsVoxelMapEmpty; // Tell if the voxel map is empty or not.
 uniform float uVoxelNoise; // The voxel noise.
 uniform float uVoxelIntensity; // The intensity of the voxel.
 uniform float uNbImageDepth; // The size of the images inside the uVoxelMapTypeSampler.
@@ -54,6 +55,11 @@ vec3 borderColor(vec3 position);
 
 void main(void)
 {
+    if(!uIsVoxelMapEmpty){
+        gl_FragColor = vec4(0., 0., 0., 1.);
+        return;
+    }
+
     // Default color.
     vec4 color = vec4(0., 0., 0., 0.);
 
