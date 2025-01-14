@@ -28,6 +28,8 @@
 
 .modal-body {
     padding: 5px 5px 0 5px;
+    max-height: 230px;
+    overflow-y: auto;
 }
 
 .modal-footer {
@@ -46,12 +48,18 @@
 
 .modal-label{
     font-weight: bold;
+    margin-top: 5px;
 }
 
 .modal-close {
     color: #aaa;
     font-size: 28px;
     font-weight: bold;
+}
+
+.modal-close-bis {
+    color: #aaa;
+    font-size: 23px;
 }
 
 .modal-color-square {
@@ -66,7 +74,10 @@
 
 
 .modal-close:hover,
-.modal-close:focus {
+.modal-close:focus,
+.modal-close-bis:hover,
+.modal-close-bis:focus
+{
     opacity: 0.8;
     text-decoration: none;
     cursor: pointer;
@@ -100,18 +111,18 @@
     font-size: 14px;
 }
 
-.modal-validate-button{
+.modal-footer-buttons{
     background-color: rgb(169, 159, 159);
     color: white;
     border: none;
     cursor: pointer;
-    width: 80%;
+    width: 45%;
     border-radius: 10px;
     padding: 5px;
     transition: ease-in-out 0.4s;
 }
 
-.modal-validate-button:hover {
+.modal-footer-buttons:hover {
     opacity: 0.8;
     transition: ease-in-out 0.4s;
 }
