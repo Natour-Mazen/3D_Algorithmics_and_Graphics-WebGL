@@ -56,3 +56,40 @@ function loadTexture(gl, url) {
 
     return texture;
 }
+
+function createSolidTexture(gl, data) {
+    // Vérification : data doit être divisible par 4 (r, g, b, a pour chaque pixel)
+    if (data.length % 4 !== 0) {
+        throw new Error("Le tableau 'data' doit contenir un multiple de 4 éléments (r, g, b, a).");
+    }
+
+    // Conversion des données en Uint8Array (si elles ne le sont pas déjà)
+    const textureData = new Uint8Array(data);
+
+
+    const size = Math.sqrt(textureData.length / 4);
+    if (!Number.isInteger(size)) {
+        throw new Error("Le tableau 'data' doit contenir un nombre parfait de pixels (r, g, b, a).");
+    }
+
+    // Création et configuration de la texture
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(
+        gl.TEXTURE_2D,    // Type de texture
+        0,                // Niveau de mipmap
+        gl.RGBA,          // Format interne
+        size,             // Largeur
+        size,             // Hauteur
+        0,                // Bordure (doit être 0)
+        gl.RGBA,          // Format des données source
+        gl.UNSIGNED_BYTE, // Type de données
+        textureData       // Données
+    );
+
+    // Paramètres de filtrage
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+
+    return texture;
+}
