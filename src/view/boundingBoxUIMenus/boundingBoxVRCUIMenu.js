@@ -347,7 +347,8 @@ function initBoundingBoxVRCUIComponents() {
                 theVRCBoundingBox.setNbImageWidth(selectedTypeOption.dataset.width);
                 theVRCBoundingBox.setNbImageHeight(selectedTypeOption.dataset.height);
                 theVRCBoundingBox.setTransferFunc(selectedTransferFuncOption.value);
-                theVRCBoundingBox.setTransferFuncCustomValues(boundingBoxVRCTransferFuncCustomValues);
+                saveTransferFunctionValues();
+                // theVRCBoundingBox.setTransferFuncCustomValues(boundingBoxVRCTransferFuncCustomValues);
                 theVRCBoundingBox.setVoxelIntensity(boundingBoxVRCDefaultVoxelIntensity);
                 theVRCBoundingBox.setSlicesToDisplay(boundingBoxVRCSlicesToDisplay);
                 theVRCBoundingBox.setVoxelNoise(boundingBoxVRCDefaultVoxelNoise);
