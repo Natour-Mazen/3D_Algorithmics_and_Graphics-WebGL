@@ -26,8 +26,8 @@ float BORDER_SIZE = 0.01 * uBBSize; // The border size of the wireframe.
 
 // Nyquist–Shannon sampling to have the best step.
 float uBBSizeCarre = uBBSize * uBBSize;
-float DIAGO = sqrt(sqrt(uBBSizeCarre + uBBSizeCarre) * sqrt(uBBSizeCarre + uBBSizeCarre) + uBBSizeCarre);
-float PAS = DIAGO / sqrt(uNbImageDepth * uNbImageDepth + uNbImageDepth * uNbImageDepth) * 2.;
+float DIAGO = sqrt(sqrt(uBBSizeCarre + uBBSizeCarre) * sqrt(uBBSizeCarre + uBBSizeCarre) + uBBSizeCarre); // For size = 10 => 44
+float PAS = DIAGO / sqrt(uNbImageDepth * uNbImageDepth + uNbImageDepth * uNbImageDepth) * 2.; // LQ : 0.12, NQ : 0.25, HQ : 0.49
 
 const vec3 BACKGROUND_COLOR = vec3(0.7, 0.7, 0.7);
 
