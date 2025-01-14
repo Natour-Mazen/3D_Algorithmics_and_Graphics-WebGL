@@ -201,16 +201,24 @@ function closeModal(modal) {
  * @param {Function} rowCreator - A function to create a row element for each default value.
  * @param {Function} onValidate - The event handler for the validate button click event.
  * @param {Function} onClose - The event handler for the close button click event.
+ * @param {Function} afterInitCallBack - Optional. A callback function to execute after the modal is initialized.
  */
-function createAndInitModal(modalContent, titleText, defaultValues, rowCreator, onValidate, onClose = null) {
+function createAndInitModal(modalContent, titleText, defaultValues, rowCreator,
+                            onValidate, onClose = null, afterInitCallBack) {
     modalContent.innerHTML = '';
 
     const header = createModalHeader(titleText, modalContent.parentElement, onClose);
     const body = createModalBodyWithRows(defaultValues, rowCreator);
+    const footer = createModalFooter(onValidate);
 
     modalContent.appendChild(header);
     modalContent.appendChild(body);
-    modalContent.appendChild(createModalFooter(onValidate));
+    modalContent.appendChild(footer);
+
+    // Execute the afterInit callback if provided
+    if (afterInitCallBack && typeof afterInitCallBack === 'function') {
+        afterInitCallBack(modalContent, body, header, footer);
+    }
 }
 
 /**
@@ -266,7 +274,7 @@ function createModalFooter(onValidate) {
     footer.className = 'modal-footer';
 
     const validateButton = document.createElement('button');
-    validateButton.className = 'modal-validate-button';
+    validateButton.className = 'modal-footer-buttons';
     validateButton.innerText = 'Validate';
     validateButton.onclick = onValidate;
 
