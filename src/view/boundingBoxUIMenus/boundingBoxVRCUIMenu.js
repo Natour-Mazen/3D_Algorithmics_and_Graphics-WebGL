@@ -186,6 +186,7 @@ function handleCreateModalBodyCustomTransferFunc() {
                 // Crée une nouvelle ligne et l'ajoute au corps du modal
                 const newRow = createModalRowCustomTransferFunc({ color: '#ffffff', alpha: 1.0 });
                 body.appendChild(newRow);
+                saveTransferFunctionValues(false);
             });
             footer.style.justifyContent = 'space-between';
             footer.appendChild(addButton)
@@ -227,6 +228,9 @@ function createModalRowCustomTransferFunc({ color, alpha }) {
     colorInput.type = 'color';
     colorInput.className = 'modal-color-selector';
     colorInput.value = color;
+    colorInput.oninput = () => {
+        saveTransferFunctionValues(false);
+    }
 
 
     const closeButton = document.createElement('span');
@@ -238,6 +242,7 @@ function createModalRowCustomTransferFunc({ color, alpha }) {
         if (rows.length > 2) {
             if (index > 1) {
                 theRowElem.remove();
+                saveTransferFunctionValues(false);
             } else {
                 window.alert('You cannot remove the first two colors!');
             }
@@ -266,6 +271,9 @@ function createModalRowCustomTransferFunc({ color, alpha }) {
     alphaInput.max = 1;
     alphaInput.step = 0.01;
     alphaInput.value = alpha;
+    alphaInput.oninput = () => {
+        saveTransferFunctionValues(false);
+    }
 
     const labelPos = document.createElement('span');
     labelPos.innerText = 'Pos';
@@ -279,6 +287,9 @@ function createModalRowCustomTransferFunc({ color, alpha }) {
     posInput.max = 1;
     posInput.step = 0.01;
     posInput.value = alpha;
+    posInput.oninput = () => {
+        saveTransferFunctionValues(false);
+    }
 
     theAlphaPosDiv.appendChild(labelAlpha);
     theAlphaPosDiv.appendChild(alphaInput);
@@ -315,6 +326,9 @@ function createModalRowSlicesCubes(labelText) {
     checkbox.type = 'checkbox';
     checkbox.className = 'modal-checkbox';
     checkbox.checked = true;
+    // checkbox.oninput = () => {
+    //     saveSliceDisplayValues(false);
+    // }
 
     row.appendChild(colorSquare);
     row.appendChild(label);
@@ -322,7 +336,7 @@ function createModalRowSlicesCubes(labelText) {
     return row;
 }
 
-function saveTransferFunctionValues() {
+function saveTransferFunctionValues(closeTheModal = true) {
     const rows = boundingBoxVRCElements.transferFuncCustomModalBody.querySelectorAll('.modal-row');
     boundingBoxVRCTransferFuncCustomValues = Array.from(rows).flatMap(row => {
         //console.log(row);
@@ -341,18 +355,24 @@ function saveTransferFunctionValues() {
         boundingBoxVRCTransferFuncCustomTexture = createHorizontalGradientTexture(gl, boundingBoxVRCTransferFuncCustomValues);
        // theVRCBoundingBox.setTransferFuncCustomValues(boundingBoxVRCTransferFuncCustomValues);
     }
-    closeModal(boundingBoxVRCElements.transferFuncCustomModal);
+    if(closeTheModal){
+        closeModal(boundingBoxVRCElements.transferFuncCustomModal);
+    }
 }
 
-function saveSliceDisplayValues() {
+function saveSliceDisplayValues(closeTheModal = true) {
     const rows = boundingBoxVRCElements.slicesToDisplayCustomModalBody.querySelectorAll('.modal-row');
     boundingBoxVRCSlicesToDisplay = Array.from(rows).map(row => row.querySelector('.modal-checkbox').checked ? 1. : 0.);
 
     if (theVRCBoundingBox) {
         theVRCBoundingBox.setSlicesToDisplay(boundingBoxVRCSlicesToDisplay);
-        theVRCBoundingBox.setDisplaySlicesCubes(false);
+        if (closeTheModal){
+            theVRCBoundingBox.setDisplaySlicesCubes(false);
+        }
     }
-    closeModal(boundingBoxVRCElements.slicesToDisplayCustomModal);
+    if(closeTheModal){
+        closeModal(boundingBoxVRCElements.slicesToDisplayCustomModal);
+    }
 }
 
 function getDefaultValues() {
