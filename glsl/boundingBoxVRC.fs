@@ -252,7 +252,7 @@ vec4 transformationDefault(vec4 color)
 
 vec4 transformationCustom(vec4 color)
 {
-    return texture2D(uVoxelMapTypeSampler, vec2(color.a, 0.));
+    return texture2D(uFunctionTransferSampler, vec2(color.a, 0.)).rbga;
 
     // The values are in (r,b,g), why we don't know because in the js it's (r,g,b).
     vec4 color1 = uTransferFuncCustomValues[0].rbga;
