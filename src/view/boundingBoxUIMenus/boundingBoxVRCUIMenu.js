@@ -94,8 +94,8 @@ let isThereVRCBoundingBox = false;
  * @type {Number[]}
  */
 let boundingBoxVRCTransferFuncCustomValues = [
-    1., 0., 0., 0.01, // Red
-    1., 1., 0., 0.15, // Yellow
+    1., 0., 0., 0, // Red
+    1., 1., 0., 1, // Yellow
     // 0., 1., 0., 0.020, // Green
     // 0., 0., 1., 0.040, // Blue
     // 0., 0., 0., 0.200  // Black
@@ -209,44 +209,90 @@ function handleCreateModalBodySlices() {
 }
 
 function createModalRowCustomTransferFunc({ color, alpha }) {
-    const row = document.createElement('div');
-    row.className = 'modal-row';
+    const theRowElem = document.createElement('div');
+    theRowElem.className = 'modal-row';
+    theRowElem.style.display = 'block';
+    theRowElem.style.marginBottom = '15px';
+
+    const theColorDiv = document.createElement('div');
+    theColorDiv.style.display = 'flex';
+    theColorDiv.style.justifyContent = 'space-evenly';
+    theColorDiv.style.marginBottom = '3px';
+
+    const labelColor = document.createElement('span');
+    labelColor.innerText = 'Color ';
+    labelColor.className = 'modal-label';
 
     const colorInput = document.createElement('input');
     colorInput.type = 'color';
     colorInput.className = 'modal-color-selector';
     colorInput.value = color;
 
-    const labelAlpha = document.createElement('span');
-    labelAlpha.innerText = 'Alpha : ';
-    labelAlpha.className = 'modal-label';
-
-    const alphaInput = document.createElement('input');
-    alphaInput.type = 'number';
-    alphaInput.className = 'modal-alpha-input';
-    alphaInput.min = 0;
-    alphaInput.max = 1;
-    alphaInput.step = 0.01;
-    alphaInput.value = alpha;
-
 
     const closeButton = document.createElement('span');
     closeButton.className = 'modal-close-bis';
     closeButton.innerHTML = '&times;';
     closeButton.onclick = () => {
-        const rows = row.parentElement.querySelectorAll('.modal-row');
+        const rows = Array.from(theRowElem.parentElement.querySelectorAll('.modal-row'));
+        const index = rows.indexOf(theRowElem);
         if (rows.length > 2) {
-            row.remove();
+            if (index > 1) {
+                theRowElem.remove();
+            } else {
+                window.alert('You cannot remove the first two colors!');
+            }
         }else{
             window.alert('You must have at least 2 colors !');
         }
     };
 
-    row.appendChild(colorInput);
-    row.appendChild(labelAlpha);
-    row.appendChild(alphaInput);
-    row.appendChild(closeButton);
-    return row;
+    theColorDiv.appendChild(labelColor);
+    theColorDiv.appendChild(colorInput);
+    theColorDiv.appendChild(closeButton);
+
+    const theAlphaPosDiv = document.createElement('div');
+    theAlphaPosDiv.style.display = 'flex';
+    theAlphaPosDiv.style.justifyContent = 'space-between';
+
+    const labelAlpha = document.createElement('span');
+    labelAlpha.innerText = 'Alpha';
+    labelAlpha.className = 'modal-label';
+
+    const alphaInput = document.createElement('input');
+    alphaInput.type = 'number';
+    alphaInput.className = 'modal-input';
+    alphaInput.id = 'alphaInput';
+    alphaInput.min = 0;
+    alphaInput.max = 1;
+    alphaInput.step = 0.01;
+    alphaInput.value = alpha;
+
+    const labelPos = document.createElement('span');
+    labelPos.innerText = 'Pos';
+    labelPos.className = 'modal-label';
+
+    const posInput = document.createElement('input');
+    posInput.type = 'number';
+    posInput.className = 'modal-input';
+    posInput.id = 'posInput';
+    posInput.min = 0;
+    posInput.max = 1;
+    posInput.step = 0.01;
+    posInput.value = alpha;
+
+    theAlphaPosDiv.appendChild(labelAlpha);
+    theAlphaPosDiv.appendChild(alphaInput);
+    theAlphaPosDiv.appendChild(labelPos);
+    theAlphaPosDiv.appendChild(posInput);
+
+    const borderDiv = document.createElement('div');
+    borderDiv.style.borderBottom = '3px solid white';
+    borderDiv.style.marginTop = '8px';
+
+    theRowElem.appendChild(theColorDiv);
+    theRowElem.appendChild(theAlphaPosDiv);
+    theRowElem.appendChild(borderDiv);
+    return theRowElem;
 }
 
 function createModalRowSlicesCubes(labelText) {
@@ -279,17 +325,20 @@ function createModalRowSlicesCubes(labelText) {
 function saveTransferFunctionValues() {
     const rows = boundingBoxVRCElements.transferFuncCustomModalBody.querySelectorAll('.modal-row');
     boundingBoxVRCTransferFuncCustomValues = Array.from(rows).flatMap(row => {
+        //console.log(row);
+        const alphaInput = row.children[1].children[1];
+        const posInput = row.children[1].children[3];
         const color = row.querySelector('.modal-color-selector').value;
-        const alpha = parseFloat(row.querySelector('.modal-alpha-input').value) || 0.0;
+        const alpha = parseFloat(alphaInput.value) || 0.0;
         const colorRGB = Color.hextoRGB(color).toArray();
         colorRGB[3] = alpha;
         return colorRGB;
     });
 
-    console.log(boundingBoxVRCTransferFuncCustomValues);
+    //console.log(boundingBoxVRCTransferFuncCustomValues);
 
     if (theVRCBoundingBox) {
-        boundingBoxVRCTransferFuncCustomTexture = createSolidTexture(gl, boundingBoxVRCTransferFuncCustomValues);
+        boundingBoxVRCTransferFuncCustomTexture = createHorizontalGradientTexture(gl, boundingBoxVRCTransferFuncCustomValues);
        // theVRCBoundingBox.setTransferFuncCustomValues(boundingBoxVRCTransferFuncCustomValues);
     }
     closeModal(boundingBoxVRCElements.transferFuncCustomModal);
@@ -430,6 +479,14 @@ function initBoundingBoxVRCUIComponents() {
     const customOption = boundingBoxVRCElements.transferFuncSelector.querySelector('option[value="1"]');
     customOption.addEventListener('click', function (e) {
         openModal(boundingBoxVRCElements.transferFuncCustomModal);
+    });
+
+    const modalBody = boundingBoxVRCElements.transferFuncCustomModal.querySelector('.modal-body');
+    // get the tow first modal-row and in each one get the input color and input alpha and set the input alpha as incassible
+    const rows = modalBody.querySelectorAll('.modal-row');
+    rows.forEach(row => {
+        const posInput = row.children[1].children[3]; // children[1] is the div of alpha and pos and children[3] is the input of pos
+        posInput.setAttribute('disabled', 'true');
     });
 }
 
