@@ -94,12 +94,17 @@ let isThereVRCBoundingBox = false;
  * @type {Number[]}
  */
 let boundingBoxVRCTransferFuncCustomValues = [
-    1., 0., 0., 0.001, // Red
-    1., 1., 0., 0.015, // Yellow
-    0., 1., 0., 0.020, // Green
-    0., 0., 1., 0.040, // Blue
-    0., 0., 0., 0.200  // Black
+    1., 0., 0., 0.01, // Red
+    1., 1., 0., 0.15, // Yellow
+    // 0., 1., 0., 0.020, // Green
+    // 0., 0., 1., 0.040, // Blue
+    // 0., 0., 0., 0.200  // Black
 ];
+
+/**
+ * @type {WebGLTexture|null}
+ */
+let boundingBoxVRCTransferFuncCustomTexture = null;
 
 
 /**
@@ -171,7 +176,20 @@ function handleCreateModalBodyCustomTransferFunc() {
         'Customize Transfer Function',
         getDefaultValues(),
         createModalRowCustomTransferFunc,
-        saveTransferFunctionValues
+        saveTransferFunctionValues,
+        null,
+        (modalContent, body, header, footer) => {
+            const addButton = document.createElement('button');
+            addButton.innerText = 'Add';
+            addButton.className = 'modal-footer-buttons'
+            addButton.addEventListener('click', () => {
+                // Crée une nouvelle ligne et l'ajoute au corps du modal
+                const newRow = createModalRowCustomTransferFunc({ color: '#ffffff', alpha: 1.0 });
+                body.appendChild(newRow);
+            });
+            footer.style.justifyContent = 'space-between';
+            footer.appendChild(addButton)
+        }
     );
 }
 
@@ -211,9 +229,23 @@ function createModalRowCustomTransferFunc({ color, alpha }) {
     alphaInput.step = 0.01;
     alphaInput.value = alpha;
 
+
+    const closeButton = document.createElement('span');
+    closeButton.className = 'modal-close-bis';
+    closeButton.innerHTML = '&times;';
+    closeButton.onclick = () => {
+        const rows = row.parentElement.querySelectorAll('.modal-row');
+        if (rows.length > 2) {
+            row.remove();
+        }else{
+            window.alert('You must have at least 2 colors !');
+        }
+    };
+
     row.appendChild(colorInput);
     row.appendChild(labelAlpha);
     row.appendChild(alphaInput);
+    row.appendChild(closeButton);
     return row;
 }
 
@@ -254,8 +286,11 @@ function saveTransferFunctionValues() {
         return colorRGB;
     });
 
+    console.log(boundingBoxVRCTransferFuncCustomValues);
+
     if (theVRCBoundingBox) {
-        theVRCBoundingBox.setTransferFuncCustomValues(boundingBoxVRCTransferFuncCustomValues);
+        boundingBoxVRCTransferFuncCustomTexture = createSolidTexture(gl, boundingBoxVRCTransferFuncCustomValues);
+       // theVRCBoundingBox.setTransferFuncCustomValues(boundingBoxVRCTransferFuncCustomValues);
     }
     closeModal(boundingBoxVRCElements.transferFuncCustomModal);
 }
