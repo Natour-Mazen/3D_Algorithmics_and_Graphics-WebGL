@@ -32,6 +32,7 @@ class BoundingBoxVRC extends BoundingBox {
         this.shader.uVoxelIntensity = gl.getUniformLocation(this.shader, "uVoxelIntensity");
         this.shader.uDisplaySlicesCubes = gl.getUniformLocation(this.shader, "uDisplaySlicesCubes");
         this.shader.uSlicesToDisplay = gl.getUniformLocation(this.shader, "uSlicesToDisplay");
+        this.shader.uFunctionTransferSampler = gl.getUniformLocation(this.shader, "uFunctionTransferSampler");
     }
 
     setUniforms() {
@@ -65,9 +66,9 @@ class BoundingBoxVRC extends BoundingBox {
         gl.uniform1f(this.shader.uHeartBeatFactor, (Date.now() - this.instanceStartTime) / 1000.0);
         this.checkGlError();
 
-        // The custom values for the transfer function, if any.
-        gl.uniform4fv(this.shader.uTransferFuncCustomValues,new Float32Array(this.transferFuncCustomValues) );
-        this.checkGlError();
+        // // The custom values for the transfer function, if any.
+        // gl.uniform4fv(this.shader.uTransferFuncCustomValues,new Float32Array(this.transferFuncCustomValues) );
+        // this.checkGlError();
 
         // The voxel intensity of the voxel map.
         gl.uniform1f(this.shader.uVoxelIntensity, this.voxelIntensity);
@@ -84,6 +85,11 @@ class BoundingBoxVRC extends BoundingBox {
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, boundingBoxVoxelMapType);
         gl.uniform1i(this.shader.uVoxelMapTypeSampler, 0);
+        this.checkGlError();
+
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, boundingBoxVRCTransferFuncCustomTexture);
+        gl.uniform1i(this.shader.uFunctionTransferSampler, 1);
         this.checkGlError();
 
     }
