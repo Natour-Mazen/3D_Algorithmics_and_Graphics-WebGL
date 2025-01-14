@@ -8,6 +8,7 @@ uniform float uAspectRatio; // The image aspect ratio.
 uniform float uFOV; // FOV.
 
 uniform sampler2D uVoxelMapTypeSampler; // The voxel map.
+uniform sampler2D uFunctionTransferSampler; // The 1D image for the custom function transfer.
 uniform bool uIsVoxelMapEmpty; // Tell if the voxel map is empty or not.
 uniform float uVoxelNoise; // The voxel noise.
 uniform float uVoxelIntensity; // The intensity of the voxel.
@@ -251,6 +252,8 @@ vec4 transformationDefault(vec4 color)
 
 vec4 transformationCustom(vec4 color)
 {
+    return texture2D(uVoxelMapTypeSampler, vec2(color.a, 0.));
+
     // The values are in (r,b,g), why we don't know because in the js it's (r,g,b).
     vec4 color1 = uTransferFuncCustomValues[0].rbga;
     vec4 color2 = uTransferFuncCustomValues[1].rbga;
