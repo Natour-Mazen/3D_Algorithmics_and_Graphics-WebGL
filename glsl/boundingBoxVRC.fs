@@ -473,7 +473,7 @@ vec4 displaySlicesCubes(vec4 color,vec3 position)
     }
     if(color.a <= 0.01)
     {
-        color.a = 0.01;
+        color.a = 0.004;
         int index = getColorSliceIndex(position);
         if (index == 0) {
             color.rgb = vec3(1.0, 0.0, 0.0); // Rouge
