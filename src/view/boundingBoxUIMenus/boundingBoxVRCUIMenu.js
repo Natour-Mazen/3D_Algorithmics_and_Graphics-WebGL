@@ -326,9 +326,9 @@ function createModalRowSlicesCubes(labelText) {
     checkbox.type = 'checkbox';
     checkbox.className = 'modal-checkbox';
     checkbox.checked = true;
-    // checkbox.oninput = () => {
-    //     saveSliceDisplayValues(false);
-    // }
+    checkbox.oninput = () => {
+        saveSliceDisplayValues(false);
+    }
 
     row.appendChild(colorSquare);
     row.appendChild(label);
