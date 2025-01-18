@@ -94,8 +94,8 @@ let isThereVRCBoundingBox = false;
  * @type {Number[]}
  */
 let boundingBoxVRCTransferFuncCustomValues = [
-    1., 0., 0., 0, // Red
-    1., 1., 0., 1, // Yellow
+    1., 0., 0., 0., 0., // Red
+    1., 1., 0., 1., 1., // Yellow
 ];
 
 /**
@@ -186,7 +186,11 @@ function handleCreateModalBodyCustomTransferFunc() {
             addButton.className = 'modal-footer-buttons'
             addButton.addEventListener('click', () => {
                 // Crée une nouvelle ligne et l'ajoute au corps du modal
-                const newRow = createModalRowCustomTransferFunc({ color: '#ffffff', alpha: 1.0 });
+                const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+                // alpha et pos sont des valeurs aléatoires entre 0 et 1
+                const randomAlpha = Math.random().toFixed(2);
+                const randomPos = Math.random().toFixed(2);
+                const newRow = createModalRowCustomTransferFunc({ color: randomColor, alpha: randomAlpha, position: randomPos });
                 body.appendChild(newRow);
                 saveTransferFunctionValues(false);
             });
@@ -245,7 +249,7 @@ function handleCreateModalBodySlices() {
     );
 }
 
-function createModalRowCustomTransferFunc({ color, alpha }) {
+function createModalRowCustomTransferFunc({ color, alpha, position }) {
     const theRowElem = document.createElement('div');
     theRowElem.className = 'modal-row';
     theRowElem.style.display = 'block';
@@ -322,7 +326,7 @@ function createModalRowCustomTransferFunc({ color, alpha }) {
     posInput.min = 0;
     posInput.max = 1;
     posInput.step = 0.01;
-    posInput.value = alpha;
+    posInput.value = position;
     posInput.oninput = () => {
         saveTransferFunctionValues(false);
     }
@@ -419,14 +423,15 @@ function saveSliceDisplayValues(closeTheModal = true) {
 
 function getDefaultValues() {
     return boundingBoxVRCTransferFuncCustomValues.reduce((acc, _, i) => {
-        if (i % 4 === 0) {
+        if (i % 5 === 0) {
             acc.push({
                 color: adjustLuminance(
                     boundingBoxVRCTransferFuncCustomValues[i],
                     boundingBoxVRCTransferFuncCustomValues[i + 1],
                     boundingBoxVRCTransferFuncCustomValues[i + 2]
                 ),
-                alpha: boundingBoxVRCTransferFuncCustomValues[i + 3]
+                alpha: boundingBoxVRCTransferFuncCustomValues[i + 3],
+                position: boundingBoxVRCTransferFuncCustomValues[i + 4]
             });
         }
         return acc;
