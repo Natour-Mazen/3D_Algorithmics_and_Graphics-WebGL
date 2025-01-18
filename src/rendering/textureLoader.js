@@ -57,38 +57,77 @@ function loadTexture(gl, url) {
     return texture;
 }
 
-function createHorizontalGradientTexture(gl, data) {
-    // Vérification que le tableau de données est un multiple de 4
-    if (data.length % 4 !== 0) {
-        throw new Error("Le tableau 'data' doit contenir un multiple de 4 éléments (r, g, b, a par pixel).");
+function createHorizontalGradientTexture(gl, data, textureSize = 1000) {
+    // Vérification que le tableau de données est un multiple de 5 (r, g, b, a, pos)
+    if (data.length % 5 !== 0) {
+        throw new Error("Le tableau 'data' doit contenir un multiple de 5 éléments (r, g, b, a, pos).\nExemple : [r, g, b, a, pos, r, g, b, a, pos,...]");
     }
 
-    // Conversion des valeurs entre 0 et 1 en entiers entre 0 et 255
-    const normalizedData = new Uint8Array(data.map(value => Math.round(value * 255)));
+    function normalizeDataForGradient(data) {
+        return data.map((value, index) => {
+            // Multiplier uniquement les valeurs de couleur (r, g, b, a)
+            if (index % 5 !== 4) {
+                return value * 255; // Convertir en 0-255
+            }
+            return value; // Laisser la position telle quelle (entre 0 et 1)
+        });
+    }
 
-    // Nombre de couleurs
-    const numColors = normalizedData.length / 4;
+    // Normalisation des données
+    data = normalizeDataForGradient(data);
 
-    // Taille de la texture (une ligne correspond à toutes les couleurs)
-    const width = numColors;
-    const height = numColors; // Pour une texture carrée
+    // Taille de la texture
+    const width = data.length / 5; // Texture 1D
+    const height = 1; // Texture 1D
 
     // Création d'un tableau pour représenter la texture
-    const textureData = new Uint8Array(width * height * 4);
+    const textureData = new Uint8Array(width * 4); // 4 canaux (r, g, b, a) par pixel
 
-    // Remplissage de chaque ligne avec toutes les couleurs dans l'ordre
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            const colorIndex = (x % numColors) * 4; // Index cyclique des couleurs
-            const pixelIndex = (y * width + x) * 4; // Position du pixel dans la texture
-            textureData.set(
-                normalizedData.slice(colorIndex, colorIndex + 4), // Couleur à copier
-                pixelIndex // Position dans la texture
-            );
+    // Parcours de chaque pixel de la texture
+    for (let x = 0; x < width; x++) {
+        // Position normalisée du pixel (entre 0 et 1)
+        const pos = x / (width - 1);
+
+        // Trouver les deux couleurs les plus proches (gauche et droite)
+        let leftIndex = 0;
+        let rightIndex = 0;
+
+        for (let i = 0; i < data.length; i += 5) {
+            const keyPos = data[i + 4]; // Position de la couleur-clé
+            if (keyPos <= pos) {
+                leftIndex = i;
+            } else {
+                rightIndex = i;
+                break;
+            }
         }
+
+        // Positions des couleurs gauche et droite
+        const leftPos = data[leftIndex + 4];
+        const rightPos = data[rightIndex + 4];
+
+        // Couleurs gauche et droite
+        const leftColor = data.slice(leftIndex, leftIndex + 4);
+        const rightColor = data.slice(rightIndex, rightIndex + 4);
+
+        // Calcul du facteur d'interpolation (t)
+        const t = (pos - leftPos) / (rightPos - leftPos);
+
+        // Interpolation des couleurs
+        const r = Math.round(leftColor[0] * (1 - t) + rightColor[0] * t);
+        const g = Math.round(leftColor[1] * (1 - t) + rightColor[1] * t);
+        const b = Math.round(leftColor[2] * (1 - t) + rightColor[2] * t);
+        const a = Math.round(leftColor[3] * (1 - t) + rightColor[3] * t);
+
+        // Remplissage du tableau de texture
+        const pixelIndex = x * 4;
+        textureData[pixelIndex] = r;
+        textureData[pixelIndex + 1] = g;
+        textureData[pixelIndex + 2] = b;
+        textureData[pixelIndex + 3] = a;
     }
 
-    // Création de la texture
+    // Création de la texture WebGL
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
 
@@ -108,13 +147,14 @@ function createHorizontalGradientTexture(gl, data) {
     // Paramètres de filtrage
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-    // Save the texture as PNG for debugging
-    //saveTextureAsPNG(gl, texture, width, height, "horizontal_gradient_texture.png");
+    //saveTextureAsPNG(gl, texture, width, height, "gradient.png");
+
     return texture;
 }
+
 function saveTextureAsPNG(gl, texture, width, height, fileName = "texture.png") {
     // Create a framebuffer
     const framebuffer = gl.createFramebuffer();
