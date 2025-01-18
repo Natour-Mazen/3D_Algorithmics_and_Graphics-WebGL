@@ -194,9 +194,6 @@ function initBoundingBoxRMUIComponents() {
         handleBoundingBoxHeightMapSelection(this.value, 'texture');
     });
 
-
-    initStyleCaretBoundingBoxComponents(boundingBoxRMElements);
-
     handleDisplayHTMLSelectorElement(boundingBoxRMElements.heightMapTextureSelector,'none');
 }
 
