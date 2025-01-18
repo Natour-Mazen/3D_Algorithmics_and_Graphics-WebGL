@@ -57,6 +57,9 @@ function loadTexture(gl, url) {
     return texture;
 }
 
+const textureDefaultWidth = 1000;
+const textureDefaultHeight = 1;
+
 function createHorizontalGradientTexture(gl, data) {
     // Vérification que le tableau de données est un multiple de 5 (r, g, b, a, pos)
     if (data.length % 5 !== 0) {
@@ -79,7 +82,7 @@ function createHorizontalGradientTexture(gl, data) {
     colors.sort((a, b) => a.pos - b.pos);
 
     // Taille de la texture
-    const width = 1000; // Texture 1D (fixée à 1000 pixels)
+    const width = textureDefaultWidth; // Texture 1D (à 1000 pixels)
     const height = 1; // Texture 1D
 
     // Création d'un tableau pour représenter la texture
@@ -173,48 +176,95 @@ function createHorizontalGradientTexture(gl, data) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
     // Enregistrer la texture en PNG (optionnel)
-    // saveTextureAsPNG(gl, texture, width, height, "gradient.png");
+    // saveTextureAsPNG(gl, texture,"gradient.png");
 
     return texture;
 }
 
+function transformWebGLTextureToPNG(gl, texture, width = textureDefaultWidth, height = textureDefaultHeight) {
+    // Si la largeur et la hauteur ne sont pas égales, nous ajustons
+    if (width !== height) {
+        const maxDimension = Math.max(width, height); // On choisit la plus grande dimension pour en faire un carré
+        width = maxDimension;
+        height = maxDimension;
+    }
 
-
-
-function saveTextureAsPNG(gl, texture, width, height, fileName = "texture.png") {
-    // Create a framebuffer
+    // Créer un framebuffer
     const framebuffer = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
 
-    // Check if the framebuffer is complete
+    // Vérifier si le framebuffer est complet
     if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
         console.error("Erreur : Framebuffer incomplet.");
         return;
     }
 
-    // Read the pixels from the framebuffer
+    // Lire les pixels du framebuffer
     const pixels = new Uint8Array(width * height * 4);
     gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-    // Unbind the framebuffer
+    // Si la largeur et la hauteur d'origine ne sont pas égales, dupliquer la texture sur plusieurs lignes
+    const originalWidth = textureDefaultWidth;
+    const originalHeight = 1;
+
+    if (originalWidth !== originalHeight) {
+        // Créer un tableau pour contenir la texture dupliquée en forme carrée
+        const squarePixels = new Uint8Array(width * height * 4);
+
+        // Dupliquer la texture sur toute la surface carrée
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                // Calculer l'index dans la texture d'origine (répétée sur plusieurs lignes)
+                const originalX = x % originalWidth;
+                const originalY = y % originalHeight;
+
+                const originalIndex = (originalY * originalWidth + originalX) * 4;
+                const squareIndex = (y * width + x) * 4;
+
+                // Copier les données de la texture dans la texture carrée
+                squarePixels[squareIndex] = pixels[originalIndex];       // R
+                squarePixels[squareIndex + 1] = pixels[originalIndex + 1]; // G
+                squarePixels[squareIndex + 2] = pixels[originalIndex + 2]; // B
+                squarePixels[squareIndex + 3] = pixels[originalIndex + 3]; // A
+            }
+        }
+
+        // Mettre à jour les pixels pour la texture carrée
+        pixels.set(squarePixels);
+    }
+
+    // Débind du framebuffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.deleteFramebuffer(framebuffer);
 
-    // Create a canvas to draw the pixels
+    // Créer un canvas pour dessiner les pixels
     const canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;
     const context = canvas.getContext("2d");
 
-    // Draw the pixels on the canvas
+    // Dessiner les pixels sur le canvas
     const imageData = context.createImageData(width, height);
     imageData.data.set(pixels);
     context.putImageData(imageData, 0, 0);
 
-    // Save the canvas as PNG
+    // Retourner l'image en format PNG
+    return canvas.toDataURL("image/png");
+}
+
+function downloadFile(file, fileName) {
     const link = document.createElement("a");
     link.download = fileName;
-    link.href = canvas.toDataURL("image/png");
+    link.href = file;
     link.click();
+}
+
+function saveTextureAsPNG(texture, fileName, width = textureDefaultWidth, height = textureDefaultHeight) {
+    const img = transformWebGLTextureToPNG(gl, texture, width, height);
+    downloadFile(img, fileName);
+}
+
+function getWebGlTextureAsPNG(texture, width = textureDefaultWidth, height = textureDefaultHeight) {
+    return transformWebGLTextureToPNG(gl, texture, width, height);
 }
