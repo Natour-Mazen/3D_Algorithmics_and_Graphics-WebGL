@@ -60,9 +60,9 @@ const dropdowns = [
             { type: 'slider', label: 'Size:', id: 'boundingBoxVRC_size_slider', min: 1, max: 10, step: 1, value: 1, displayId: 'boundingBoxVRC_size_value' },
             { type: 'select', label: 'Type', id: 'boundingBoxVRC_type_selector', options: ['None'] },
             { type: 'select', label: 'Transfer Func', id: 'boundingBoxVRC_voxelMap_transferFunc_selector', options: [] },
-            { type: 'modal', id: 'boundingBoxVRC_transferFuncCustom_modal', idBody: 'boundingBoxVRC_transferFuncCustom_modalBody' },
+            { type: 'modal', id: 'boundingBoxVRC_transferFuncCustom_modal', idContent: 'boundingBoxVRC_transferFuncCustom_modalContent' },
             { type: 'button', label: 'Slices display', labelButton : 'modify', id: 'boundingBoxVRC_slicesDisplay' },
-            { type: 'modal', id: 'boundingBoxVRC_slicesToDisplayCustom_modal', idBody: 'boundingBoxVRC_slicesToDisplayCustom_modalBody' },
+            { type: 'modal', id: 'boundingBoxVRC_slicesToDisplayCustom_modal', idContent: 'boundingBoxVRC_slicesToDisplayCustom_modalContent' },
             { type: 'slider', label: 'Voxel intensity:', id: 'boundingBoxVRC_voxelMap_voxel-intensity', min: 1, max: 100, step: 1, value: 1, displayId: 'boundingBoxVRC_voxelMap_voxel-intensity_value' },
             { type: 'slider', label: 'Voxel noise:', id: 'boundingBoxVRC_voxelMap_voxel-noise_slider', min: 1, max: 50, step: 1, value: 1, displayId: 'boundingBoxVRC_voxelMap_voxel-noise_value' }
         ],

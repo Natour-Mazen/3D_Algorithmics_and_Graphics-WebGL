@@ -92,7 +92,7 @@ function createItemElement(item) {
     }else if (item.type === 'modal') {
         row.innerHTML = `
         <div class="modal" id="${item.id}">
-            <div class="modal-content" id="${item.idBody}">
+            <div class="modal-content" id="${item.idContent}">
                <!-- Modal content should be added by each specific UI component/File, each modal should have a unique id -->
             </div>
         </div>
