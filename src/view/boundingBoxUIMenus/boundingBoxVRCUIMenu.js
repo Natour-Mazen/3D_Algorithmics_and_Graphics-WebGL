@@ -17,7 +17,7 @@ const boundingBoxVRCElements = {
     sizeValueDisplay: doc.getElementById('boundingBoxVRC_size_value'),
 
     transferFuncCustomModal: doc.getElementById('boundingBoxVRC_transferFuncCustom_modal'),
-    transferFuncCustomModalBody: doc.getElementById('boundingBoxVRC_transferFuncCustom_modalBody'),
+    transferFuncCustomModalContent: doc.getElementById('boundingBoxVRC_transferFuncCustom_modalContent'),
 
     transferFuncSelector: doc.getElementById('boundingBoxVRC_voxelMap_transferFunc_selector'),
 
@@ -30,7 +30,7 @@ const boundingBoxVRCElements = {
     slicesDisplayButton: doc.getElementById('boundingBoxVRC_slicesDisplay'),
 
     slicesToDisplayCustomModal: doc.getElementById('boundingBoxVRC_slicesToDisplayCustom_modal'),
-    slicesToDisplayCustomModalBody: doc.getElementById('boundingBoxVRC_slicesToDisplayCustom_modalBody'),
+    slicesToDisplayCustomModalContent: doc.getElementById('boundingBoxVRC_slicesToDisplayCustom_modalContent'),
 };
 
 /****************************************************/
@@ -169,7 +169,7 @@ function handleBoundingBoxVoxelMapSelection(selectedVoxelMap) {
 
 function handleCreateModalBodyCustomTransferFunc() {
     createAndInitModal(
-        boundingBoxVRCElements.transferFuncCustomModalBody,
+        boundingBoxVRCElements.transferFuncCustomModalContent,
         'Custom Transfer Function',
         getDefaultValues(),
         createModalRowCustomTransferFunc,
@@ -193,6 +193,7 @@ function handleCreateModalBodyCustomTransferFunc() {
                 const newRow = createModalRowCustomTransferFunc({ color: randomColor, alpha: randomAlpha, position: randomPos });
                 body.appendChild(newRow);
                 saveTransferFunctionValues(false);
+                reorderRowsByPosition();
             });
 
             const saveButton = document.createElement('button');
@@ -234,7 +235,7 @@ function handleCreateModalBodyCustomTransferFunc() {
 
 function handleCreateModalBodySlices() {
     createAndInitModal(
-        boundingBoxVRCElements.slicesToDisplayCustomModalBody,
+        boundingBoxVRCElements.slicesToDisplayCustomModalContent,
         'Check or uncheck the slices to display',
         ['Red', 'Lime', 'Blue', 'Yellow', 'Magenta', 'Cyan', 'White', 'Grey'],
         createModalRowSlicesCubes,
@@ -249,11 +250,28 @@ function handleCreateModalBodySlices() {
     );
 }
 
-function createModalRowCustomTransferFunc({ color, alpha, position }) {
+function reorderRowsByPosition() {
+    const modalContent = boundingBoxVRCElements.transferFuncCustomModalContent;
+    const modalBody = modalContent.querySelector('.modal-body');
+    const rows = Array.from(modalBody.querySelectorAll('.modal-row'));
+
+    rows.sort((a, b) => {
+        const posA = parseFloat(a.querySelector('#posInput').value);
+        const posB = parseFloat(b.querySelector('#posInput').value);
+        return posA - posB;
+    });
+
+    rows.forEach(row => modalBody.appendChild(row));
+}
+
+function createModalRowCustomTransferFunc({ color, alpha, position, id = null }) {
     const theRowElem = document.createElement('div');
     theRowElem.className = 'modal-row';
     theRowElem.style.display = 'block';
     theRowElem.style.marginBottom = '15px';
+    if(id){
+        theRowElem.id = id;
+    }
 
     const theColorDiv = document.createElement('div');
     theColorDiv.style.display = 'flex';
@@ -273,27 +291,23 @@ function createModalRowCustomTransferFunc({ color, alpha, position }) {
     }
 
 
-    const closeButton = document.createElement('span');
-    closeButton.className = 'modal-close-bis';
-    closeButton.innerHTML = '&times;';
-    closeButton.onclick = () => {
-        const rows = Array.from(theRowElem.parentElement.querySelectorAll('.modal-row'));
-        const index = rows.indexOf(theRowElem);
-        if (rows.length > 2) {
-            if (index > 1) {
-                theRowElem.remove();
-                saveTransferFunctionValues(false);
-            } else {
-                window.alert('You cannot remove the first two colors!');
-            }
-        }else{
-            window.alert('You must have at least 2 colors !');
-        }
-    };
-
     theColorDiv.appendChild(labelColor);
     theColorDiv.appendChild(colorInput);
-    theColorDiv.appendChild(closeButton);
+
+    if(!id){ // if we don't have an id, we can add a close button, that's mean the color is not representing the texture boundaries
+        const closeButton = document.createElement('span');
+        closeButton.className = 'modal-close-bis';
+        closeButton.innerHTML = '&times;';
+        closeButton.onclick = () => {
+            if(theRowElem.id){
+                window.alert('You cannot remove the colors representing the texture boundaries ! \nPlease add a new color instead, or change the color and the alpha of the existing ones.');
+            }else{
+                theRowElem.remove();
+                saveTransferFunctionValues(false);
+            }
+        }
+        theColorDiv.appendChild(closeButton);
+    }
 
     const theAlphaPosDiv = document.createElement('div');
     theAlphaPosDiv.style.display = 'flex';
@@ -329,6 +343,7 @@ function createModalRowCustomTransferFunc({ color, alpha, position }) {
     posInput.value = position;
     posInput.oninput = () => {
         saveTransferFunctionValues(false);
+        reorderRowsByPosition();
     }
 
     theAlphaPosDiv.appendChild(labelAlpha);
@@ -377,7 +392,7 @@ function createModalRowSlicesCubes(labelText) {
 }
 
 function saveTransferFunctionValues(closeTheModal = true) {
-    const rows = boundingBoxVRCElements.transferFuncCustomModalBody.querySelectorAll('.modal-row');
+    const rows = boundingBoxVRCElements.transferFuncCustomModalContent.querySelectorAll('.modal-row');
     boundingBoxVRCTransferFuncCustomValues = Array.from(rows).flatMap(row => {
         const alphaInput = row.children[1].children[1];
         const posInput = row.children[1].children[3];
@@ -407,7 +422,7 @@ function saveTransferFunctionValues(closeTheModal = true) {
 }
 
 function saveSliceDisplayValues(closeTheModal = true) {
-    const rows = boundingBoxVRCElements.slicesToDisplayCustomModalBody.querySelectorAll('.modal-row');
+    const rows = boundingBoxVRCElements.slicesToDisplayCustomModalContent.querySelectorAll('.modal-row');
     boundingBoxVRCSlicesToDisplay = Array.from(rows).map(row => row.querySelector('.modal-checkbox').checked ? 1. : 0.);
 
     if (theVRCBoundingBox) {
@@ -431,7 +446,8 @@ function getDefaultValues() {
                     boundingBoxVRCTransferFuncCustomValues[i + 2]
                 ),
                 alpha: boundingBoxVRCTransferFuncCustomValues[i + 3],
-                position: boundingBoxVRCTransferFuncCustomValues[i + 4]
+                position: boundingBoxVRCTransferFuncCustomValues[i + 4],
+                id: `row-${i}`
             });
         }
         return acc;
@@ -548,11 +564,12 @@ function initBoundingBoxVRCUIComponents() {
     });
 
     const modalBody = boundingBoxVRCElements.transferFuncCustomModal.querySelector('.modal-body');
-    // get the tow first modal-row and in each one get the input color and input alpha and set the input alpha as incassible
     const rows = modalBody.querySelectorAll('.modal-row');
     rows.forEach(row => {
-        const posInput = row.children[1].children[3]; // children[1] is the div of alpha and pos and children[3] is the input of pos
-        posInput.setAttribute('disabled', 'true');
+        if(row.id){
+            const posInput = row.children[1].children[3]; // children[1] is the div of alpha and pos and children[3] is the input of pos
+            posInput.setAttribute('disabled', 'true');
+        }
     });
 }
 
