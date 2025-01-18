@@ -9,7 +9,6 @@ class BoundingBoxVRC extends BoundingBox {
         this.nbImageWidth = 1;
         this.nbImageHeight = 1;
         this.instanceStartTime = Date.now();
-        this.transferFuncCustomValues = [];
         this.voxelIntensity = 1;
         this.displaySlicesCubes = false;
         this.slicesToDisplay = [];
@@ -66,10 +65,6 @@ class BoundingBoxVRC extends BoundingBox {
         gl.uniform1f(this.shader.uHeartBeatFactor, (Date.now() - this.instanceStartTime) / 1000.0);
         this.checkGlError();
 
-        // // The custom values for the transfer function, if any.
-        // gl.uniform4fv(this.shader.uTransferFuncCustomValues,new Float32Array(this.transferFuncCustomValues) );
-        // this.checkGlError();
-
         // The voxel intensity of the voxel map.
         gl.uniform1f(this.shader.uVoxelIntensity, this.voxelIntensity);
         this.checkGlError();
@@ -114,10 +109,6 @@ class BoundingBoxVRC extends BoundingBox {
 
     setNbImageHeight(value) {
         this.nbImageHeight = value;
-    }
-
-    setTransferFuncCustomValues(value) {
-        this.transferFuncCustomValues = value;
     }
 
     setVoxelIntensity(value) {
