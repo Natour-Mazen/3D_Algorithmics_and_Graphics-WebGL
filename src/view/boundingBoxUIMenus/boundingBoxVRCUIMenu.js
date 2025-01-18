@@ -182,7 +182,7 @@ function handleCreateModalBodyCustomTransferFunc() {
             buttonsDiv.style.marginBottom = '15px';
 
             const addButton = document.createElement('button');
-            addButton.innerText = 'Add';
+            addButton.innerText = 'Add a color';
             addButton.className = 'modal-footer-buttons'
             addButton.addEventListener('click', () => {
                 // Crée une nouvelle ligne et l'ajoute au corps du modal
