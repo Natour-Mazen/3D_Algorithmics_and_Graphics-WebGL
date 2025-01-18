@@ -192,4 +192,3 @@ function saveTextureAsPNG(gl, texture, width, height, fileName = "texture.png") 
     link.href = canvas.toDataURL("image/png");
     link.click();
 }
-
