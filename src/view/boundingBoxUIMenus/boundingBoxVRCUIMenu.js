@@ -96,9 +96,6 @@ let isThereVRCBoundingBox = false;
 let boundingBoxVRCTransferFuncCustomValues = [
     1., 0., 0., 0, // Red
     1., 1., 0., 1, // Yellow
-    // 0., 1., 0., 0.020, // Green
-    // 0., 0., 1., 0.040, // Blue
-    // 0., 0., 0., 0.200  // Black
 ];
 
 /**
@@ -173,12 +170,17 @@ function handleBoundingBoxVoxelMapSelection(selectedVoxelMap) {
 function handleCreateModalBodyCustomTransferFunc() {
     createAndInitModal(
         boundingBoxVRCElements.transferFuncCustomModalBody,
-        'Customize Transfer Function',
+        'Custom Transfer Function',
         getDefaultValues(),
         createModalRowCustomTransferFunc,
-        saveTransferFunctionValues,
         null,
         (modalContent, body, header, footer) => {
+
+            const buttonsDiv = document.createElement('div');
+            buttonsDiv.style.display = 'flex';
+            buttonsDiv.style.justifyContent = 'space-between';
+            buttonsDiv.style.marginBottom = '15px';
+
             const addButton = document.createElement('button');
             addButton.innerText = 'Add';
             addButton.className = 'modal-footer-buttons'
@@ -188,8 +190,40 @@ function handleCreateModalBodyCustomTransferFunc() {
                 body.appendChild(newRow);
                 saveTransferFunctionValues(false);
             });
-            footer.style.justifyContent = 'space-between';
-            footer.appendChild(addButton)
+
+            const saveButton = document.createElement('button');
+            saveButton.innerText = 'Save as PNG';
+            saveButton.className = 'modal-footer-buttons'
+            saveButton.addEventListener('click', () => {
+                if(theVRCBoundingBox === null){
+                    window.alert('You must create a bounding box to save the transfer function texture as png !');
+                }else {
+                   saveTextureAsPNG(boundingBoxVRCTransferFuncCustomTexture, 'transferFuncCustomTexture.png');
+                }
+            });
+
+            buttonsDiv.appendChild(addButton);
+            buttonsDiv.appendChild(saveButton);
+
+            const imgDiv = document.createElement('div');
+            imgDiv.style.display = 'flex';
+            imgDiv.style.justifyContent = 'center';
+
+            const imageLabel = document.createElement('span');
+            imageLabel.innerText = 'Transfer Function Texture :';
+            imageLabel.className = 'modal-label';
+
+            const imageTexture = document.createElement('img');
+            imageTexture.style.width = '100px';
+            imageTexture.style.height = '50px';
+            imageTexture.style.border = '3px ridge #a99f9f';
+            imageTexture.style.borderRadius = '5px';
+
+            imgDiv.appendChild(imageLabel);
+            imgDiv.appendChild(imageTexture);
+
+            footer.appendChild(buttonsDiv)
+            footer.appendChild(imgDiv);
         }
     );
 }
@@ -200,11 +234,13 @@ function handleCreateModalBodySlices() {
         'Check or uncheck the slices to display',
         ['Red', 'Lime', 'Blue', 'Yellow', 'Magenta', 'Cyan', 'White', 'Grey'],
         createModalRowSlicesCubes,
-        saveSliceDisplayValues,
         () => {
             if (theVRCBoundingBox) {
                 theVRCBoundingBox.setDisplaySlicesCubes(false);
             }
+        },
+        (modalContent, body, header, footer) => {
+            body.style.maxHeight = '280px';
         }
     );
 }
@@ -339,7 +375,6 @@ function createModalRowSlicesCubes(labelText) {
 function saveTransferFunctionValues(closeTheModal = true) {
     const rows = boundingBoxVRCElements.transferFuncCustomModalBody.querySelectorAll('.modal-row');
     boundingBoxVRCTransferFuncCustomValues = Array.from(rows).flatMap(row => {
-        //console.log(row);
         const alphaInput = row.children[1].children[1];
         const posInput = row.children[1].children[3];
         const color = row.querySelector('.modal-color-selector').value;
@@ -351,11 +386,16 @@ function saveTransferFunctionValues(closeTheModal = true) {
         return colorRGB;
     });
 
-    //console.log(boundingBoxVRCTransferFuncCustomValues);
 
     if (theVRCBoundingBox) {
         boundingBoxVRCTransferFuncCustomTexture = createHorizontalGradientTexture(gl, boundingBoxVRCTransferFuncCustomValues);
-       // theVRCBoundingBox.setTransferFuncCustomValues(boundingBoxVRCTransferFuncCustomValues);
+
+        // get the footer of the modal and get the imageTexture and set the src to the new texture
+        const png = getWebGlTextureAsPNG(boundingBoxVRCTransferFuncCustomTexture);
+        const footer = boundingBoxVRCElements.transferFuncCustomModal.querySelector('.modal-footer');
+        const imageTexture = footer.querySelector('img');
+
+        imageTexture.src = png;
     }
     if(closeTheModal){
         closeModal(boundingBoxVRCElements.transferFuncCustomModal);
@@ -419,7 +459,6 @@ function initBoundingBoxVRCUIComponents() {
                 theVRCBoundingBox.setNbImageHeight(selectedTypeOption.dataset.height);
                 theVRCBoundingBox.setTransferFunc(selectedTransferFuncOption.value);
                 saveTransferFunctionValues();
-                // theVRCBoundingBox.setTransferFuncCustomValues(boundingBoxVRCTransferFuncCustomValues);
                 theVRCBoundingBox.setVoxelIntensity(boundingBoxVRCDefaultVoxelIntensity);
                 theVRCBoundingBox.setSlicesToDisplay(boundingBoxVRCSlicesToDisplay);
                 theVRCBoundingBox.setVoxelNoise(boundingBoxVRCDefaultVoxelNoise);
