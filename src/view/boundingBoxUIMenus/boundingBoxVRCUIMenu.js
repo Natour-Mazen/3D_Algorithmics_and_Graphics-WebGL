@@ -299,12 +299,8 @@ function createModalRowCustomTransferFunc({ color, alpha, position, id = null })
         closeButton.className = 'modal-close-bis';
         closeButton.innerHTML = '&times;';
         closeButton.onclick = () => {
-            if(theRowElem.id){
-                window.alert('You cannot remove the colors representing the texture boundaries ! \nPlease add a new color instead, or change the color and the alpha of the existing ones.');
-            }else{
-                theRowElem.remove();
-                saveTransferFunctionValues(false);
-            }
+            theRowElem.remove();
+            saveTransferFunctionValues(false);
         }
         theColorDiv.appendChild(closeButton);
     }
@@ -399,12 +395,11 @@ function saveTransferFunctionValues(closeTheModal = true) {
         const color = row.querySelector('.modal-color-selector').value;
         const alpha = parseFloat(alphaInput.value) || 0.0;
         const pos = parseFloat(posInput.value) || 0.0;
-        const colorRGB = Color.hextoRGB(color).toArray();
-        colorRGB[3] = alpha;
-        colorRGB[4] = pos;
-        return colorRGB;
+        const colorRGBAP = Color.hextoRGB(color).toArray();
+        colorRGBAP[3] = alpha;
+        colorRGBAP[4] = pos;
+        return colorRGBAP;
     });
-
 
     if (theVRCBoundingBox) {
         boundingBoxVRCTransferFuncCustomTexture = createHorizontalGradientTexture(gl, boundingBoxVRCTransferFuncCustomValues);
@@ -413,7 +408,6 @@ function saveTransferFunctionValues(closeTheModal = true) {
         const png = getWebGlTextureAsPNG(boundingBoxVRCTransferFuncCustomTexture);
         const footer = boundingBoxVRCElements.transferFuncCustomModal.querySelector('.modal-footer');
         const imageTexture = footer.querySelector('img');
-
         imageTexture.src = png;
     }
     if(closeTheModal){
