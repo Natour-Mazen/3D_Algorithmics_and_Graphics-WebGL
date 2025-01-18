@@ -78,8 +78,6 @@ function createHorizontalGradientTexture(gl, data) {
     // Trier les couleurs par position (pos) croissante
     colors.sort((a, b) => a.pos - b.pos);
 
-    console.log(colors);
-
     // Taille de la texture
     const width = 1000; // Texture 1D (fixée à 1000 pixels)
     const height = 1; // Texture 1D
@@ -102,12 +100,23 @@ function createHorizontalGradientTexture(gl, data) {
             }
         }
 
-        if (leftIndex === -1 || rightIndex === -1) {
-            return { color: [0, 0, 0, 255] }; // Valeur par défaut si aucune couleur trouvée
+        // Si aucune couleur à gauche, on prend la plus proche à droite
+        if (leftIndex === -1) {
+            leftIndex = rightIndex;
+        }
+
+        // Si aucune couleur à droite, on prend la plus proche à gauche
+        if (rightIndex === -1) {
+            rightIndex = leftIndex;
         }
 
         const leftColor = colors[leftIndex];
         const rightColor = colors[rightIndex];
+
+        // Si leftIndex == rightIndex, il n'y a qu'une seule couleur, donc aucune interpolation
+        if (leftIndex === rightIndex) {
+            return { color: [leftColor.r, leftColor.g, leftColor.b, leftColor.a] };
+        }
 
         const leftPos = leftColor.pos;
         const rightPos = rightColor.pos;
@@ -164,10 +173,11 @@ function createHorizontalGradientTexture(gl, data) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
     // Enregistrer la texture en PNG (optionnel)
-    //saveTextureAsPNG(gl, texture, width, height, "gradient.png");
+    // saveTextureAsPNG(gl, texture, width, height, "gradient.png");
 
     return texture;
 }
+
 
 
 
