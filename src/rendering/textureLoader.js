@@ -61,12 +61,13 @@ const textureDefaultWidth = 1000;
 const textureDefaultHeight = 1;
 
 function createHorizontalGradientTexture(gl, data) {
-    // Vérification que le tableau de données est un multiple de 5 (r, g, b, a, pos)
+    // Check that the data array is a multiple of 5 (r, g, b, a, pos)
     if (data.length % 5 !== 0) {
         throw new Error("Le tableau 'data' doit contenir un multiple de 5 éléments (r, g, b, a, pos).\nExemple : [r, g, b, a, pos, r, g, b, a, pos,...]");
     }
 
-    // Restructuration du tableau pour obtenir un tableau d'objets {r, g, b, a, pos}
+    // Rewrite the array to get an array of objects {r, g, b, a, pos}
+    // Exemple : [r, g, b, a, pos, r, g, b, a, pos,...] => [{r, g, b, a, pos}, {r, g, b, a, pos},...]
     let colors = [];
     for (let i = 0; i < data.length; i += 5) {
         colors.push({
@@ -78,21 +79,22 @@ function createHorizontalGradientTexture(gl, data) {
         });
     }
 
-    // Trier les couleurs par position (pos) croissante
+    // sort colors by position (pos)
     colors.sort((a, b) => a.pos - b.pos);
 
-    // Taille de la texture
-    const width = textureDefaultWidth; // Texture 1D (à 1000 pixels)
+    // Texture dimensions
+    const width = textureDefaultWidth; // Texture 1D
     const height = 1; // Texture 1D
 
-    // Création d'un tableau pour représenter la texture
-    const textureData = new Uint8Array(width * 4); // 4 canaux (r, g, b, a) par pixel
+    // Creation of an array to represent the texture
+    const textureData = new Uint8Array(width * 4); // 4 channels (r, g, b, a) per pixel
 
-    // Fonction pour obtenir la couleur interpolée pour une position donnée
+
+    // Function to get the interpolated color for a given position
     function getInterpolatedColorAtPosition(pos) {
         let leftIndex = -1, rightIndex = -1;
 
-        // Chercher les deux couleurs voisines
+        // Find the two neighboring colors
         for (let i = 0; i < colors.length; i++) {
             const keyPos = colors[i].pos;
             if (keyPos <= pos) {
@@ -103,12 +105,12 @@ function createHorizontalGradientTexture(gl, data) {
             }
         }
 
-        // Si aucune couleur à gauche, on prend la plus proche à droite
+        // if no color to the left, take the closest to the right
         if (leftIndex === -1) {
             leftIndex = rightIndex;
         }
 
-        // Si aucune couleur à droite, on prend la plus proche à gauche
+        // if no color to the right, take the closest to the left
         if (rightIndex === -1) {
             rightIndex = leftIndex;
         }
@@ -116,7 +118,7 @@ function createHorizontalGradientTexture(gl, data) {
         const leftColor = colors[leftIndex];
         const rightColor = colors[rightIndex];
 
-        // Si leftIndex == rightIndex, il n'y a qu'une seule couleur, donc aucune interpolation
+        // if leftIndex == rightIndex, there is only one color, so no interpolation
         if (leftIndex === rightIndex) {
             return { color: [leftColor.r, leftColor.g, leftColor.b, leftColor.a] };
         }
@@ -124,10 +126,10 @@ function createHorizontalGradientTexture(gl, data) {
         const leftPos = leftColor.pos;
         const rightPos = rightColor.pos;
 
-        // Calcul du facteur d'interpolation (t)
+        // Calculation of the normalized position between the two colors (t)
         const t = (pos - leftPos) / (rightPos - leftPos);
 
-        // Interpolation des couleurs
+        // Color interpolation
         const r = Math.round(leftColor.r * (1 - t) + rightColor.r * t);
         const g = Math.round(leftColor.g * (1 - t) + rightColor.g * t);
         const b = Math.round(leftColor.b * (1 - t) + rightColor.b * t);
@@ -136,15 +138,14 @@ function createHorizontalGradientTexture(gl, data) {
         return { color: [r, g, b, a] };
     }
 
-    // Parcours de chaque pixel de la texture
     for (let x = 0; x < width; x++) {
-        // Position normalisée du pixel (entre 0 et 1)
+        // Calculation of the normalized pixel position
         const pos = x / (width - 1);
 
-        // Obtenir la couleur interpolée à cette position
+        // Get the interpolated color at the position
         const { color } = getInterpolatedColorAtPosition(pos);
 
-        // Remplissage du tableau de texture
+        // Filling the texture data with the color
         const pixelIndex = x * 4;
         textureData[pixelIndex] = color[0];
         textureData[pixelIndex + 1] = color[1];
@@ -152,77 +153,78 @@ function createHorizontalGradientTexture(gl, data) {
         textureData[pixelIndex + 3] = color[3];
     }
 
-    // Création de la texture WebGL
+    // Create the texture object and bind it
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
 
-    // Chargement des données dans la texture
+    // Load the texture data
     gl.texImage2D(
-        gl.TEXTURE_2D,    // Type de texture
-        0,                // Niveau de mipmap
-        gl.RGBA,          // Format interne
-        width,            // Largeur
-        height,           // Hauteur
-        0,                // Bordure (doit être 0)
-        gl.RGBA,          // Format des données
-        gl.UNSIGNED_BYTE, // Type de données
-        textureData       // Données de la texture
+        gl.TEXTURE_2D,    // texture cible
+        0,                // mipmap level
+        gl.RGBA,          // interneFormat
+        width,            // width,
+        height,           // height
+        0,                // border (always 0)
+        gl.RGBA,          // textureFormat
+        gl.UNSIGNED_BYTE, // dataType
+        textureData       // textureData
     );
 
-    // Paramètres de filtrage
+    // Texture wrapping et filtering
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-    // Enregistrer la texture en PNG (optionnel)
+    // Save the texture as PNG for debugging purposes
     // saveTextureAsPNG(gl, texture,"gradient.png");
 
     return texture;
 }
 
 function transformWebGLTextureToPNG(gl, texture, width = textureDefaultWidth, height = textureDefaultHeight) {
-    // Si la largeur et la hauteur ne sont pas égales, nous ajustons
+    // If the width and height are different, choose the largest dimension to make a square
     if (width !== height) {
-        const maxDimension = Math.max(width, height); // On choisit la plus grande dimension pour en faire un carré
+        const maxDimension = Math.max(width, height); // We choose the largest dimension to make a square
         width = maxDimension;
         height = maxDimension;
     }
 
-    // Créer un framebuffer
+    // Create a framebuffer
     const framebuffer = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
 
-    // Vérifier si le framebuffer est complet
+    // Check if the framebuffer is complete
     if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
         console.error("Erreur : Framebuffer incomplet.");
         return;
     }
 
-    // Lire les pixels du framebuffer
+    // Read the pixels from the framebuffer
     const pixels = new Uint8Array(width * height * 4);
     gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-    // Si la largeur et la hauteur d'origine ne sont pas égales, dupliquer la texture sur plusieurs lignes
+
     const originalWidth = textureDefaultWidth;
     const originalHeight = 1;
 
+    // If the original width and height are not equal, duplicate the texture on multiple lines
     if (originalWidth !== originalHeight) {
-        // Créer un tableau pour contenir la texture dupliquée en forme carrée
+        // Create an array to contain the duplicated texture in square form
         const squarePixels = new Uint8Array(width * height * 4);
 
-        // Dupliquer la texture sur toute la surface carrée
+        // Duplicate the texture over the entire square surface
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
-                // Calculer l'index dans la texture d'origine (répétée sur plusieurs lignes)
+                // Calculate the index in the original texture (repeated on multiple lines)
                 const originalX = x % originalWidth;
                 const originalY = y % originalHeight;
 
                 const originalIndex = (originalY * originalWidth + originalX) * 4;
                 const squareIndex = (y * width + x) * 4;
 
-                // Copier les données de la texture dans la texture carrée
+                // Copy the texture data to the square texture
                 squarePixels[squareIndex] = pixels[originalIndex];       // R
                 squarePixels[squareIndex + 1] = pixels[originalIndex + 1]; // G
                 squarePixels[squareIndex + 2] = pixels[originalIndex + 2]; // B
@@ -230,26 +232,26 @@ function transformWebGLTextureToPNG(gl, texture, width = textureDefaultWidth, he
             }
         }
 
-        // Mettre à jour les pixels pour la texture carrée
+        // Update the pixels for the square texture
         pixels.set(squarePixels);
     }
 
-    // Débind du framebuffer
+    // unbind the framebuffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.deleteFramebuffer(framebuffer);
 
-    // Créer un canvas pour dessiner les pixels
+    // Create a canvas to draw the pixels, then convert it to PNG
     const canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;
     const context = canvas.getContext("2d");
 
-    // Dessiner les pixels sur le canvas
+    //Draw the pixels on the canvas
     const imageData = context.createImageData(width, height);
     imageData.data.set(pixels);
     context.putImageData(imageData, 0, 0);
 
-    // Retourner l'image en format PNG
+    // return the PNG image
     return canvas.toDataURL("image/png");
 }
 

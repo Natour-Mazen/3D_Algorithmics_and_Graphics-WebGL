@@ -168,6 +168,10 @@ function handleBoundingBoxVoxelMapSelection(selectedVoxelMap) {
 /*  BOUNDING BOX VRC MODALS  */
 /*****************************/
 
+/*********************************************/
+/*     CUSTOM TRANSFER FUNCTION MODAL        */
+/*********************************************/
+
 function handleCreateModalBodyCustomTransferFunc() {
     createAndInitModal(
         boundingBoxVRCElements.transferFuncCustomModalContent,
@@ -186,15 +190,14 @@ function handleCreateModalBodyCustomTransferFunc() {
             addButton.innerText = 'Add a color';
             addButton.className = 'modal-footer-buttons'
             addButton.addEventListener('click', () => {
-                // Crée une nouvelle ligne et l'ajoute au corps du modal
                 const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
-                // alpha et pos sont des valeurs aléatoires entre 0 et 1
-                const randomAlpha = Math.random().toFixed(2);
-                const randomPos = Math.random().toFixed(2);
+                // alpha and pos are random values between 0 and 1, 0 and 1 not included
+                const randomAlpha = (Math.random() * (1 - Number.EPSILON) + Number.EPSILON).toFixed(2);
+                const randomPos = (Math.random() * (1 - Number.EPSILON) + Number.EPSILON).toFixed(2);
                 const newRow = createModalRowCustomTransferFunc({ color: randomColor, alpha: randomAlpha, position: randomPos });
                 body.appendChild(newRow);
-                saveTransferFunctionValues(false);
                 reorderRowsByPosition();
+                saveTransferFunctionValues(false);
             });
 
             const saveButton = document.createElement('button');
@@ -230,23 +233,6 @@ function handleCreateModalBodyCustomTransferFunc() {
 
             footer.appendChild(buttonsDiv)
             footer.appendChild(imgDiv);
-        }
-    );
-}
-
-function handleCreateModalBodySlices() {
-    createAndInitModal(
-        boundingBoxVRCElements.slicesToDisplayCustomModalContent,
-        'Check or uncheck the slices to display',
-        ['Red', 'Lime', 'Blue', 'Yellow', 'Magenta', 'Cyan', 'White', 'Grey'],
-        createModalRowSlicesCubes,
-        () => {
-            if (theVRCBoundingBox) {
-                theVRCBoundingBox.setDisplaySlicesCubes(false);
-            }
-        },
-        (modalContent, body, header, footer) => {
-            body.style.maxHeight = '280px';
         }
     );
 }
@@ -290,7 +276,6 @@ function createModalRowCustomTransferFunc({ color, alpha, position, id = null })
     colorInput.oninput = () => {
         saveTransferFunctionValues(false);
     }
-
 
     theColorDiv.appendChild(labelColor);
     theColorDiv.appendChild(colorInput);
@@ -339,8 +324,8 @@ function createModalRowCustomTransferFunc({ color, alpha, position, id = null })
     posInput.step = 0.01;
     posInput.value = position;
     posInput.oninput = () => {
-        saveTransferFunctionValues(false);
         reorderRowsByPosition();
+        saveTransferFunctionValues(false);
     }
 
     theAlphaPosDiv.appendChild(labelAlpha);
@@ -356,6 +341,81 @@ function createModalRowCustomTransferFunc({ color, alpha, position, id = null })
     theRowElem.appendChild(theAlphaPosDiv);
     theRowElem.appendChild(borderDiv);
     return theRowElem;
+}
+
+function saveTransferFunctionValues(closeTheModal = true) {
+    const rows = boundingBoxVRCElements.transferFuncCustomModalContent.querySelectorAll('.modal-row');
+    boundingBoxVRCTransferFuncCustomValues = Array.from(rows).flatMap(row => {
+        const alphaInput = row.children[1].children[1];
+        const posInput = row.children[1].children[3];
+        const colorInput = row.children[0].children[1];
+        const color = colorInput.value;
+        const alpha = parseFloat(alphaInput.value) || 0.0;
+        const pos = parseFloat(posInput.value) || 0.0;
+        const colorRGBAP = Color.hextoRGB(color).toArray();
+        colorRGBAP[3] = alpha;
+        colorRGBAP[4] = pos;
+        return colorRGBAP;
+    });
+
+    if (theVRCBoundingBox) {
+        boundingBoxVRCTransferFuncCustomTexture = createHorizontalGradientTexture(gl, boundingBoxVRCTransferFuncCustomValues);
+
+        // get the footer of the modal and get the imageTexture and set the src to the new texture
+        const png = getWebGlTextureAsPNG(boundingBoxVRCTransferFuncCustomTexture);
+        const footer = boundingBoxVRCElements.transferFuncCustomModal.querySelector('.modal-footer');
+        const imageTexture = footer.querySelector('img');
+        imageTexture.src = png;
+    }
+    if(closeTheModal){
+        closeModal(boundingBoxVRCElements.transferFuncCustomModal);
+    }
+}
+
+function getDefaultValues() {
+    return boundingBoxVRCTransferFuncCustomValues.reduce((acc, _, i) => {
+        if (i % 5 === 0) {
+            acc.push({
+                color: adjustLuminance(
+                    boundingBoxVRCTransferFuncCustomValues[i],
+                    boundingBoxVRCTransferFuncCustomValues[i + 1],
+                    boundingBoxVRCTransferFuncCustomValues[i + 2]
+                ),
+                alpha: boundingBoxVRCTransferFuncCustomValues[i + 3],
+                position: boundingBoxVRCTransferFuncCustomValues[i + 4],
+                id: `row-${i}`
+            });
+        }
+        return acc;
+    }, []);
+}
+
+function adjustLuminance(r, g, b, factor = 1.5) {
+    const adjust = (value) => Math.min(255, Math.floor(value * factor));
+    const hex = (value) => value.toString(16).padStart(2, '0');
+    return `#${hex(adjust(r * 255))}${hex(adjust(g * 255))}${hex(adjust(b * 255))}`;
+}
+
+/*********************************************/
+/*      CUSTOM SLICES DISPLAY MODAL          */
+/*********************************************/
+
+
+function handleCreateModalBodySlices() {
+    createAndInitModal(
+        boundingBoxVRCElements.slicesToDisplayCustomModalContent,
+        'Check or uncheck the slices to display',
+        ['Red', 'Lime', 'Blue', 'Yellow', 'Magenta', 'Cyan', 'White', 'Grey'],
+        createModalRowSlicesCubes,
+        () => {
+            if (theVRCBoundingBox) {
+                theVRCBoundingBox.setDisplaySlicesCubes(false);
+            }
+        },
+        (modalContent, body, header, footer) => {
+            body.style.maxHeight = '280px';
+        }
+    );
 }
 
 function createModalRowSlicesCubes(labelText) {
@@ -388,35 +448,6 @@ function createModalRowSlicesCubes(labelText) {
     return row;
 }
 
-function saveTransferFunctionValues(closeTheModal = true) {
-    const rows = boundingBoxVRCElements.transferFuncCustomModalContent.querySelectorAll('.modal-row');
-    boundingBoxVRCTransferFuncCustomValues = Array.from(rows).flatMap(row => {
-        const alphaInput = row.children[1].children[1];
-        const posInput = row.children[1].children[3];
-        const colorInput = row.children[0].children[1];
-        const color = colorInput.value;
-        const alpha = parseFloat(alphaInput.value) || 0.0;
-        const pos = parseFloat(posInput.value) || 0.0;
-        const colorRGBAP = Color.hextoRGB(color).toArray();
-        colorRGBAP[3] = alpha;
-        colorRGBAP[4] = pos;
-        return colorRGBAP;
-    });
-
-    if (theVRCBoundingBox) {
-        boundingBoxVRCTransferFuncCustomTexture = createHorizontalGradientTexture(gl, boundingBoxVRCTransferFuncCustomValues);
-
-        // get the footer of the modal and get the imageTexture and set the src to the new texture
-        const png = getWebGlTextureAsPNG(boundingBoxVRCTransferFuncCustomTexture);
-        const footer = boundingBoxVRCElements.transferFuncCustomModal.querySelector('.modal-footer');
-        const imageTexture = footer.querySelector('img');
-        imageTexture.src = png;
-    }
-    if(closeTheModal){
-        closeModal(boundingBoxVRCElements.transferFuncCustomModal);
-    }
-}
-
 function saveSliceDisplayValues(closeTheModal = true) {
     const rows = boundingBoxVRCElements.slicesToDisplayCustomModalContent.querySelectorAll('.modal-row');
     boundingBoxVRCSlicesToDisplay = Array.from(rows).map(row => row.querySelector('.modal-checkbox').checked ? 1. : 0.);
@@ -432,33 +463,9 @@ function saveSliceDisplayValues(closeTheModal = true) {
     }
 }
 
-function getDefaultValues() {
-    return boundingBoxVRCTransferFuncCustomValues.reduce((acc, _, i) => {
-        if (i % 5 === 0) {
-            acc.push({
-                color: adjustLuminance(
-                    boundingBoxVRCTransferFuncCustomValues[i],
-                    boundingBoxVRCTransferFuncCustomValues[i + 1],
-                    boundingBoxVRCTransferFuncCustomValues[i + 2]
-                ),
-                alpha: boundingBoxVRCTransferFuncCustomValues[i + 3],
-                position: boundingBoxVRCTransferFuncCustomValues[i + 4],
-                id: `row-${i}`
-            });
-        }
-        return acc;
-    }, []);
-}
-
-function adjustLuminance(r, g, b, factor = 1.5) {
-    const adjust = (value) => Math.min(255, Math.floor(value * factor));
-    const hex = (value) => value.toString(16).padStart(2, '0');
-    return `#${hex(adjust(r * 255))}${hex(adjust(g * 255))}${hex(adjust(b * 255))}`;
-}
-
-/****************************************************/
-/*             BOUNDING BOX UI VRC INIT             */
-/****************************************************/
+/******************************/
+/*  BOUNDING BOX UI VRC INIT  */
+/******************************/
 
 function initBoundingBoxVRCUIComponents() {
 
@@ -517,9 +524,6 @@ function initBoundingBoxVRCUIComponents() {
         boundingBoxVRCElements.transferFuncSelector,
         boundingBoxVoxelMapTransferFuncLoader,
         function () {
-            if(Number(this.value) === -1){
-                openModal(boundingBoxVRCElements.transferFuncCustomModal);
-            }
             if(theVRCBoundingBox !== null){
                 theVRCBoundingBox.setTransferFunc(this.value);
             }
