@@ -400,7 +400,6 @@ function adjustLuminance(r, g, b, factor = 1.5) {
 /*      CUSTOM SLICES DISPLAY MODAL          */
 /*********************************************/
 
-
 function handleCreateModalBodySlices() {
     createAndInitModal(
         boundingBoxVRCElements.slicesToDisplayCustomModalContent,
