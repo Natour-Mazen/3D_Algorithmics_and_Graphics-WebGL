@@ -253,57 +253,6 @@ vec4 transformationDefault(vec4 color)
 vec4 transformationCustom(vec4 color)
 {
     return texture2D(uFunctionTransferSampler, vec2(color.a, 0.)).rbga;
-
-    // The values are in (r,b,g), why we don't know because in the js it's (r,g,b).
-    vec4 color1 = uTransferFuncCustomValues[0].rbga;
-    vec4 color2 = uTransferFuncCustomValues[1].rbga;
-    vec4 color3 = uTransferFuncCustomValues[2].rbga;
-    vec4 color4 = uTransferFuncCustomValues[3].rbga;
-    vec4 color5 = uTransferFuncCustomValues[4].rbga;
-
-    float colorAlpha = color.r;
-
-    // Exemple of what could be a custom transfer function.
-    // With color1 = [1., 0., 0., 1.0]
-    // With color2 = [1., 1., 0., 0.6]
-    // With color3 = [1., 0., 1., 0.2] >>> The alpha is important here for the placement of the point on the transfer function.
-    // With color4 = [0., 1., 0., 0.6]
-    // With color5 = [1., 0., 1., 1.0]
-    ///
-    ///    1           5
-    ///    |\         /|
-    ///    | \       / |
-    ///    |  2     4  |
-    ///    |   \   /   |
-    ///    |    \ /    |
-    ///    |     3     |  >>> The position on 'x' of the points are fixed but alpha change the 'y' position.
-    ///    |___________|
-
-    // In function of the color of the pixel (here the red component), we select the point on the curve that is returned.
-    // The curve (transfer fucntion), get use the new color and the new alpha.
-
-    if(colorAlpha <= 1. / 4.){
-        float mixValue = colorAlpha * (1. / 4.);
-        color.a = mix(color1.a, color2.a, mixValue);
-        color.rgb = mix(color1.rgb, color2.rgb, mixValue);
-    }
-    else if(colorAlpha <= 2. / 4.){
-        float mixValue = (colorAlpha - 1. / 4.) * (2. / 4. - 1. / 4.);
-        color.a = mix(color2.a, color3.a, mixValue);
-        color.rgb = mix(color2.rgb, color3.rgb, mixValue);
-    }
-    else if(colorAlpha <= 3. / 4.){
-        float mixValue = (colorAlpha - 2. / 4.) * (3. / 4. - 2. / 4.);
-        color.a = mix(color3.a, color4.a, mixValue);
-        color.rgb = mix(color3.rgb, color4.rgb, mixValue);
-    }
-    else{ // colorAlpha <= 1.
-          float mixValue = (colorAlpha - 3. / 4.) * (4. / 4. - 3. / 4.);
-          color.a = mix(color4.a, color5.a, mixValue);
-          color.rgb = mix(color4.rgb, color5.rgb, mixValue);
-    }
-
-    return color;
 }
 
 vec4 transformationRed(vec4 color)
