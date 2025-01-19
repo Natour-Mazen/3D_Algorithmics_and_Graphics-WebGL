@@ -16,7 +16,6 @@ uniform float uNbImageDepth; // The size of the images inside the uVoxelMapTypeS
 uniform float uNbImageWidth; // The number of images along the width.
 uniform float uNbImageHeight; // The number of images along the height.
 uniform int uTransferFunc; // The choice of the transfer function.
-uniform vec4 uTransferFuncCustomValues[5]; // The values for the custom transfer function.
 uniform float uHeartBeatFactor; // The heart factor.
 uniform bool uDisplaySlicesCubes; // If the slice modification is active.
 uniform float uSlicesToDisplay[8]; // The slices to display.

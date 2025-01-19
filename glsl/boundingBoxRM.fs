@@ -1,10 +1,5 @@
 precision mediump float;
 
-uniform vec4 uColor; // Color of the material.
-uniform vec4 uAmbientLight; // The ambiant light.
-uniform vec4 uLightColor; // The color light.
-uniform float uLightIntensity; // The light intensity.
-uniform float uPI; // 3.14...
 uniform float uBBSize; // The bounding box size factor.
 uniform bool uIsWireFrame; // If the wireframe is displayed.
 uniform bool uIsOpaque; // If the object is opaque.
