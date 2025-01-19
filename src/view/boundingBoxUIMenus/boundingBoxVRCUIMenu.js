@@ -392,7 +392,8 @@ function saveTransferFunctionValues(closeTheModal = true) {
     boundingBoxVRCTransferFuncCustomValues = Array.from(rows).flatMap(row => {
         const alphaInput = row.children[1].children[1];
         const posInput = row.children[1].children[3];
-        const color = row.querySelector('.modal-color-selector').value;
+        const colorInput = row.children[0].children[1];
+        const color = colorInput.value;
         const alpha = parseFloat(alphaInput.value) || 0.0;
         const pos = parseFloat(posInput.value) || 0.0;
         const colorRGBAP = Color.hextoRGB(color).toArray();
