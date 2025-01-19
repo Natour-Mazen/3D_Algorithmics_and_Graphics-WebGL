@@ -41,7 +41,7 @@ class BoundingBoxVRC extends BoundingBox {
         gl.uniform1i(this.shader.uIsVoxelMapEmpty, boundingBoxVoxelMapType == null ? 0 : 1);
         this.checkGlError();
 
-        // To modify the ray depth.
+        // To modify the noise of the voxel map.
         gl.uniform1f(this.shader.uVoxelNoise, this.voxelNoise);
         this.checkGlError();
 

@@ -355,8 +355,8 @@ vec4 transformationGlitch(vec4 color, vec3 position)
 
 vec4 transformationHeartBeat(vec4 color)
 {
-    float glitchFactor = sin(color.a * 10.0 + uHeartBeatFactor) * 0.5 + 0.5;
-    color.rgb = mix(color.rgb, vec3(1.0, 0.0, 0.0), glitchFactor);
+    float factor = sin(color.a * 10.0 + uHeartBeatFactor) * 0.5 + 0.5;
+    color.rgb = mix(color.rgb, vec3(1.0, 0.0, 0.0), factor);
     return color;
 }
 
