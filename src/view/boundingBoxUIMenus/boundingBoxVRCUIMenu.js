@@ -96,6 +96,7 @@ let isThereVRCBoundingBox = false;
 let boundingBoxVRCTransferFuncCustomValues = [
     1., 0., 0., 0., 0., // Red
     1., 1., 0., 1., 1., // Yellow
+    //R,G,B,A,Pos
 ];
 
 /**
