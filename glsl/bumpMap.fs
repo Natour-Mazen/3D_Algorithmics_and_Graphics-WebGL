@@ -3,7 +3,6 @@ precision mediump float;
 
 uniform sampler2D uSampler; // Texture.
 uniform sampler2D uBumpSampler; // Texture for the bump map.
-uniform vec4 uColor; // Color of the material.
 uniform vec4 uAmbientLight; // The ambiant light.
 uniform vec4 uLightColor; // The color light.
 uniform bool uBumMap; // true if the bump map is activeted, false otherwise.

@@ -2,7 +2,6 @@
 precision mediump float;
 
 uniform sampler2D uSampler;
-uniform vec3 uColor; // Not used here.
 uniform bool uIsColor; // true we display the shader color, false otherwise.
 uniform vec4 uAmbientLight; // The ambiant light.
 uniform vec4 uLightColor; // The color light.
