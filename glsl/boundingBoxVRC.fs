@@ -373,7 +373,7 @@ int getColorSliceIndex(vec3 position){
         return 5;
     }else if (position.x >= 0.0  && position.z <= 1.0 * uBBSize && position.y <= 0.0 ) { // Position du cube Blanc
         return 6;
-    }else if (position.x <= 0.0  && position.z <= 1.0 * uBBSize && position.y >= 0.0 ) { // Position du cube Gris
+    }else if (position.x <= 0.0  && position.z <= 1.0 * uBBSize && position.y >= 0.0 ) { // Position du cube GrisNoir
         return 7;
     }
     return -1;
@@ -413,6 +413,9 @@ vec4 displaySlicesCubes(vec4 color,vec3 position)
     color = cutSlicesCubes(color, position);
 
     color.a = color.r;
+    if(color.a < (4. * 0.01) - 0.01){
+        color.a = 0.;
+    }
     if(color.a >= 0.6){
         color.a = 1.;
     }
@@ -435,7 +438,7 @@ vec4 displaySlicesCubes(vec4 color,vec3 position)
         } else if (index == 6) {
             color.rgb = vec3(1.0, 1.0, 1.0); // Blanc
         } else if (index == 7) {
-            color.rgb = vec3(0.5, 0.5, 0.5); // Gris
+            color.rgb = vec3(0.0, 0.0, 0.0); // GrisNoir
         }
     }
     return color;
