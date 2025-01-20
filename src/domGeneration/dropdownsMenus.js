@@ -17,7 +17,8 @@ const dropdowns = [
             { type: 'select', label: 'Objects', id: 'models_select', options: ['None'] },
             { type: 'color', label: 'Colors:', id: 'model_color', value: '#cccccc' },
             { type: 'slider', label: 'Scale:', id: 'scale_slider', min: 5, max: 20, step: 1, value: 0, displayId: 'scale_value' }
-        ]
+        ],
+        isLong: false
     },
     {
         title: 'Height Map',
