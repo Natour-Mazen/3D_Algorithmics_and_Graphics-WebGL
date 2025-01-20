@@ -178,7 +178,9 @@ function handleCreateModalBodyCustomTransferFunc() {
         'Custom Transfer Function',
         getDefaultValues(),
         createModalRowCustomTransferFunc,
-        null,
+        () => {
+            saveTransferFunctionValues();
+        },
         (modalContent, body, header, footer) => {
 
             const buttonsDiv = document.createElement('div');
