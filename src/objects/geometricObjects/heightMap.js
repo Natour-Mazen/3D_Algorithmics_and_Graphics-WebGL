@@ -123,14 +123,14 @@ class HeightMap extends ObjectToDraw {
 
     createTextureCoords(width, height) {
         const fSize = 1.0;
-        const texWidthInBetween = fSize / parseFloat(width - 1);
-        const texHeightInBetween = fSize / parseFloat(height - 1);
+        const texWidthInBetween = fSize / (width - 1);
+        const texHeightInBetween = fSize / (height - 1);
         const textureCoord = [];
 
         for (let h = 0; h < height; ++h) {
             for (let w = 0; w < width; ++w) {
-                const x = parseFloat(w * texWidthInBetween);
-                const y = parseFloat(h * texHeightInBetween);
+                const x = (w * texWidthInBetween);
+                const y = (h * texHeightInBetween);
                 textureCoord.push(x, y);
             }
         }
@@ -170,13 +170,12 @@ class HeightMap extends ObjectToDraw {
                     gl.deleteFramebuffer(framebuffer);
 
                     const divider = 1;
-                    const width = parseInt(this.width / divider);
-                    const height = parseInt(this.height / divider);
+                    const width = (this.width / divider);
+                    const height = (this.height / divider);
 
                     let pointHeight = new Uint8Array(width * height);
                     for (let i = 0; i < width * height; ++i) {
-                        let res = data[i * 4 * divider];
-                        pointHeight[i] = res;
+                        pointHeight[i] = data[i * 4 * divider];
                     }
                     resolve({pointHeight, width, height});
                 } catch (error) {
