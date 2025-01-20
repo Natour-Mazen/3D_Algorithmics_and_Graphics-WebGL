@@ -413,9 +413,6 @@ vec4 displaySlicesCubes(vec4 color,vec3 position)
     color = cutSlicesCubes(color, position);
 
     color.a = color.r;
-    if(color.a < (uVoxelNoise * 0.01) - 0.01){
-        color.a = 0.;
-    }
     if(color.a >= 0.6){
         color.a = 1.;
     }
