@@ -409,9 +409,7 @@ function handleCreateModalBodySlices() {
         ['Red', 'Lime', 'Blue', 'Yellow', 'Magenta', 'Cyan', 'White', 'Grey'],
         createModalRowSlicesCubes,
         () => {
-            if (theVRCBoundingBox) {
-                theVRCBoundingBox.setDisplaySlicesCubes(false);
-            }
+            saveSliceDisplayValues();
         },
         (modalContent, body, header, footer) => {
             body.style.maxHeight = '280px';
