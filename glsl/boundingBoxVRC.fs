@@ -413,7 +413,7 @@ vec4 displaySlicesCubes(vec4 color,vec3 position)
     color = cutSlicesCubes(color, position);
 
     color.a = color.r;
-    if(color.a < (4. * 0.01) - 0.01){
+    if(color.a < (4. * 0.01) - 0.01){ // we reduce the artifacts from the model
         color.a = 0.;
     }
     if(color.a >= 0.6){
@@ -422,6 +422,13 @@ vec4 displaySlicesCubes(vec4 color,vec3 position)
     if(color.a <= 0.01)
     {
         color.a = 0.004;
+        if(uNbImageDepth == 128. ){ // if the depth is 128 that means we have a low quality image, and the slices cubes should be more visible
+                                    color.a *= 2.;
+        }
+        if(uNbImageDepth == 512.){ // if the depth is 512 that means we have a high quality image, and the slices cubes should be less visible
+                                   color.a /= 2.;
+        }
+        // owtherwise we have a normal quality image, and the slices cubes should be normal
         int index = getColorSliceIndex(position);
         if (index == 0) {
             color.rgb = vec3(1.0, 0.0, 0.0); // Rouge
