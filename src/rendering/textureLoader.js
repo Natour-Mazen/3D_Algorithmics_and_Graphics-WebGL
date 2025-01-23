@@ -1,3 +1,9 @@
+/**
+ * Creates a WebGL texture with a single blue pixel.
+ *
+ * @param {WebGLRenderingContext} gl - The WebGL rendering context.
+ * @returns {WebGLTexture} - The created WebGL texture.
+ */
 function createTexture(gl) {
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -19,6 +25,14 @@ function createTexture(gl) {
     return texture;
 }
 
+/**
+ * Handles the loading of an image into a WebGL texture.
+ *
+ * @param {WebGLRenderingContext} gl - The WebGL rendering context.
+ * @param {WebGLTexture} texture - The WebGL texture to bind the image to.
+ * @param {HTMLImageElement} image - The image to load into the texture.
+ * @param {Function} callback - The callback function to execute once the image data is loaded.
+ */
 function handleImageLoad(gl, texture, image, callback) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE, image);
@@ -45,6 +59,13 @@ function handleImageLoad(gl, texture, image, callback) {
     callback(imageData.data);
 }
 
+/**
+ * Loads a texture from a given URL.
+ *
+ * @param {WebGLRenderingContext} gl - The WebGL rendering context.
+ * @param {string} url - The URL of the image to load as a texture.
+ * @returns {WebGLTexture} - The created WebGL texture.
+ */
 function loadTexture(gl, url) {
     const texture = createTexture(gl);
 
@@ -60,6 +81,15 @@ function loadTexture(gl, url) {
 const textureDefaultWidth = 1000;
 const textureDefaultHeight = 1;
 
+/**
+ * Creates a horizontal gradient texture in WebGL.
+ *
+ * @param {WebGLRenderingContext} gl - The WebGL rendering context.
+ * @param {number[]} data - An array of color stops, where each stop is defined by 5 elements: [r, g, b, a, pos].
+ *                          r, g, b, a are the color components (0 to 1), and pos is the position (0 to 1).
+ * @returns {WebGLTexture} - The created WebGL texture.
+ * @throws {Error} - If the data array length is not a multiple of 5.
+ */
 function createHorizontalGradientTexture(gl, data) {
     // Check that the data array is a multiple of 5 (r, g, b, a, pos)
     if (data.length % 5 !== 0) {
@@ -182,6 +212,15 @@ function createHorizontalGradientTexture(gl, data) {
     return texture;
 }
 
+/**
+ * Transforms a WebGL texture to a PNG image.
+ *
+ * @param {WebGLRenderingContext} gl - The WebGL rendering context.
+ * @param {WebGLTexture} texture - The WebGL texture to transform.
+ * @param {number} [width=textureDefaultWidth] - The width of the texture.
+ * @param {number} [height=textureDefaultHeight] - The height of the texture.
+ * @returns {string} - The PNG image as a data URL.
+ */
 function transformWebGLTextureToPNG(gl, texture, width = textureDefaultWidth, height = textureDefaultHeight) {
     // If the width and height are different, choose the largest dimension to make a square
     if (width !== height) {
@@ -255,6 +294,12 @@ function transformWebGLTextureToPNG(gl, texture, width = textureDefaultWidth, he
     return canvas.toDataURL("image/png");
 }
 
+/**
+ * Initiates a download of a file with the specified name.
+ *
+ * @param {string} file - The data URL of the file to be downloaded.
+ * @param {string} fileName - The name to be given to the downloaded file.
+ */
 function downloadFile(file, fileName) {
     const link = document.createElement("a");
     link.download = fileName;
@@ -262,11 +307,27 @@ function downloadFile(file, fileName) {
     link.click();
 }
 
+/**
+ * Saves a WebGL texture as a PNG file.
+ *
+ * @param {WebGLTexture} texture - The WebGL texture to save as a PNG.
+ * @param {string} fileName - The name of the PNG file to save.
+ * @param {number} [width=textureDefaultWidth] - The width of the texture.
+ * @param {number} [height=textureDefaultHeight] - The height of the texture.
+ */
 function saveTextureAsPNG(texture, fileName, width = textureDefaultWidth, height = textureDefaultHeight) {
     const img = transformWebGLTextureToPNG(gl, texture, width, height);
     downloadFile(img, fileName);
 }
 
+/**
+ * Converts a WebGL texture to a PNG image and returns it as a data URL.
+ *
+ * @param {WebGLTexture} texture - The WebGL texture to convert.
+ * @param {number} [width=textureDefaultWidth] - The width of the texture.
+ * @param {number} [height=textureDefaultHeight] - The height of the texture.
+ * @returns {string} - The PNG image as a data URL.
+ */
 function getWebGlTextureAsPNG(texture, width = textureDefaultWidth, height = textureDefaultHeight) {
     return transformWebGLTextureToPNG(gl, texture, width, height);
 }
