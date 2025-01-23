@@ -172,6 +172,10 @@ function handleBoundingBoxVoxelMapSelection(selectedVoxelMap) {
 /*     CUSTOM TRANSFER FUNCTION MODAL        */
 /*********************************************/
 
+/**
+ * Creates the modal body for the custom transfer function.
+ * Initializes the modal with default values, adds event listeners for adding colors and saving the transfer function as a PNG.
+ */
 function handleCreateModalBodyCustomTransferFunc() {
     createAndInitModal(
         boundingBoxVRCElements.transferFuncCustomModalContent,
@@ -239,6 +243,11 @@ function handleCreateModalBodyCustomTransferFunc() {
     );
 }
 
+/**
+ * Reorders the rows in the custom transfer function modal by their position values.
+ * This function sorts the rows based on the value of the position input field (`#posInput`)
+ * and then appends them back to the modal body in the correct order.
+ */
 function reorderRowsByPosition() {
     const modalContent = boundingBoxVRCElements.transferFuncCustomModalContent;
     const modalBody = modalContent.querySelector('.modal-body');
@@ -253,6 +262,17 @@ function reorderRowsByPosition() {
     rows.forEach(row => modalBody.appendChild(row));
 }
 
+/**
+ * Creates a row element for the custom transfer function modal.
+ * Each row contains inputs for color, alpha, and position values.
+ *
+ * @param {Object} params - The parameters for the row.
+ * @param {string} params.color - The color value in hex format.
+ * @param {number} params.alpha - The alpha value (0 to 1).
+ * @param {number} params.position - The position value (0 to 1).
+ * @param {string|null} [params.id=null] - The optional ID for the row element.
+ * @returns {HTMLDivElement} The created row element.
+ */
 function createModalRowCustomTransferFunc({ color, alpha, position, id = null }) {
     const theRowElem = document.createElement('div');
     theRowElem.className = 'modal-row';
@@ -345,6 +365,15 @@ function createModalRowCustomTransferFunc({ color, alpha, position, id = null })
     return theRowElem;
 }
 
+/**
+ * Saves the custom transfer function values from the modal.
+ * Iterates through each row in the modal, extracts the color, alpha, and position values,
+ * converts the color to RGBA format, and stores the values in the `boundingBoxVRCTransferFuncCustomValues` array.
+ * If a bounding box exists, creates a horizontal gradient texture from the values and updates the image in the modal footer.
+ * Optionally closes the modal after saving the values.
+ *
+ * @param {boolean} [closeTheModal=true] - Whether to close the modal after saving the values.
+ */
 function saveTransferFunctionValues(closeTheModal = true) {
     const rows = boundingBoxVRCElements.transferFuncCustomModalContent.querySelectorAll('.modal-row');
     boundingBoxVRCTransferFuncCustomValues = Array.from(rows).flatMap(row => {
@@ -374,6 +403,14 @@ function saveTransferFunctionValues(closeTheModal = true) {
     }
 }
 
+/**
+ * Retrieves the default values for the custom transfer function.
+ * This function processes the `boundingBoxVRCTransferFuncCustomValues` array,
+ * grouping every five elements into an object containing color, alpha, position, and id properties.
+ * The color is adjusted for luminance.
+ *
+ * @returns {Object[]} An array of objects representing the default values for the custom transfer function.
+ */
 function getDefaultValues() {
     return boundingBoxVRCTransferFuncCustomValues.reduce((acc, _, i) => {
         if (i % 5 === 0) {
@@ -392,6 +429,15 @@ function getDefaultValues() {
     }, []);
 }
 
+/**
+ * Adjusts the luminance of the given RGB values by a specified factor.
+ *
+ * @param {number} r - The red component (0 to 1).
+ * @param {number} g - The green component (0 to 1).
+ * @param {number} b - The blue component (0 to 1).
+ * @param {number} [factor=1.5] - The factor by which to adjust the luminance.
+ * @returns {string} The adjusted color in hex format.
+ */
 function adjustLuminance(r, g, b, factor = 1.5) {
     const adjust = (value) => Math.min(255, Math.floor(value * factor));
     const hex = (value) => value.toString(16).padStart(2, '0');
@@ -402,6 +448,10 @@ function adjustLuminance(r, g, b, factor = 1.5) {
 /*      CUSTOM SLICES DISPLAY MODAL          */
 /*********************************************/
 
+/**
+ * Creates the modal body for the slices display.
+ * Initializes the modal with default values, adds event listeners for saving the slice display values.
+ */
 function handleCreateModalBodySlices() {
     createAndInitModal(
         boundingBoxVRCElements.slicesToDisplayCustomModalContent,
@@ -417,6 +467,13 @@ function handleCreateModalBodySlices() {
     );
 }
 
+/**
+ * Creates a row element for the slices display modal.
+ * Each row contains a color square, a label, and a checkbox.
+ *
+ * @param {string} labelText - The text for the label and the color of the square.
+ * @returns {HTMLDivElement} The created row element.
+ */
 function createModalRowSlicesCubes(labelText) {
     const row = document.createElement('div');
     row.className = 'modal-row';
@@ -447,6 +504,15 @@ function createModalRowSlicesCubes(labelText) {
     return row;
 }
 
+/**
+ * Saves the slice display values from the modal.
+ * Iterates through each row in the modal, extracts the checkbox state,
+ * and updates the `boundingBoxVRCSlicesToDisplay` array.
+ * If a bounding box exists, updates its slice display settings.
+ * Optionally closes the modal after saving the values.
+ *
+ * @param {boolean} [closeTheModal=true] - Whether to close the modal after saving the values.
+ */
 function saveSliceDisplayValues(closeTheModal = true) {
     const rows = boundingBoxVRCElements.slicesToDisplayCustomModalContent.querySelectorAll('.modal-row');
     boundingBoxVRCSlicesToDisplay = Array.from(rows).map(row => row.querySelector('.modal-checkbox').checked ? 1. : 0.);
