@@ -253,6 +253,12 @@ Pour la création de ces images, nous avons développé un script Python qui uti
 par le site pour générer les images nécessaires. Ce script se trouve dans le dossier "script".
 
 
+### Explication de la function de transfert Custom
+La fonction de transfert custom permet de créer une texture 1D (de taille 1000, donc 1000 couleurs) représentant un gradient horizontal défini par des couleurs 
+et des positions données. Les couleurs intermédiaires sont calculées par interpolation linéaire entre ces points. 
+La texture générée est ensuite utilisée dans le shader pour transformer une couleur en fonction de sa transparence (alpha) : 
+la valeur alpha sert de coordonnée pour récupérer la couleur correspondante dans le gradient. 
+
 ## Remarques
 - L'interface utilisateur est entièrement générée en JavaScript pour permettre une interaction dynamique.
 - L'application a été testée plusieurs fois et tout fonctionne correctement sans erreurs
