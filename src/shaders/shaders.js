@@ -1,4 +1,9 @@
 // shaders.js
+/**
+ * Loads the shaders for the given 3D object.
+ *
+ * @param {Object} Obj3D - The 3D object for which shaders are to be loaded.
+ */
 function loadShaders(Obj3D) {
     loadCommonShader(Obj3D, function() {
         loadShaderText(Obj3D, '.vs');
@@ -6,6 +11,12 @@ function loadShaders(Obj3D) {
     });
 }
 
+/**
+ * Loads the shader text for the given 3D object.
+ *
+ * @param {Object} Obj3D - The 3D object for which shader text is to be loaded.
+ * @param {string} ext - The file extension of the shader text to be loaded (e.g., '.vs' or '.fs').
+ */
 function loadShaderText(Obj3D, ext) {
     const xhttp = new XMLHttpRequest();
 
@@ -31,6 +42,13 @@ function loadShaderText(Obj3D, ext) {
     xhttp.send();
 }
 
+/**
+ * Injects common code into the shader code before the main function.
+ *
+ * @param {string} shaderCode - The original shader code.
+ * @param {string} commonCode - The common code to be injected.
+ * @returns {string} - The shader code with the common code injected.
+ */
 function injectCommonCode(shaderCode, commonCode) {
     const mainIndex = shaderCode.indexOf("void main(void)");
     if (mainIndex !== -1) {
@@ -41,6 +59,12 @@ function injectCommonCode(shaderCode, commonCode) {
     return shaderCode;
 }
 
+/**
+ * Loads the common shader code for the given 3D object.
+ *
+ * @param {Object} Obj3D - The 3D object for which the common shader code is to be loaded.
+ * @param {Function} callback - The callback function to be executed once the common shader code is loaded.
+ */
 function loadCommonShader(Obj3D, callback) {
     const xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -54,6 +78,11 @@ function loadCommonShader(Obj3D, callback) {
     xhttp.send();
 }
 
+/**
+ * Compiles the vertex and fragment shaders for the given 3D object.
+ *
+ * @param {Object} Obj3D - The 3D object for which shaders are to be compiled.
+ */
 function compileShaders(Obj3D) {
 
     // For debugging purposes
