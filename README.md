@@ -259,6 +259,8 @@ et des positions données. Les couleurs intermédiaires sont calculées par inte
 La texture générée est ensuite utilisée dans le shader pour transformer une couleur en fonction de sa transparence (alpha) : 
 la valeur alpha sert de coordonnée pour récupérer la couleur correspondante dans le gradient. 
 
+Bonus : vous pouvez enregistrer la texture générée en png en cliquant sur le bouton "Save as PNG".
+
 ## Remarques
 - L'interface utilisateur est entièrement générée en JavaScript pour permettre une interaction dynamique.
 - L'application a été testée plusieurs fois et tout fonctionne correctement sans erreurs
